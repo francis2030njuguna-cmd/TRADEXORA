@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEXORA Trading - Wallet</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#8b1d38',
+                            brightRed: '#e53e3e',
+                            softRed: '#fff5f5',
+                            border: '#e2e8f0',
+                            bg: '#f8f9fc',
+                            cardBorder: '#e8ecef',
+                            textDark: '#1a202c',
+                            textMuted: '#718096',
+                            green: '#16a34a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #2d3748;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: #cbd5e1;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="bg-[#ffffff] min-h-screen flex flex-col justify-between pb-28 select-none">
+
+    <!-- TOP HEADER -->
+    <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+
+            <!-- Left Header: Back Button OR Logo & Deposit Funds -->
+            <div class="flex items-center space-x-3">
+                <!-- Top Left Back Button for Sub-pages -->
+                <button id="topPageBackBtn" onclick="openView('menu')" class="hidden flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Back</span>
+        </button>
+
+                <a href="../TradesChart/index.html" class="flex items-center space-x-2" id="headerLogoBtn">
+                    <div class="w-9 h-9 rounded-full bg-black text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/30 shadow-sm">
+                        <span class="tracking-tighter">TRADEXORA</span>
+                    </div>
+                </a>
+
+                <button onclick="openView('wallet'); setWalletTab('deposit');" class="flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
+          <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
+          <span>Deposit Funds</span>
+        </button>
+            </div>
+
+            <!-- Right Header: Account Status & Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="relative">
+                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+            <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
+            <div class="text-right">
+              <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
+              <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+            </div>
+          </button>
+
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
+
+                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+              <div>
+                <div class="text-xs font-bold text-gray-800">Demo Account</div>
+                <div class="text-[11px] text-gray-500">ID: DNP142887</div>
+              </div>
+              <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
+            </button>
+
+                        <button onclick="selectAccount('Real', '$0.00', 'RNP982314')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+              <div>
+                <div class="text-xs font-bold text-gray-800">Real Account</div>
+                <div class="text-[11px] text-gray-500">ID: RNP982314</div>
+              </div>
+              <div class="text-xs font-bold text-gray-700">$0.00</div>
+            </button>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
+
+                <button onclick="openView('settings')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
+          <i class="fa-solid fa-gear text-xs"></i>
+        </button>
+
+                <button onclick="openView('profile')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
+          <i class="fa-regular fa-user text-xs"></i>
+        </button>
+
+                <button onclick="showLogoutToast()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i>
+        </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
+
+        <!-- PAGE TITLE SECTION -->
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase" id="pageCategoryLabel">WALLET</div>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight" id="pageTitleLabel">NOONES</h1>
+            </div>
+        </div>
+
+        <!-- QUICK LINKS ROW (CENTERED) -->
+        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-8 border-b border-gray-100 pb-6">
+            <a href="../TradesChart/index.html" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                    <i class="fa-solid fa-house text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
+            </a>
+
+            <button onclick="openView('menu')" class="group flex flex-col items-center">
+        <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </div>
+        <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Menu</span>
+      </button>
+        </div>
+
+        <!-- VIEW 1: MENU GRID OVERVIEW -->
+        <div id="view-menu" class="view-panel hidden">
+            <!-- SECTION 1: TRADING WORKSPACE -->
+            <section class="mb-10">
+                <h2 class="text-sm font-bold text-gray-900 mb-4 tracking-wide">Trading workspace</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                    <button onclick="openView('portfolio')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+              <i class="fa-regular fa-clock text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Portfolio</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Balance, equity, margin, performance, analytics
+            </p>
+          </button>
+
+                    <button onclick="openView('wallet')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+              <i class="fa-regular fa-credit-card text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Wallet</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Deposit, withdraw, transfers, history, payment methods
+            </p>
+          </button>
+
+                    <button onclick="openView('ai-assistant')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+              <i class="fa-solid fa-brain text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">AI Assistant</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Chat, recommendations, analysis, explanations, signals
+            </p>
+          </button>
+
+                    <button onclick="openView('notifications')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+              <i class="fa-regular fa-bell text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Notifications</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Trade alerts, system alerts, security alerts
+            </p>
+          </button>
+
+                </div>
+            </section>
+
+            <!-- SECTION 2: ACCOUNT AND SUPPORT -->
+            <section>
+                <h2 class="text-sm font-bold text-gray-900 mb-4 tracking-wide">Account and support</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    <button onclick="openView('profile')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+              <i class="fa-regular fa-user text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Profile</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Personal information, verification, KYC, devices
+            </p>
+          </button>
+
+                    <button onclick="openView('settings')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+              <i class="fa-solid fa-gear text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Settings</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Theme, language, preferences, privacy, security
+            </p>
+          </button>
+
+                    <button onclick="openView('help')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+            <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+              <i class="fa-regular fa-circle-question text-base"></i>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Help Center</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              FAQ, support, live chat, documentation
+            </p>
+          </button>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: PORTFOLIO -->
+        <div id="view-portfolio" class="view-panel hidden space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-credit-card text-red-500 mr-1"></i> Balance</div>
+                    <div class="text-xl font-extrabold text-gray-900">$10,000.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-clock text-red-500 mr-1"></i> Equity</div>
+                    <div class="text-xl font-extrabold text-gray-900">$10,000.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Margin</div>
+                    <div class="text-xl font-extrabold text-gray-900">$1,200.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Performance</div>
+                    <div class="text-xl font-extrabold text-emerald-600">+0.00%</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-center">
+                <div>
+                    <div class="text-sm font-bold text-gray-800">Demo account portfolio</div>
+                    <div class="text-xs text-gray-500">DNP142887</div>
+                </div>
+                <span class="text-xs bg-gray-200 text-gray-700 px-2.5 py-1 rounded-md font-bold">DEMO</span>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-sm font-bold text-gray-900">Analytics</h3>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Win rate and risk/reward analytics extend from live order history.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Portfolio breakdown stays focused on balance, equity, margin, and performance.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Use Trades and Trading for execution, then return here for summary analytics.</div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: WALLET -->
+        <div id="view-wallet" class="view-panel hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
+                        <i class="fa-regular fa-credit-card text-red-500 mr-1.5"></i> Live wallet
+                    </div>
+                    <div class="text-2xl font-extrabold text-gray-900" id="liveWalletBalance">$0.00</div>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
+                        <i class="fa-solid fa-building-columns text-red-500 mr-1.5"></i> Live balance
+                    </div>
+                    <div class="text-2xl font-extrabold text-gray-900" id="liveAccountBalance">$0.00</div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-50 text-gray-500 text-xs rounded-xl border border-gray-100">
+                Wallet actions fund and withdraw from real accounts only. Demo balance is reset from the header.
+            </div>
+
+            <!-- DEPOSIT / WITHDRAW TOGGLE -->
+            <div class="grid grid-cols-2 gap-3">
+                <button id="depositTabBtn" onclick="setWalletTab('deposit')" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600">
+          Deposit
+        </button>
+                <button id="withdrawTabBtn" onclick="setWalletTab('withdraw')" class="py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100">
+          Withdraw
+        </button>
+            </div>
+
+            <!-- PAYMENT METHODS -->
+            <div class="border border-gray-200/80 rounded-2xl p-5 bg-white space-y-4">
+                <div class="text-xs font-bold text-gray-900 flex items-center">
+                    <i class="fa-regular fa-credit-card text-blue-600 mr-2"></i> Choose Payment Method
+                </div>
+
+                <div class="space-y-2">
+                    <!-- M-PESA -->
+                    <label class="flex items-center justify-between p-3.5 border border-blue-500 bg-blue-50/10 rounded-2xl cursor-pointer hover:bg-blue-50/20 transition-all">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="payment_method" value="mpesa" checked class="text-blue-600 focus:ring-blue-500">
+              <span class="text-xs font-bold text-gray-900">Use M-Pesa</span>
+            </div>
+            <div class="border border-green-200 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-600">
+              M-PESA
+            </div>
+          </label>
+
+                    <!-- USDT -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="payment_method" value="usdt" class="text-blue-600 focus:ring-blue-500">
+              <span class="text-xs font-bold text-gray-900">USDT</span>
+            </div>
+            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]">
+              T
+            </div>
+          </label>
+
+                    <!-- ETHEREUM -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="payment_method" value="ethereum" class="text-blue-600 focus:ring-blue-500">
+              <span class="text-xs font-bold text-gray-900">Ethereum</span>
+            </div>
+            <div class="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-[10px]">
+              <i class="fa-brands fa-ethereum"></i>
+            </div>
+          </label>
+
+                    <!-- BTC -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+            <div class="flex items-center space-x-3">
+              <input type="radio" name="payment_method" value="btc" class="text-blue-600 focus:ring-blue-500">
+              <span class="text-xs font-bold text-gray-900">BTC</span>
+            </div>
+            <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-[10px]">
+              <i class="fa-brands fa-bitcoin"></i>
+            </div>
+          </label>
+                </div>
+
+                <button onclick="proceedToAmount()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all shadow-sm">
+          Continue
+        </button>
+
+                <div class="flex items-center space-x-1.5 text-[10px] text-emerald-600 font-medium pt-1">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                    <span>The connection is secured</span>
+                </div>
+            </div>
+
+            <!-- TRANSACTION HISTORY -->
+            <div class="space-y-3 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-gray-900">Transaction history</h3>
+                    <span class="text-[10px] text-gray-400 font-medium" id="txnCount">0 records</span>
+                </div>
+
+                <div id="txnHistoryList" class="space-y-2"></div>
+            </div>
+
+            <!-- PENDING OPERATIONS -->
+            <div class="pt-2">
+                <div class="text-xs font-bold text-red-600 flex items-center space-x-1 mb-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <span>Pending operations</span>
+                </div>
+                <div class="text-xl font-extrabold text-gray-900" id="pendingOpsCount">0</div>
+            </div>
+
+        </div>
+
+        <!-- VIEW 3b: AMOUNT SELECTION (STEP 2 AFTER PAYMENT METHOD) -->
+        <div id="view-amount" class="view-panel hidden space-y-6">
+            <div class="border border-gray-200/80 rounded-2xl p-5 bg-white space-y-5">
+                <div>
+                    <div class="text-xs font-bold text-gray-900 flex items-center">
+                        <i class="fa-solid fa-money-bill-wave text-emerald-600 mr-2"></i> Select Amount to Pay
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-1" id="amountMethodLabel">Method: M-PESA</div>
+                </div>
+
+                <!-- AMOUNT GRID -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="selectAmount(5)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $5
+          </button>
+                    <button onclick="selectAmount(10)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $10
+          </button>
+                    <button onclick="selectAmount(20)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $20
+          </button>
+                    <button onclick="selectAmount(50)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $50
+          </button>
+                    <button onclick="selectAmount(100)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $100
+          </button>
+                    <button onclick="selectAmount(500)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all">
+            $500
+          </button>
+                    <button onclick="selectAmount(1000)" class="amount-btn py-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 text-sm font-extrabold text-gray-800 transition-all col-span-2 sm:col-span-1">
+            $1,000
+          </button>
+                </div>
+
+                <!-- SELECTED AMOUNT SUMMARY -->
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500 font-medium">Amount (USD)</span>
+                        <span class="text-sm font-extrabold text-gray-900" id="amountUsdLabel">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center" id="kesRow">
+                        <span class="text-xs text-gray-500 font-medium">Amount (KES)</span>
+                        <span class="text-sm font-extrabold text-emerald-600" id="amountKesLabel">KES 0.00</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400" id="rateNote">Rate: 1 USD = 129.00 KES (M-Pesa)</div>
+                </div>
+
+                <!-- PAYMENT DETAILS (RECIPIENT ADDRESS / NUMBER) -->
+                <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-2">
+                    <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-location-dot mr-1.5"></i> Send exactly this amount to
+                    </div>
+                    <div id="paymentDetailsBox" class="text-xs font-bold text-gray-900 break-all">Payment details will appear here after you choose an amount.</div>
+                    <button id="copyDetailsBtn" onclick="copyPaymentDetails()" class="hidden w-full py-2.5 bg-gray-900 hover:bg-black text-white rounded-xl text-[11px] font-bold transition-all">
+            <i class="fa-regular fa-copy mr-1.5"></i> Copy Address
+          </button>
+                </div>
+
+                <button onclick="openMpesaModal()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold transition-all shadow-sm">
+          Pay Deposit Now
+        </button>
+
+                <button onclick="openView('wallet')" class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-2xl text-xs font-bold transition-all border border-gray-200">
+          <i class="fa-solid fa-arrow-left mr-1.5"></i> Back to Payment Methods
+        </button>
+            </div>
+        </div>
+
+        <!-- VIEW 4: AI ASSISTANT -->
+        <div id="view-ai-assistant" class="view-panel hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-brain text-red-500 mr-2"></i> Chat and analysis</h3>
+                <div class="space-y-3">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
+                        <p class="text-xs text-gray-700 mt-1">Analyze EURUSD and explain the current short-term structure.</p>
+                    </div>
+                    <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                        <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
+                        <p class="text-xs text-gray-800 mt-1">EURUSD keeps a constructive intraday bias above 1.0820 with steady higher lows and better momentum through London support.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
+                        <p class="text-xs text-gray-700 mt-1">What is the preferred risk area for a continuation setup?</p>
+                    </div>
+                    <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                        <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
+                        <p class="text-xs text-gray-800 mt-1">A continuation setup favors pullbacks into support while maintaining defined risk below the latest higher low.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-bolt text-red-500 mr-2"></i> AI signals</h3>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <div class="text-xs font-bold text-gray-900">EURUSD · Buy Bias</div>
+                    <div class="text-[10px] text-gray-400">Confidence 72%</div>
+                    <p class="text-[11px] text-gray-600">Higher lows remain intact above intraday VWAP.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <div class="text-xs font-bold text-gray-900">XAUUSD · Momentum Long</div>
+                    <div class="text-[10px] text-gray-400">Confidence 68%</div>
+                    <p class="text-[11px] text-gray-600">Breakout continuation remains valid above 2378.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <div class="text-xs font-bold text-gray-900">BTCUSD · Neutral</div>
+                    <div class="text-[10px] text-gray-400">Confidence 54%</div>
+                    <p class="text-[11px] text-gray-600">Range conditions persist until 64.8k breaks decisively.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: NOTIFICATIONS -->
+        <div id="view-notifications" class="view-panel hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
+                    <p class="text-xs text-gray-400">0 unread · 0 total · Account: <span id="notifUserName">Guest</span></p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-lg font-bold">All</button>
+                    <button class="px-3 py-1 bg-gray-50 text-gray-400 text-xs rounded-lg">Unread</button>
+                </div>
+            </div>
+
+            <div class="py-12 text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto">
+                    <i class="fa-regular fa-bell-slash text-xl"></i>
+                </div>
+                <div class="text-sm font-bold text-gray-800">No notifications</div>
+                <p class="text-xs text-gray-400">Updates will appear here as they happen.</p>
+                <button onclick="openView('wallet')" class="text-xs text-red-600 font-bold hover:underline">Go to Wallet &rarr;</button>
+            </div>
+        </div>
+
+        <!-- VIEW 6: PROFILE -->
+        <div id="view-profile" class="view-panel hidden space-y-6">
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-regular fa-user text-red-500 mr-2"></i> Personal information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Name</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileName">Guest</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Email</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileEmail">Not set</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Phone Number</div>
+                        <div class="text-xs font-bold text-gray-800" id="profilePhone">Not set</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Country</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileCountry">Not set</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-800">Verification</span>
+                        <span class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-extrabold">PENDING</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 leading-normal">Upload your ID, passport, or driver's license together with a utility bill or bank statement.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span class="text-xs font-bold text-gray-800">Devices</span>
+                    <p class="text-[11px] text-gray-500 leading-normal">Current device session verified and secured.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span class="text-xs font-bold text-gray-800">Security</span>
+                    <p class="text-[11px] text-gray-500 leading-normal">Password and device controls live alongside alerts and settings.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: SETTINGS -->
+        <div id="view-settings" class="view-panel hidden space-y-6">
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-800">Appearance</h3>
+                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold">Light Mode</div>
+                <div class="p-3 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold">Dark Mode</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Language</h4>
+                    <select class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium">
+            <option>English</option>
+            <option>French</option>
+            <option>Swahili</option>
+          </select>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Notifications</h4>
+                    <label class="flex items-center space-x-2 text-xs text-gray-700">
+            <input type="checkbox" checked class="rounded text-red-600">
+            <span>Price alerts</span>
+          </label>
+                    <label class="flex items-center space-x-2 text-xs text-gray-700">
+            <input type="checkbox" checked class="rounded text-red-600">
+            <span>Security alerts</span>
+          </label>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Privacy</h4>
+                    <p class="text-xs text-gray-500">Session security enabled.</p>
+                    <p class="text-xs text-gray-500">Manual theme and language preferences saved locally.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: HELP CENTER -->
+        <div id="view-help" class="view-panel hidden space-y-6">
+            <div class="text-center py-4 space-y-2">
+                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-regular fa-comments"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Get Help</h2>
+                <p class="text-xs text-gray-500">Find answers to common questions or reach out to our support team</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-circle-question text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">FAQ</div>
+                    <p class="text-[10px] text-gray-500">Browse frequently asked questions</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-file-lines text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">Documentation</div>
+                    <p class="text-[10px] text-gray-500">Learn how to use the platform</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-envelope text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">Email Support</div>
+                    <p class="text-[10px] text-gray-500">support@qoratrading.com</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 pt-4 border-t border-gray-100">
+                <h3 class="text-sm font-bold text-gray-900">Frequently Asked Questions</h3>
+                <div class="space-y-2">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-800">How do I create an account?</div>
+                        <p class="text-xs text-gray-500">Click the "Create Account" button on the homepage, fill in your details, and follow the verification process.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-800">What markets can I trade?</div>
+                        <p class="text-xs text-gray-500">Qora Trading offers access to forex, cryptocurrencies, stocks, commodities, and indices.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION DOCK -->
+    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+        <div class="flex items-center justify-between">
+
+            <button onclick="openView('menu')" class="flex flex-col items-center flex-1 py-1 text-red-600">
+        <i class="fa-solid fa-bars text-sm mb-1"></i>
+        <span class="text-[10px] font-bold">Menu</span>
+      </button>
+
+            <a href="../Trades/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
+                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$24.54</span>
+                <i class="fa-regular fa-folder text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Trades</span>
+            </a>
+
+            <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-solid fa-house text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Trade chart</span>
+            </a>
+
+            <a href="../Markets%26News/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-newspaper text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Markets&News</span>
+            </a>
+
+            <a href="../More/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-user text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">More</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <!-- M-PESA PHONE NUMBER MODAL -->
+    <div id="mpesaModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeMpesaModal()"></div>
+
+        <!-- Modal card -->
+        <div class="relative bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 space-y-5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                        <i class="fa-solid fa-mobile-screen text-emerald-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-extrabold text-gray-900">M-PESA Deposit</div>
+                        <div class="text-[10px] text-gray-400">STK Push · Safaricom</div>
+                    </div>
+                </div>
+                <button onclick="closeMpesaModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Amount summary -->
+            <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl space-y-1.5">
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] text-gray-500 font-medium">Amount (USD)</span>
+                    <span class="text-sm font-extrabold text-gray-900" id="modalUsdLabel">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] text-gray-500 font-medium">Amount (KES)</span>
+                    <span class="text-sm font-extrabold text-emerald-700" id="modalKesLabel">KES 0.00</span>
+                </div>
+            </div>
+
+            <!-- Phone input -->
+            <div class="space-y-2">
+                <label class="text-[11px] font-bold text-gray-700 flex items-center">
+                    <i class="fa-solid fa-phone mr-1.5 text-emerald-600"></i> M-Pesa Phone Number
+                </label>
+                <input id="mpesaPhoneInput" type="tel" inputmode="numeric" placeholder="01XXXXXXXX / 07XXXXXXXX" oninput="formatPhoneInput(this)" autocomplete="tel" class="w-full px-4 py-3.5 border-2 border-gray-200 focus:border-emerald-500 rounded-2xl text-sm font-bold text-gray-900 outline-none tracking-wider transition-colors">
+                <p class="text-[10px] text-gray-400 flex items-center">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Accepts 01... and 07... numbers. An STK push will be sent to this number.
+                </p>
+                <p id="phoneError" class="hidden text-[10px] font-bold text-red-500 flex items-center">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid number. Must start with 01 or 07 and be 10 digits.
+                </p>
+            </div>
+
+            <!-- Pay button -->
+            <button id="payNowBtn" onclick="payDepositNow()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-sm font-extrabold transition-all shadow-md flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-bolt"></i>
+                <span id="payNowLabel">Pay Deposit Now</span>
+            </button>
+
+            <div class="flex items-center justify-center space-x-1.5 text-[10px] text-emerald-600 font-medium">
+                <i class="fa-solid fa-shield-halved text-xs"></i>
+                <span>Secured by M-PESA · PayHero</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing overlay -->
+    <div id="processingOverlay" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-xs w-full text-center space-y-4">
+            <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center">
+                <i class="fa-solid fa-spinner fa-spin text-emerald-600 text-xl"></i>
+            </div>
+            <div class="text-sm font-extrabold text-gray-900">Check your phone</div>
+            <p class="text-xs text-gray-500 leading-relaxed" id="processingMsg">An M-PESA prompt has been sent. Enter your PIN to complete the payment.</p>
+            <div class="text-[10px] text-gray-400" id="processingRef"></div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-[70] flex items-center space-x-2">
+        <i class="fa-solid fa-circle-info text-amber-400" id="toastIcon"></i>
+        <span id="toastMsg">Action triggered</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let activeWalletMode = 'deposit';
+        let selectedMethod = 'mpesa';
+        let selectedUsdAmount = 0;
+        let pendingReference = null;
+
+        // ---------- ADDRESSES & RATES ----------
+        const WALLET_ADDRESSES = {
+            mpesa: {
+                label: 'M-PESA',
+                icon: 'fa-mobile-screen',
+                payTo: 'M-PESA STK Push — a payment prompt will be sent to your phone',
+                address: 'PAYBILL: 522533 · Acc: NOONESPAYMENT'
+            },
+            usdt: {
+                label: 'USDT (TRC20)',
+                icon: 'fa-coins',
+                payTo: 'USDT TRC20 address — send the exact USD amount in USDT',
+                address: 'TCW2y97hG2YBzdioBFHtSmdymg61Hi6Tek'
+            },
+            ethereum: {
+                label: 'Ethereum (ERC20)',
+                icon: 'fa-brands fa-ethereum',
+                payTo: 'Ethereum (ERC20) address — send ETH covering the USD amount + gas',
+                address: '0x455a03454F829e968858e5022aA54576E7dA30dC'
+            },
+            btc: {
+                label: 'Bitcoin (BTC Network)',
+                icon: 'fa-brands fa-bitcoin',
+                payTo: 'Bitcoin address — send BTC covering the USD amount + network fee',
+                address: 'bc1q3ceew699ry0let4gtjr3hynnqpzhxe2cr77lgz'
+            }
+        };
+
+        const USD_TO_KES = 129.00;
+
+        // ---------- REGISTERED USER DATA ----------
+        function getRegisteredName() {
+            return localStorage.getItem('userName') || 'Guest';
+        }
+
+        function applyUserData() {
+            const userName = getRegisteredName();
+            document.getElementById('pageTitleLabel').innerText = userName;
+            document.getElementById('notifUserName').innerText = userName;
+            document.getElementById('profileName').innerText = userName;
+            document.getElementById('profileEmail').innerText = localStorage.getItem('userEmail') || 'Not set';
+            document.getElementById('profilePhone').innerText = localStorage.getItem('userPhone') || 'Not set';
+            document.getElementById('profileCountry').innerText = localStorage.getItem('userCountry') || 'Not set';
+            renderTxnHistory();
+        }
+
+        // ---------- VIEW SWITCHING ----------
+        function openView(viewName) {
+            const panels = document.querySelectorAll('.view-panel');
+            panels.forEach(panel => panel.classList.add('hidden'));
+
+            const catLabel = document.getElementById('pageCategoryLabel');
+            const titleLabel = document.getElementById('pageTitleLabel');
+            const backBtn = document.getElementById('topPageBackBtn');
+            const logoBtn = document.getElementById('headerLogoBtn');
+
+            const targetPanel = document.getElementById(`view-${viewName}`);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+
+            const userName = getRegisteredName();
+
+            if (viewName === 'menu') {
+                catLabel.innerText = 'MENU';
+                titleLabel.innerText = userName;
+                backBtn.classList.add('hidden');
+                logoBtn.classList.remove('hidden');
+            } else {
+                catLabel.innerText = viewName.toUpperCase().replace('-', ' ');
+                titleLabel.innerText = userName;
+                backBtn.classList.remove('hidden');
+                logoBtn.classList.add('hidden');
+            }
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // ---------- WALLET ----------
+        function setWalletTab(mode) {
+            activeWalletMode = mode;
+            const depositBtn = document.getElementById('depositTabBtn');
+            const withdrawBtn = document.getElementById('withdrawTabBtn');
+
+            if (mode === 'deposit') {
+                depositBtn.className = "py-3 bg-emerald-600 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600";
+                withdrawBtn.className = "py-3 bg-red-50 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100";
+            } else {
+                withdrawBtn.className = "py-3 bg-red-600 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-red-600";
+                depositBtn.className = "py-3 bg-emerald-50 text-emerald-600 font-bold rounded-2xl text-xs transition-all border border-emerald-100";
+            }
+        }
+
+        function proceedToAmount() {
+            const paymentInput = document.querySelector('input[name="payment_method"]:checked');
+            selectedMethod = (paymentInput && paymentInput.value) || 'mpesa';
+
+            if (activeWalletMode === 'withdraw') {
+                showToast('Withdrawals are processed manually. Contact support.');
+                return;
+            }
+
+            selectedUsdAmount = 0;
+            document.getElementById('amountUsdLabel').innerText = '$0.00';
+            document.getElementById('amountKesLabel').innerText = 'KES 0.00';
+            document.getElementById('paymentDetailsBox').innerText = 'Select an amount above to see payment details.';
+            document.getElementById('copyDetailsBtn').classList.add('hidden');
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+            });
+
+            const conf = WALLET_ADDRESSES[selectedMethod];
+            document.getElementById('amountMethodLabel').innerText = `Method: ${conf.label}`;
+
+            const kesRow = document.getElementById('kesRow');
+            const rateNote = document.getElementById('rateNote');
+            if (selectedMethod === 'mpesa') {
+                kesRow.classList.remove('hidden');
+                rateNote.classList.remove('hidden');
+                rateNote.innerText = `Rate: 1 USD = ${USD_TO_KES.toFixed(2)} KES (M-Pesa)`;
+            } else {
+                kesRow.classList.add('hidden');
+                rateNote.classList.add('hidden');
+            }
+
+            openView('amount');
+        }
+
+        // STEP: pick an amount -> highlights + updates labels -> AUTO-OPENS the M-Pesa popup
+        function selectAmount(usd) {
+            selectedUsdAmount = usd;
+
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+            });
+            event.currentTarget.classList.add('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+
+            document.getElementById('amountUsdLabel').innerText = `$${usd.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+
+            const conf = WALLET_ADDRESSES[selectedMethod];
+
+            if (selectedMethod === 'mpesa') {
+                const kes = usd * USD_TO_KES;
+                document.getElementById('amountKesLabel').innerText = `KES ${kes.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('paymentDetailsBox').innerText = `${conf.payTo}\nAmount: KES ${kes.toFixed(2)}`;
+                document.getElementById('copyDetailsBtn').classList.remove('hidden');
+
+                // >>> POPUP OPENS AUTOMATICALLY once the amount is selected <<<
+                setTimeout(() => openMpesaModal(), 350);
+            } else {
+                document.getElementById('paymentDetailsBox').innerText = `${conf.payTo}\nAddress: ${conf.address}\nAmount: $${usd.toFixed(2)} in ${conf.label}`;
+                document.getElementById('copyDetailsBtn').classList.remove('hidden');
+            }
+        }
+
+        function copyPaymentDetails() {
+            const text = document.getElementById('paymentDetailsBox').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Payment details copied to clipboard');
+            }).catch(() => {
+                showToast('Copy failed — select the text manually');
+            });
+        }
+
+        // ---------- M-PESA MODAL FLOW ----------
+        function openMpesaModal() {
+            if (selectedUsdAmount <= 0) {
+                showToast('Please select an amount first');
+                return;
+            }
+
+            if (selectedMethod !== 'mpesa') {
+                // Crypto: manual send flow (no popup)
+                const conf = WALLET_ADDRESSES[selectedMethod];
+                const record = {
+                    method: conf.label,
+                    usd: selectedUsdAmount,
+                    date: new Date().toLocaleString(),
+                    status: 'PENDING'
+                };
+                const history = JSON.parse(localStorage.getItem('txnHistory') || '[]');
+                history.unshift(record);
+                localStorage.setItem('txnHistory', JSON.stringify(history));
+                renderTxnHistory();
+
+                showToast(`Send $${selectedUsdAmount} to the ${conf.label} address shown. Awaiting confirmations...`);
+                openView('wallet');
+                return;
+            }
+
+            // Fill modal with the selected amount
+            document.getElementById('modalUsdLabel').innerText = `$${selectedUsdAmount.toFixed(2)}`;
+            const kes = Math.round(selectedUsdAmount * USD_TO_KES);
+            document.getElementById('modalKesLabel').innerText = `KES ${kes.toLocaleString()}`;
+
+            // Pre-fill from registration if saved (converts 2547XXXXXXXX / 7XXXXXXXX -> 07XXXXXXXX)
+            const input = document.getElementById('mpesaPhoneInput');
+            input.value = '';
+            const saved = localStorage.getItem('userPhone');
+            if (saved) {
+                let d = saved.replace(/\D/g, '');
+                if (d.startsWith('254') && d.length === 12) d = '0' + d.slice(3);
+                else if (!d.startsWith('0') && d.length === 9) d = '0' + d;
+                if (/^0(1|7)\d{8}$/.test(d)) input.value = d;
+            }
+
+            document.getElementById('phoneError').classList.add('hidden');
+            document.getElementById('payNowBtn').disabled = false;
+            document.getElementById('payNowLabel').innerText = 'Pay Deposit Now';
+
+            document.getElementById('mpesaModal').classList.remove('hidden');
+        }
+
+        function closeMpesaModal() {
+            document.getElementById('mpesaModal').classList.add('hidden');
+        }
+
+        // Format input as 07XX XXX XXX while typing (digits only, max 10 digits)
+        function formatPhoneInput(input) {
+            const digits = input.value.replace(/\D/g, '').slice(0, 10);
+            let out = digits;
+            if (digits.length > 7) out = `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+            else if (digits.length > 4) out = `${digits.slice(0, 4)} ${digits.slice(4)}`;
+            input.value = out;
+
+            // Live error hint
+            const err = document.getElementById('phoneError');
+            if (digits.length === 10 && !/^0(1|7)\d{8}$/.test(digits)) {
+                err.classList.remove('hidden');
+            } else if (digits.length === 10) {
+                err.classList.add('hidden');
+            }
+        }
+
+        // Step 2: "Pay Deposit Now" -> validate 01/07 number -> fire STK push
+        async function payDepositNow() {
+            const digits = document.getElementById('mpesaPhoneInput').value.replace(/\D/g, '');
+
+            // Must be exactly 10 digits starting with 01 or 07
+            if (!/^0(1|7)\d{8}$/.test(digits)) {
+                document.getElementById('phoneError').classList.remove('hidden');
+                showToast('Enter a valid number: 01XXXXXXXX or 07XXXXXXXX');
+                return;
+            }
+
+            // Convert to international format for PayHero: 07XXXXXXXX -> 2547XXXXXXXX
+            const phone = '254' + digits.slice(1);
+            const kesAmount = Math.round(selectedUsdAmount * USD_TO_KES);
+
+            // Lock the button
+            const btn = document.getElementById('payNowBtn');
+            btn.disabled = true;
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+            document.getElementById('payNowLabel').innerText = 'Sending STK Push...';
+
+            try {
+                const resp = await fetch('/api/payhero/stk-push', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone_number: phone,
+                        amount: kesAmount
+                    })
+                });
+
+                const data = await resp.json();
+
+                if (!resp.ok || !data.success) {
+                    showToast(data.message || 'STK push failed. Please try again.');
+                    resetPayNowBtn();
+                    return;
+                }
+
+                pendingReference = data.data.external_reference;
+
+                // Save the phone for next time
+                localStorage.setItem('userPhone', digits);
+
+                // Save history record
+                const record = {
+                    method: 'M_PESA_STK',
+                    usd: selectedUsdAmount,
+                    kes: kesAmount,
+                    phone: digits,
+                    reference: pendingReference,
+                    date: new Date().toLocaleString(),
+                    status: 'PENDING'
+                };
+                const history = JSON.parse(localStorage.getItem('txnHistory') || '[]');
+                history.unshift(record);
+                localStorage.setItem('txnHistory', JSON.stringify(history));
+                renderTxnHistory();
+
+                // Close modal, show processing overlay
+                closeMpesaModal();
+                resetPayNowBtn();
+                document.getElementById('processingMsg').innerText =
+                    `An M-PESA prompt for KES ${kesAmount.toLocaleString()} has been sent to ${digits}. Enter your PIN to complete the payment.`;
+                document.getElementById('processingRef').innerText = `Ref: ${pendingReference}`;
+                document.getElementById('processingOverlay').classList.remove('hidden');
+
+                // Poll payment status
+                pollPaymentStatus(pendingReference, 0);
+
+            } catch (err) {
+                console.error('STK push error:', err);
+                showToast('Network error — could not reach payment server');
+                resetPayNowBtn();
+            }
+        }
+
+        function resetPayNowBtn() {
+            const btn = document.getElementById('payNowBtn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-60', 'cursor-not-allowed');
+            document.getElementById('payNowLabel').innerText = 'Pay Deposit Now';
+        }
+
+        function pollPaymentStatus(reference, attempt) {
+            if (attempt > 24) { // ~2 minutes
+                document.getElementById('processingOverlay').classList.add('hidden');
+                showToast('Payment timed out. Check transaction history.');
+                return;
+            }
+            setTimeout(async() => {
+                try {
+                    const resp = await fetch(`/api/payhero/status/${reference}`);
+                    const data = await resp.json();
+
+                    if (data.success && data.data.status === 'SUCCESS') {
+                        document.getElementById('processingOverlay').classList.add('hidden');
+                        updateTxnStatus(reference, 'SUCCESS');
+                        showToast('✅ Payment confirmed! Deposit credited.');
+                        openView('wallet');
+                        return;
+                    }
+                    if (data.success && data.data.status === 'FAILED') {
+                        document.getElementById('processingOverlay').classList.add('hidden');
+                        updateTxnStatus(reference, 'FAILED');
+                        showToast('❌ Payment failed or was cancelled');
+                        return;
+                    }
+                    pollPaymentStatus(reference, attempt + 1);
+                } catch (e) {
+                    pollPaymentStatus(reference, attempt + 1);
+                }
+            }, 5000);
+        }
+
+        function updateTxnStatus(reference, status) {
+            const history = JSON.parse(localStorage.getItem('txnHistory') || '[]');
+            const txn = history.find(t => t.reference === reference);
+            if (txn) {
+                txn.status = status;
+                localStorage.setItem('txnHistory', JSON.stringify(history));
+                renderTxnHistory();
+            }
+        }
+
+        // ---------- TRANSACTION HISTORY RENDER ----------
+        function renderTxnHistory() {
+            const history = JSON.parse(localStorage.getItem('txnHistory') || '[]');
+            const list = document.getElementById('txnHistoryList');
+            const countEl = document.getElementById('txnCount');
+            const pendingEl = document.getElementById('pendingOpsCount');
+
+            if (!list) return;
+
+            countEl.innerText = `${history.length} record${history.length !== 1 ? 's' : ''}`;
+            pendingEl.innerText = history.filter(t => t.status === 'PENDING').length;
+
+            if (history.length === 0) {
+                list.innerHTML = '<div class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs text-gray-400 text-center">No transactions yet</div>';
+                return;
+            }
+
+            list.innerHTML = history.map(t => {
+                const statusColors = {
+                    'SUCCESS': 'text-emerald-600',
+                    'FAILED': 'text-red-500',
+                    'PENDING': 'text-amber-500'
+                };
+                return `
+                <div class="p-4 bg-white border border-gray-200/80 rounded-2xl flex items-center justify-between shadow-xs">
+                    <div>
+                        <div class="text-xs font-bold text-gray-900">${t.method}${t.phone ? ' · ' + t.phone : ''}</div>
+                        <div class="text-[10px] text-gray-400">${t.date}${t.reference ? ' · ' + t.reference.slice(0, 12) : ''}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-extrabold text-gray-900">${t.usd ? '$' + Number(t.usd).toFixed(2) : ''}</div>
+                        <div class="text-[9px] font-bold uppercase tracking-wider ${statusColors[t.status] || 'text-gray-400'}">${t.status || 'PENDING'}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ---------- ACCOUNT DROPDOWN ----------
+        function toggleAccountDropdown() {
+            document.getElementById('accountDropdown').classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('accountDropdown');
+            const dropdownBtn = document.getElementById('accountDropdownBtn');
+            if (dropdown && dropdownBtn && !dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function selectAccount(type, balance, id) {
+            document.getElementById('activeAccountType').innerText = `${type} ${balance}`;
+            document.getElementById('activeAccountId').innerText = id;
+            toggleAccountDropdown();
+            showToast(`Switched to ${type} Account (${balance})`);
+        }
+
+        // ---------- TOASTS ----------
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 2500);
+        }
+
+        function showLogoutToast() {
+            showToast("Session security active. Logging out...");
+        }
+
+        // ---------- INITIALIZATION ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            applyUserData();
+            openView('wallet');
+        });
+    </script>
+
+</body>
+
+</html>

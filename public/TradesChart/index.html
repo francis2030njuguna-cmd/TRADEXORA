@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEXORA Trading Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- TradingView Web Component loader (Advanced Chart) -->
+    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-advanced-chart.js" crossorigin=""></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        qora: {
+                            bg: '#f8fafc',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            demoRed: '#801336',
+                            sellRed: '#ff7b89',
+                            buyGreen: '#50e396',
+                            aiBlue: '#2d60f7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        .ai-shadow {
+            box-shadow: 0 10px 25px -5px rgba(45, 96, 247, .4), 0 8px 10px -6px rgba(45, 96, 247, .2);
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .flash-up {
+            animation: flashUp .5s ease-out;
+        }
+        
+        .flash-down {
+            animation: flashDown .5s ease-out;
+        }
+        
+        @keyframes flashUp {
+            0% {
+                background: rgba(80, 227, 150, .35);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+        
+        @keyframes flashDown {
+            0% {
+                background: rgba(255, 123, 137, .35);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn .2s ease-out;
+        }
+        
+        tv-advanced-chart {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between p-2 md:p-3 bg-slate-50">
+
+    <div class="max-w-[1600px] w-full mx-auto space-y-2 pb-20">
+
+        <!-- 1. HEADER BAR -->
+        <header class="bg-white rounded-xl p-2 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 md:gap-3">
+                <a href="../index.html" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 text-amber-400 font-bold text-sm tracking-wider shadow-inner">
+                    <div class="w-5 h-5 rounded-full border border-amber-400 flex items-center justify-center text-[10px] font-black bg-slate-800">Q</div>
+                    <span class="text-white text-xs font-bold tracking-wider">TRADEXORA</span>
+                </a>
+                <a href="../deposit/index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-semibold transition">
+                    <i class="fa-regular fa-credit-card text-amber-600"></i>
+                    <span>Deposit Funds</span>
+                </a>
+            </div>
+
+            <div class="flex-1 max-w-xl min-w-[220px]">
+                <div class="relative flex items-center">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="symbolSearch" onkeyup="handleSearch(event)" placeholder="Search All Symbols (e.g. AAPL, BTC, USOIL)" class="w-full pl-9 pr-28 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    <div class="absolute right-1 flex items-center gap-1">
+                        <button id="toggleAccountBtn" onclick="toggleAccountType()" class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-md shadow-2xs transition">
+                        <i class="fa-solid fa-sliders text-slate-400 text-[10px]"></i>
+                        <span id="toggleAccountBtnText">Switch to Live</span>
+                    </button>
+                        <button class="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100 transition" title="User Profile" onclick="window.location.href='../More/index.html'">
+                        <i class="fa-regular fa-user text-xs"></i>
+                    </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div id="accountBadge" class="flex flex-col items-end px-3 py-1 bg-[#801336] text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm" onclick="toggleAccountType()">
+                    <div class="flex items-center gap-1 text-[11px] font-semibold">
+                        <i class="fa-solid fa-chevron-down text-[9px] text-rose-300"></i>
+                        <span id="accountBalanceDisplay">Demo $10,000.00</span>
+                    </div>
+                    <span id="accountIdDisplay" class="text-[9px] text-rose-200/80 tracking-wider">DNP142887</span>
+                </div>
+                <button onclick="resetAccountBalance()" title="Reset Demo Balance" class="w-8 h-8 flex items-center justify-center border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
+                <i class="fa-solid fa-rotate-right text-xs"></i>
+            </button>
+                <button onclick="showToast('Notifications', 'Real-time price feed synchronized', 'info')" class="relative w-8 h-8 flex items-center justify-center border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 rounded-lg transition">
+                <i class="fa-regular fa-bell text-xs"></i>
+                <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+            </button>
+            </div>
+        </header>
+
+        <!-- 2. CATEGORY TABS & SUB SYMBOLS -->
+        <section class="bg-white rounded-xl p-2.5 border border-slate-200 shadow-sm space-y-2">
+            <div id="categoryContainer" class="flex items-center gap-6 overflow-x-auto border-b border-slate-100 pb-2 text-xs font-medium text-slate-500 no-scrollbar">
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Forex')">Forex</button>
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Commodities')">Commodities</button>
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Indices')">Indices</button>
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Stocks')">Stocks</button>
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Crypto')">Crypto</button>
+                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Metals')">Metals</button>
+            </div>
+            <div id="subSymbolsList" class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5"></div>
+        </section>
+
+        <!-- 3. MAIN CHART PANEL -->
+        <main class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative">
+            <div class="p-2 border-b border-slate-100 flex items-center justify-between gap-2 overflow-x-auto text-xs bg-slate-50/50">
+                <div class="flex items-center gap-2">
+                    <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2 py-1 shadow-2xs">
+                        <span class="text-slate-500 text-[11px] font-medium">TF</span>
+                        <select id="timeframeSelect" onchange="changeTimeframe(this.value)" class="bg-transparent font-bold text-slate-800 text-xs focus:outline-none cursor-pointer">
+                        <option value="1">1m</option><option value="5">5m</option><option value="15" selected>15m</option>
+                        <option value="30">30m</option><option value="60">1h</option><option value="240">4h</option><option value="1D">1D</option>
+                    </select>
+                    </div>
+                    <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs">
+                        <i class="fa-solid fa-chart-candlestick text-slate-500 text-xs"></i>
+                        <select id="chartTypeSelect" onchange="changeChartType(this.value)" class="bg-transparent font-semibold text-slate-800 text-xs focus:outline-none cursor-pointer">
+                        <option value="candles" selected>Chart Candles</option>
+                        <option value="hollow-candles">Hollow Candles</option>
+                        <option value="heikin-ashi">Heikin Ashi</option>
+                        <option value="line">Line Chart</option>
+                        <option value="bars">OHLC Bars</option>
+                        <option value="area">Area View</option>
+                    </select>
+                    </div>
+                    <button onclick="showToast('Indicators', 'Technical Indicators panel loaded', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Indicators">
+                    <i class="fa-solid fa-chart-line text-xs"></i>
+                </button>
+                    <button onclick="showToast('Drawing', 'Drawing tools activated', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
+                    <i class="fa-solid fa-pencil text-xs"></i>
+                </button>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="feedStatusText">Connecting feed…</span>
+                </span>
+            </div>
+
+            <!-- 4. MARKET STATUS BANNER -->
+            <div id="marketAlert" class="mx-3 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between text-xs text-amber-900 font-medium shadow-2xs">
+                <div class="flex items-center gap-2">
+                    <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                    <span id="marketNoticeText">Calculating market status…</span>
+                </div>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-100/80 rounded text-amber-800">Indicative</span>
+            </div>
+
+            <!-- 5. CHART AREA -->
+            <div class="relative w-full h-[450px] md:h-[500px] my-1 bg-white overflow-hidden">
+                <div id="tv_chart_container" class="w-full h-full">
+                    <tv-advanced-chart id="tvChart" symbol="TVC:USOIL" interval="15" timezone="Etc/UTC" theme="light" chart-type="candles" locale="en" autosize allow-symbol-change hide-volume>
+                    </tv-advanced-chart>
+                </div>
+                <canvas id="fallbackCanvas" class="hidden absolute inset-0 w-full h-full bg-white z-0"></canvas>
+                <div id="chartFallbackNotice" class="hidden absolute top-2 left-2 z-10 px-2 py-1 text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 rounded">
+                    TradingView unavailable — showing live tick candles
+                </div>
+
+                <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                <span>Qora AI</span>
+            </button>
+
+                <div id="aiModal" class="hidden absolute bottom-18 right-6 z-20 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 space-y-3 transition-all animate-fadeIn">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-robot text-blue-600"></i>
+                            <span class="font-bold text-xs text-slate-800">TRADEXORA AI Signals Engine</span>
+                        </div>
+                        <button onclick="toggleAIPanel()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    </div>
+                    <p id="aiModalText" class="text-xs text-slate-600 leading-relaxed">Analyzing…</p>
+                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 font-medium">Confidence Score</span>
+                        <span id="aiConfidenceText" class="font-bold text-slate-400">—</span>
+                    </div>
+                    <div id="aiSuggestionMeta" class="text-[11px] text-slate-500 space-y-0.5"></div>
+                    <button onclick="applyAISuggestion()" class="w-full py-2 bg-[#2d60f7] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Execute Suggested Trade</button>
+                </div>
+            </div>
+
+            <!-- 6. TRADE EXECUTION BAR -->
+            <div class="p-3 bg-white border-t border-slate-200 grid grid-cols-12 gap-2 md:gap-3 items-center">
+                <button onclick="executeTrade('SELL')" class="col-span-5 py-3 px-4 bg-[#ff7b89] hover:bg-rose-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-rose-300">
+                <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
+                <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+            </button>
+                <div class="col-span-2 flex flex-col items-center justify-center border border-slate-200 rounded-xl py-1.5 px-2 bg-slate-50 shadow-2xs">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LOT</span>
+                    <div class="flex items-center gap-1 w-full justify-center mt-0.5">
+                        <button onclick="adjustLot(-0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">-</button>
+                        <input type="number" id="lotInput" value="0.10" step="0.01" min="0.01" onchange="updateMarginEstimate()" class="w-12 text-center text-xs font-extrabold bg-transparent text-slate-900 focus:outline-none">
+                        <button onclick="adjustLot(0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">+</button>
+                    </div>
+                    <span class="text-[9px] text-slate-400">Est. margin <span id="marginEstimate" class="font-bold text-slate-600">$—</span></span>
+                </div>
+                <button onclick="executeTrade('BUY')" class="col-span-5 py-3 px-4 bg-[#50e396] hover:bg-emerald-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-300">
+                <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
+                <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+            </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 7. BOTTOM DOCK NAVIGATION -->
+    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-30 w-[95%] max-w-md">
+        <nav class="bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-full px-5 py-2 flex items-center justify-between text-slate-500">
+            <a href="../menu/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
+                <i class="fa-solid fa-bars text-sm"></i><span>Menu</span>
+            </a>
+            <a href="../Trades/index.html" class="nav-item relative flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
+                <span id="tradesProfitBadge" class="absolute -top-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.2 rounded-full border border-emerald-200 shadow-2xs">+ $0.00</span>
+                <i class="fa-solid fa-wallet text-sm mt-1"></i><span>Trades</span>
+            </a>
+            <a href="index.html" class="nav-item flex flex-col items-center gap-0.5 text-rose-600 font-semibold text-[10px]">
+                <div class="w-5 h-5 flex items-center justify-center"><i class="fa-solid fa-house text-sm"></i></div>
+                <span>Trade chart</span>
+            </a>
+            <a href="../Markets%26News/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
+                <i class="fa-regular fa-newspaper text-sm"></i><span>Markets&News</span>
+            </a>
+            <a href="../More/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
+                <i class="fa-regular fa-user text-sm"></i><span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- INSUFFICIENT FUNDS MODAL -->
+    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-100 animate-fadeIn">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-wallet"></i></div>
+            <div class="space-y-1">
+                <h3 class="text-base font-bold text-slate-900">Insufficient Account Funds</h3>
+                <p id="depositModalText" class="text-xs text-slate-500">Your balance is insufficient for this trade. Please deposit funds.</p>
+            </div>
+            <div class="pt-2 flex flex-col gap-2">
+                <a href="../deposit/index.html" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-credit-card"></i><span>Deposit Funds Now</span>
+                </a>
+                <button onclick="closeDepositModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 -translate-y-20 opacity-0 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-medium border border-slate-700">
+        <i id="toastIcon" class="fa-solid fa-circle-info text-sky-400 text-base"></i>
+        <div>
+            <div id="toastTitle" class="font-bold text-slate-100">Notification</div>
+            <div id="toastMsg" class="text-slate-300 text-[11px]"></div>
+        </div>
+    </div>
+
+    <!-- 8. APPLICATION SCRIPT -->
+    <script>
+        /* ============================================================
+                           CONFIG
+                        ============================================================ */
+        const SPREAD_PCT = 0.0002;
+        const LEVERAGE = 100;
+        const SIM_TICK_MS = 800;
+        const CANDLE_MS = 5000; // fallback candle aggregation window (5s candles)
+        const AI_REFRESH_MS = 5000;
+        const TICK_HISTORY_MAX = 90;
+        const CANDLE_MAX = 60;
+
+        const symbolsDatabase = {
+            'USOIL': {
+                tvSymbol: 'TVC:USOIL',
+                category: 'Commodities',
+                base: 103.27,
+                pipSize: 0.01,
+                contractSize: 1000
+            },
+            'NATGAS': {
+                tvSymbol: 'NYMEX:NG1!',
+                category: 'Commodities',
+                base: 3.05,
+                pipSize: 0.001,
+                contractSize: 10000
+            },
+            'EURUSD': {
+                tvSymbol: 'FX:EURUSD',
+                category: 'Forex',
+                base: 1.0845,
+                pipSize: 0.0001,
+                contractSize: 100000
+            },
+            'GBPUSD': {
+                tvSymbol: 'FX:GBPUSD',
+                category: 'Forex',
+                base: 1.2910,
+                pipSize: 0.0001,
+                contractSize: 100000
+            },
+            'USDJPY': {
+                tvSymbol: 'FX:USDJPY',
+                category: 'Forex',
+                base: 154.20,
+                pipSize: 0.01,
+                contractSize: 100000
+            },
+            'AAPL': {
+                tvSymbol: 'NASDAQ:AAPL',
+                category: 'Stocks',
+                base: 232.50,
+                pipSize: 0.01,
+                contractSize: 1
+            },
+            'NVDA': {
+                tvSymbol: 'NASDAQ:NVDA',
+                category: 'Stocks',
+                base: 138.25,
+                pipSize: 0.01,
+                contractSize: 1
+            },
+            'TSLA': {
+                tvSymbol: 'NASDAQ:TSLA',
+                category: 'Stocks',
+                base: 218.40,
+                pipSize: 0.01,
+                contractSize: 1
+            },
+            'BTCUSD': {
+                tvSymbol: 'BITSTAMP:BTCUSD',
+                category: 'Crypto',
+                base: 68450,
+                pipSize: 0.01,
+                contractSize: 1,
+                binance: 'btcusdt',
+                feed: 'live'
+            },
+            'ETHUSD': {
+                tvSymbol: 'BITSTAMP:ETHUSD',
+                category: 'Crypto',
+                base: 2640,
+                pipSize: 0.01,
+                contractSize: 1,
+                binance: 'ethusdt',
+                feed: 'live'
+            },
+            'XAUUSD': {
+                tvSymbol: 'OANDA:XAUUSD',
+                category: 'Metals',
+                base: 2735.80,
+                pipSize: 0.01,
+                contractSize: 100
+            },
+            'XAGUSD': {
+                tvSymbol: 'OANDA:XAGUSD',
+                category: 'Metals',
+                base: 33.70,
+                pipSize: 0.001,
+                contractSize: 5000
+            },
+            'US30': {
+                tvSymbol: 'CURRENCYCOM:US30',
+                category: 'Indices',
+                base: 42110,
+                pipSize: 0.1,
+                contractSize: 1
+            },
+            'SPX500': {
+                tvSymbol: 'OANDA:SPX500USD',
+                category: 'Indices',
+                base: 5815,
+                pipSize: 0.1,
+                contractSize: 1
+            }
+        };
+
+        const categorySymbols = {
+            'Forex': ['EURUSD', 'GBPUSD', 'USDJPY'],
+            'Commodities': ['USOIL', 'NATGAS'],
+            'Indices': ['US30', 'SPX500'],
+            'Stocks': ['AAPL', 'NVDA', 'TSLA'],
+            'Crypto': ['BTCUSD', 'ETHUSD'],
+            'Metals': ['XAUUSD', 'XAGUSD']
+        };
+
+        const SESSIONS = {
+            'Crypto': {
+                open247: true
+            },
+            'Forex': {
+                openUtc: [22, 0],
+                closeUtc: [22, 0],
+                openDay: 0,
+                closeDay: 5
+            },
+            'Commodities': {
+                openUtc: [22, 0],
+                closeUtc: [21, 0],
+                openDay: 0,
+                closeDay: 5
+            },
+            'Indices': {
+                openUtc: [22, 0],
+                closeUtc: [21, 0],
+                openDay: 0,
+                closeDay: 5
+            },
+            'Metals': {
+                openUtc: [23, 0],
+                closeUtc: [21, 0],
+                openDay: 0,
+                closeDay: 5
+            },
+            'Stocks': {
+                weekdays: true,
+                openMins: 13 * 60 + 30,
+                closeMins: 20 * 60
+            }
+        };
+
+        let currentSymbol = 'USOIL';
+        let currentCategory = 'Commodities';
+        let currentChartType = 'candles'; // candles | hollow-candles | heikin-ashi | line | bars | area
+        let isLiveAccount = false;
+
+        const tickHistory = {};
+        const candles = {}; // per-symbol OHLC series for the fallback renderer
+        Object.keys(symbolsDatabase).forEach(s => {
+            tickHistory[s] = [];
+            candles[s] = [];
+        });
+
+        /* ============================================================
+           PERSISTENCE
+        ============================================================ */
+        const store = {
+            get(key, fallback) {
+                try {
+                    const v = localStorage.getItem(key);
+                    return v === null ? fallback : JSON.parse(v);
+                } catch {
+                    return fallback;
+                }
+            },
+            set(key, val) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(val));
+                } catch {}
+            }
+        };
+
+        let account = store.get('qora_account', {
+            demoBalance: 10000.00,
+            liveBalance: 0.00,
+            isLive: false,
+            accountIdDemo: 'DNP142887',
+            accountIdLive: 'LIV982104'
+        });
+        let positions = store.get('qora_positions', []);
+
+        function saveAccount() {
+            store.set('qora_account', account);
+        }
+
+        function savePositions() {
+            store.set('qora_positions', positions);
+        }
+
+        /* ============================================================
+           QUOTES
+        ============================================================ */
+        function decimals(sym) {
+            const p = symbolsDatabase[sym].pipSize;
+            return p >= 0.01 ? 2 : (p >= 0.001 ? 3 : 5);
+        }
+
+        function priceOf(sym) {
+            const d = symbolsDatabase[sym];
+            return d.price !== undefined ? d.price : d.base;
+        }
+
+        function quoteSymbol(sym) {
+            const mid = priceOf(sym);
+            const spread = mid * SPREAD_PCT;
+            return {
+                mid,
+                sell: +(mid - spread / 2).toFixed(decimals(sym)),
+                buy: +(mid + spread / 2).toFixed(decimals(sym))
+            };
+        }
+
+        function pushTick(sym, price) {
+            const h = tickHistory[sym];
+            h.push(price);
+            if (h.length > TICK_HISTORY_MAX) h.shift();
+            updateCandle(sym, price);
+        }
+
+        /* OHLC candle builder — aggregates ticks into CANDLE_MS candles */
+        function updateCandle(sym, price) {
+            const series = candles[sym];
+            const now = Date.now();
+            const bucket = Math.floor(now / CANDLE_MS) * CANDLE_MS;
+            const last = series[series.length - 1];
+            if (!last || last.time !== bucket) {
+                series.push({
+                    time: bucket,
+                    open: price,
+                    high: price,
+                    low: price,
+                    close: price
+                });
+                if (series.length > CANDLE_MAX) series.shift();
+            } else {
+                last.high = Math.max(last.high, price);
+                last.low = Math.min(last.low, price);
+                last.close = price;
+            }
+        }
+
+        let binanceWs = null;
+
+        function connectCryptoFeed() {
+            try {
+                binanceWs = new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt/aggTrade/ethusdt/aggTrade');
+                binanceWs.onopen = () => {
+                    document.getElementById('feedStatusText').textContent = 'Live Feed (Crypto: Binance · Others: Simulated)';
+                };
+                binanceWs.onerror = () => {
+                    document.getElementById('feedStatusText').textContent = 'Crypto feed error — simulated fallback';
+                };
+                binanceWs.onmessage = (ev) => {
+                    try {
+                        const msg = JSON.parse(ev.data);
+                        const stream = msg.stream || '';
+                        const sym = stream.startsWith('btcusdt') ? 'BTCUSD' : stream.startsWith('ethusdt') ? 'ETHUSD' : null;
+                        if (!sym || !msg.data) return;
+                        const price = +(+msg.data.p).toFixed(decimals(sym));
+                        symbolsDatabase[sym].price = price;
+                        pushTick(sym, price);
+                        if (sym === currentSymbol) renderPrices(sym);
+                        updateTradesBadge();
+                    } catch (e) { /* ignore malformed frames */ }
+                };
+            } catch (e) {
+                console.error('Binance feed failed:', e);
+                document.getElementById('feedStatusText').textContent = 'Simulated Feed';
+            }
+        }
+
+        function simTick(sym) {
+            const d = symbolsDatabase[sym];
+            const cur = priceOf(sym);
+            const vol = cur * 0.0004;
+            d.price = +(cur + (Math.random() * 2 - 1) * vol).toFixed(decimals(sym));
+            pushTick(sym, d.price);
+            if (sym === currentSymbol) renderPrices(sym);
+        }
+
+        /* ============================================================
+           MARKET SESSIONS & COUNTDOWN
+        ============================================================ */
+        function toMins(h, m) {
+            return h * 60 + m;
+        }
+
+        function msUntilUtc(day, hour, min) {
+            const now = new Date();
+            const t = new Date();
+            t.setUTCHours(hour, min, 0, 0);
+            let dayDiff = (day - t.getUTCDay() + 7) % 7;
+            t.setUTCDate(t.getUTCDate() + dayDiff);
+            if (t <= now) t.setUTCDate(t.getUTCDate() + 7);
+            return t - now;
+        }
+
+        function nextStockOpenMs(now) {
+            const dow = now.getUTCDay();
+            const mins = now.getUTCHours() * 60 + now.getUTCMinutes();
+            let daysAhead;
+            if (dow === 6) daysAhead = 2;
+            else if (dow === 0) daysAhead = 1;
+            else if (mins < SESSIONS.Stocks.openMins) daysAhead = 0;
+            else daysAhead = (dow === 5) ? 3 : 1;
+            const t = new Date(now);
+            t.setUTCDate(t.getUTCDate() + daysAhead);
+            t.setUTCHours(Math.floor(SESSIONS.Stocks.openMins / 60), SESSIONS.Stocks.openMins % 60, 0, 0);
+            if (t <= now) t.setUTCDate(t.getUTCDate() + 1);
+            return t - now;
+        }
+
+        function getSessionStatus(sym) {
+            const cat = symbolsDatabase[sym].category;
+            const s = SESSIONS[cat];
+            const now = new Date();
+            const dow = now.getUTCDay();
+            const mins = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+            if (s.open247) return {
+                open: true,
+                label: 'Market open 24/7',
+                next: null
+            };
+
+            if (s.weekdays) {
+                const open = dow >= 1 && dow <= 5 && mins >= s.openMins && mins < s.closeMins;
+                if (open) return {
+                    open: true,
+                    label: 'US Stock Exchange market open',
+                    next: null
+                };
+                return {
+                    open: false,
+                    label: 'US Stock Exchange market closed',
+                    next: nextStockOpenMs(now)
+                };
+            }
+
+            const om = toMins(s.openUtc[0], s.openUtc[1]);
+            const cm = toMins(s.closeUtc[0], s.closeUtc[1]);
+            const inWeekly =
+                (dow > s.openDay && dow < s.closeDay) ||
+                (dow === s.openDay && mins >= om) ||
+                (dow === s.closeDay && mins < cm);
+
+            if (inWeekly) return {
+                open: true,
+                label: 'Market session active',
+                next: msUntilUtc(s.closeDay, s.closeUtc[0], s.closeUtc[1])
+            };
+            return {
+                open: false,
+                label: 'Market closed — weekend',
+                next: msUntilUtc(s.openDay, s.openUtc[0], s.openUtc[1])
+            };
+        }
+
+        function fmtCountdown(ms) {
+            if (ms <= 0) return '0s';
+            const d = Math.floor(ms / 86400000);
+            const h = Math.floor((ms % 86400000) / 3600000);
+            const m = Math.floor((ms % 3600000) / 60000);
+            const s = Math.floor((ms % 60000) / 1000);
+            return (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm ' + s + 's';
+        }
+
+        function updateMarketCountdown() {
+            const el = document.getElementById('marketNoticeText');
+            const icon = document.getElementById('marketAlertIcon');
+            const banner = document.getElementById('marketAlert');
+            if (!el) return;
+
+            const st = getSessionStatus(currentSymbol);
+            if (st.open) {
+                el.textContent = `${currentSymbol}: ${st.label}`;
+                icon.className = 'fa-solid fa-circle-check text-emerald-600';
+                banner.className = 'mx-3 mt-3 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between text-xs text-emerald-900 font-medium shadow-2xs';
+            } else {
+                el.textContent = `${currentSymbol}: ${st.label} — opens in ${fmtCountdown(st.next || 0)}`;
+                icon.className = 'fa-solid fa-triangle-exclamation text-amber-600';
+                banner.className = 'mx-3 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between text-xs text-amber-900 font-medium shadow-2xs';
+            }
+            checkAutoClose();
+        }
+
+        /* ============================================================
+           CATEGORY / SYMBOL UI
+        ============================================================ */
+        function selectCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.asset-cat-btn').forEach(btn => {
+                btn.classList.remove('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold');
+                if (btn.textContent.includes(category)) btn.classList.add('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold');
+            });
+            renderSubSymbols();
+            const list = categorySymbols[category];
+            if (list && list.length) switchSymbol(list[0]);
+        }
+
+        function renderSubSymbols() {
+            const container = document.getElementById('subSymbolsList');
+            container.innerHTML = '';
+            (categorySymbols[currentCategory] || []).forEach(sym => {
+                const q = quoteSymbol(sym);
+                const isSelected = sym === currentSymbol;
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 border ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'}`;
+                btn.innerHTML = `<span>${sym}</span><span class="text-[10px] opacity-80">${q.mid}</span>`;
+                btn.onclick = () => switchSymbol(sym);
+                container.appendChild(btn);
+            });
+        }
+
+        function switchSymbol(sym) {
+            currentSymbol = sym;
+            renderSubSymbols();
+            renderPrices(sym);
+            updateMarketCountdown();
+            runAIAnalysis();
+            const chart = document.getElementById('tvChart');
+            if (chart) chart.setAttribute('symbol', symbolsDatabase[sym].tvSymbol);
+        }
+
+        function renderPrices(sym) {
+            const q = quoteSymbol(sym);
+            const sellEl = document.getElementById('sellPriceVal');
+            const buyEl = document.getElementById('buyPriceVal');
+            const prev = parseFloat(sellEl.textContent);
+            sellEl.textContent = q.sell.toFixed(decimals(sym));
+            buyEl.textContent = q.buy.toFixed(decimals(sym));
+            if (!isNaN(prev) && prev !== q.sell) {
+                const cls = q.sell > prev ? 'flash-up' : 'flash-down';
+                [sellEl, buyEl].forEach(el => {
+                    el.classList.remove('flash-up', 'flash-down');
+                    void el.offsetWidth;
+                    el.classList.add(cls);
+                });
+            }
+            updateMarginEstimate();
+        }
+
+        function adjustLot(amount) {
+            const input = document.getElementById('lotInput');
+            let val = (parseFloat(input.value) || 0) + amount;
+            if (val < 0.01) val = 0.01;
+            input.value = val.toFixed(2);
+            updateMarginEstimate();
+        }
+
+        function updateMarginEstimate() {
+            const lot = parseFloat(document.getElementById('lotInput').value) || 0;
+            document.getElementById('marginEstimate').textContent = '$' + requiredMargin(currentSymbol, lot).toFixed(2);
+        }
+
+        /* ============================================================
+           CHART — Web Component (candles default) + candle fallback
+        ============================================================ */
+        let fallbackActive = false;
+        let fallbackRaf = null;
+
+        function changeTimeframe(tf) {
+            const chart = document.getElementById('tvChart');
+            if (chart) chart.setAttribute('interval', tf);
+        }
+
+        function changeChartType(type) {
+            currentChartType = type;
+            const chart = document.getElementById('tvChart');
+            if (chart) chart.setAttribute('chart-type', type); // live update, no rebuild
+            showToast('Chart', 'Chart view: ' + document.getElementById('chartTypeSelect').selectedOptions[0].text, 'info');
+        }
+
+        /* Watchdog: if the Web Component fails to render, use canvas candles */
+        setTimeout(() => {
+            const chart = document.getElementById('tvChart');
+            const appeared = chart && chart.shadowRoot && chart.shadowRoot.querySelector('*');
+            if (!appeared) {
+                console.warn('TradingView Web Component did not render — activating canvas candle fallback');
+                showFallback();
+            }
+        }, 8000);
+
+        function showFallback() {
+            if (fallbackActive) return;
+            fallbackActive = true;
+            document.getElementById('tv_chart_container').classList.add('hidden');
+            document.getElementById('fallbackCanvas').classList.remove('hidden');
+            document.getElementById('chartFallbackNotice').classList.remove('hidden');
+            fallbackDrawLoop();
+        }
+
+        function hideFallback() {
+            if (!fallbackActive) return;
+            fallbackActive = false;
+            cancelAnimationFrame(fallbackRaf);
+            document.getElementById('fallbackCanvas').classList.add('hidden');
+            document.getElementById('tv_chart_container').classList.remove('hidden');
+            document.getElementById('chartFallbackNotice').classList.add('hidden');
+        }
+
+        function fallbackDrawLoop() {
+            const draw = () => {
+                if (!fallbackActive) return;
+                drawFallbackChart();
+                fallbackRaf = requestAnimationFrame(() => setTimeout(draw, CANDLE_MS / 2));
+            };
+            draw();
+        }
+
+        /* Heikin Ashi transform for the fallback renderer */
+        function heikinAshi(series) {
+            const out = [];
+            series.forEach((c, i) => {
+                const prev = out[i - 1];
+                const haClose = (c.open + c.high + c.low + c.close) / 4;
+                const haOpen = prev ? (prev.open + prev.close) / 2 : (c.open + c.close) / 2;
+                out.push({
+                    time: c.time,
+                    open: haOpen,
+                    close: haClose,
+                    high: Math.max(c.high, haOpen, haClose),
+                    low: Math.min(c.low, haOpen, haClose)
+                });
+            });
+            return out;
+        }
+
+        function drawFallbackChart() {
+            const canvas = document.getElementById('fallbackCanvas');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            canvas.width = rect.width * devicePixelRatio;
+            canvas.height = rect.height * devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            const sym = currentSymbol;
+            let series = (candles[sym] || []).slice();
+
+            if (series.length < 2) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Collecting candle data for ' + sym + '…', rect.width / 2, rect.height / 2);
+                return;
+            }
+
+            if (currentChartType === 'heikin-ashi') series = heikinAshi(series);
+
+            const isCandles = currentChartType === 'candles' || currentChartType === 'hollow-candles' || currentChartType === 'heikin-ashi';
+            const isBars = currentChartType === 'bars';
+            const isArea = currentChartType === 'area';
+
+            const pad = {
+                t: 24,
+                r: 64,
+                b: 24,
+                l: 10
+            };
+            const w = rect.width - pad.l - pad.r;
+            const h = rect.height - pad.t - pad.b;
+
+            // fit candles to width: show as many as possible, min 8px per candle
+            const show = Math.max(2, Math.min(series.length, Math.floor(w / 8)));
+            const data = series.slice(-show);
+
+            let min = Infinity,
+                max = -Infinity;
+            data.forEach(c => {
+                min = Math.min(min, c.low);
+                max = Math.max(max, c.high);
+            });
+            if (min === max) {
+                const padV = min * 0.001 || 1;
+                min -= padV;
+                max += padV;
+            }
+            const range = max - min;
+            const yFor = v => pad.t + h - ((v - min) / range) * h;
+
+            // grid
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad.t + (h / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad.l, y);
+                ctx.lineTo(pad.l + w, y);
+                ctx.stroke();
+            }
+
+            const slot = w / data.length;
+            const bodyW = Math.max(2, slot * 0.6);
+
+            if (isCandles || isBars) {
+                data.forEach((c, i) => {
+                    const cx = pad.l + slot * i + slot / 2;
+                    const up = c.close >= c.open;
+                    const col = up ? '#10b981' : '#f43f5e';
+                    const lineCol = (currentChartType === 'hollow-candles' && up) ? col : col;
+
+                    // wick
+                    ctx.strokeStyle = col;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, yFor(c.high));
+                    ctx.lineTo(cx, yFor(c.low));
+                    ctx.stroke();
+
+                    if (isBars) {
+                        // OHLC bars: open tick left, close tick right
+                        const yo = yFor(c.open),
+                            yc = yFor(c.close);
+                        ctx.beginPath();
+                        ctx.moveTo(cx - bodyW / 2, yo);
+                        ctx.lineTo(cx, yo);
+                        ctx.moveTo(cx, yc);
+                        ctx.lineTo(cx + bodyW / 2, yc);
+                        ctx.stroke();
+                    } else {
+                        // body (hollow for up candles in hollow-candles mode)
+                        const yTop = yFor(Math.max(c.open, c.close));
+                        const yBot = yFor(Math.min(c.open, c.close));
+                        const bodyH = Math.max(1, yBot - yTop);
+                        const hollow = currentChartType === 'hollow-candles' && up;
+                        if (hollow) {
+                            ctx.strokeStyle = col;
+                            ctx.lineWidth = 1.5;
+                            ctx.strokeRect(cx - bodyW / 2, yTop, bodyW, bodyH);
+                        } else {
+                            ctx.fillStyle = col;
+                            ctx.fillRect(cx - bodyW / 2, yTop, bodyW, bodyH);
+                        }
+                    }
+                });
+
+                // last price line + label
+                const lastC = data[data.length - 1];
+                const ly = yFor(lastC.close);
+                const up = lastC.close >= lastC.open;
+                ctx.setLineDash([4, 3]);
+                ctx.strokeStyle = up ? '#10b981' : '#f43f5e';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(pad.l, ly);
+                ctx.lineTo(pad.l + w, ly);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = up ? '#065f46' : '#881337';
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(lastC.close.toFixed(decimals(sym)), pad.l + w + 4, ly + 4);
+            } else {
+                // line / area view from closes
+                const xStep = w / (data.length - 1);
+                const lineColor = data[data.length - 1].close >= data[0].open ? '#10b981' : '#f43f5e';
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                data.forEach((c, i) => i === 0 ? ctx.moveTo(pad.l, yFor(c.close)) : ctx.lineTo(pad.l + i * xStep, yFor(c.close)));
+                ctx.stroke();
+                if (isArea) {
+                    ctx.lineTo(pad.l + (data.length - 1) * xStep, pad.t + h);
+                    ctx.lineTo(pad.l, pad.t + h);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(16,185,129,0.08)';
+                    ctx.fill();
+                }
+                const last = data[data.length - 1].close;
+                ctx.beginPath();
+                ctx.arc(pad.l + (data.length - 1) * xStep, yFor(last), 4, 0, Math.PI * 2);
+                ctx.fillStyle = lineColor;
+                ctx.fill();
+                ctx.fillStyle = '#065f46';
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(last.toFixed(decimals(sym)), pad.l + (data.length - 1) * xStep + 6, yFor(last) + 4);
+            }
+
+            // high/low labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('H ' + max.toFixed(decimals(sym)), pad.l + 4, pad.t - 8);
+            ctx.fillText('L ' + min.toFixed(decimals(sym)), pad.l + 4, pad.t + h + 14);
+
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.fillText(sym + ' · ' + currentChartType, pad.l + 4, rect.height - 6);
+        }
+
+        /* ============================================================
+           TRADING ENGINE
+        ============================================================ */
+        function activeAccountKey() {
+            return isLiveAccount ? 'live' : 'demo';
+        }
+
+        function activeBalance() {
+            return isLiveAccount ? account.liveBalance : account.demoBalance;
+        }
+
+        function setActiveBalance(v) {
+            if (isLiveAccount) account.liveBalance = v;
+            else account.demoBalance = v;
+            saveAccount();
+            renderAccountBadge();
+        }
+
+        function requiredMargin(sym, lot) {
+            const d = symbolsDatabase[sym];
+            return quoteSymbol(sym).mid * lot * d.contractSize / LEVERAGE;
+        }
+
+        function openMarginUsed() {
+            const key = activeAccountKey();
+            return positions.filter(p => p.account === key)
+                .reduce((sum, p) => sum + requiredMargin(p.symbol, p.lot), 0);
+        }
+
+        function positionPL(p) {
+            const d = symbolsDatabase[p.symbol];
+            if (!d) return 0;
+            const q = quoteSymbol(p.symbol);
+            const cur = p.type === 'BUY' ? q.sell : q.buy;
+            const dir = p.type === 'BUY' ? 1 : -1;
+            return (cur - p.entry) * dir * p.lot * d.contractSize;
+        }
+
+        function executeTrade(type, opts = {}) {
+            const lot = opts.lot !== undefined ? opts.lot : (parseFloat(document.getElementById('lotInput').value) || 0.01);
+            if (lot < 0.01) {
+                showToast('Order Rejected', 'Minimum lot size is 0.01', 'error');
+                return;
+            }
+
+            const sym = opts.symbol || currentSymbol;
+            const st = getSessionStatus(sym);
+            if (!st.open) {
+                showToast('Order Rejected', `${sym} is closed — opens in ${fmtCountdown(st.next || 0)}`, 'error');
+                return;
+            }
+
+            const margin = requiredMargin(sym, lot);
+            const freeMargin = activeBalance() - openMarginUsed();
+            if (margin > freeMargin) {
+                document.getElementById('depositModalText').textContent =
+                    `Required margin $${margin.toFixed(2)} exceeds free margin $${Math.max(0, freeMargin).toFixed(2)}. Please deposit funds.`;
+                document.getElementById('depositModal').classList.remove('hidden');
+                return;
+            }
+
+            const q = quoteSymbol(sym);
+            const entry = type === 'BUY' ? q.buy : q.sell;
+            const pos = {
+                id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                symbol: sym,
+                type,
+                lot,
+                entry,
+                sl: opts.sl !== undefined ? opts.sl : null,
+                tp: opts.tp !== undefined ? opts.tp : null,
+                openedAt: new Date().toISOString(),
+                account: activeAccountKey()
+            };
+            positions.push(pos);
+            savePositions();
+            updateTradesBadge();
+            showToast('Trade Executed',
+                `${type} ${lot.toFixed(2)} ${sym} @ ${entry.toFixed(decimals(sym))}` +
+                (pos.sl !== null ? ` · SL ${pos.sl} · TP ${pos.tp}` : ''),
+                'success');
+        }
+
+        function checkAutoClose() {
+            const key = activeAccountKey();
+            let closed = false;
+            positions = positions.filter(p => {
+                if (p.account !== key) return true;
+                const d = symbolsDatabase[p.symbol];
+                if (!d) return true;
+                const q = quoteSymbol(p.symbol);
+                const cur = p.type === 'BUY' ? q.sell : q.buy;
+                if (p.sl !== null && ((p.type === 'BUY' && cur <= p.sl) || (p.type === 'SELL' && cur >= p.sl))) {
+                    settlePosition(p, cur, 'Stop Loss');
+                    closed = true;
+                    return false;
+                }
+                if (p.tp !== null && ((p.type === 'BUY' && cur >= p.tp) || (p.type === 'SELL' && cur <= p.tp))) {
+                    settlePosition(p, cur, 'Take Profit');
+                    closed = true;
+                    return false;
+                }
+                return true;
+            });
+            if (closed) savePositions();
+        }
+
+        function settlePosition(p, closePrice, reason) {
+            const d = symbolsDatabase[p.symbol];
+            const dir = p.type === 'BUY' ? 1 : -1;
+            const pl = (closePrice - p.entry) * dir * p.lot * d.contractSize;
+            setActiveBalance(activeBalance() + pl);
+            showToast(reason || 'Position Closed',
+                `${p.type} ${p.symbol} closed @ ${closePrice.toFixed(decimals(p.symbol))} — P/L ${pl >= 0 ? '+' : '-'}$${Math.abs(pl).toFixed(2)}`,
+                pl >= 0 ? 'success' : 'error');
+            const history = store.get('qora_history', []);
+            history.push({...p,
+                closePrice,
+                pl,
+                reason,
+                closedAt: new Date().toISOString()
+            });
+            store.set('qora_history', history);
+        }
+
+        function closePositionById(id) {
+            const key = activeAccountKey();
+            const idx = positions.findIndex(p => p.id === id && p.account === key);
+            if (idx === -1) return;
+            const p = positions[idx];
+            const q = quoteSymbol(p.symbol);
+            const cur = p.type === 'BUY' ? q.sell : q.buy;
+            positions.splice(idx, 1);
+            savePositions();
+            settlePosition(p, cur, 'Position Closed');
+            updateTradesBadge();
+        }
+
+        function updateTradesBadge() {
+            checkAutoClose();
+            const key = activeAccountKey();
+            const total = positions.filter(p => p.account === key)
+                .reduce((s, p) => s + positionPL(p), 0);
+            const badge = document.getElementById('tradesProfitBadge');
+            badge.textContent = (total >= 0 ? '+ $' : '- $') + Math.abs(total).toFixed(2);
+            badge.className = `absolute -top-2 text-[9px] font-bold px-1.5 py-0.2 rounded-full border shadow-2xs ${total >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`;
+        }
+
+        /* ============================================================
+           ACCOUNT UI
+        ============================================================ */
+        function renderAccountBadge() {
+            const badge = document.getElementById('accountBadge');
+            const balDisp = document.getElementById('accountBalanceDisplay');
+            const idDisp = document.getElementById('accountIdDisplay');
+            const btnText = document.getElementById('toggleAccountBtnText');
+            if (isLiveAccount) {
+                btnText.textContent = 'Switch to Demo';
+                badge.className = 'flex flex-col items-end px-3 py-1 bg-slate-900 text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
+                balDisp.textContent = `Live $${account.liveBalance.toFixed(2)}`;
+                idDisp.textContent = account.accountIdLive;
+            } else {
+                btnText.textContent = 'Switch to Live';
+                badge.className = 'flex flex-col items-end px-3 py-1 bg-[#801336] text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
+                balDisp.textContent = `Demo $${account.demoBalance.toFixed(2)}`;
+                idDisp.textContent = account.accountIdDemo;
+            }
+            updateMarginEstimate();
+        }
+
+        function toggleAccountType() {
+            isLiveAccount = !isLiveAccount;
+            account.isLive = isLiveAccount;
+            saveAccount();
+            renderAccountBadge();
+            updateTradesBadge();
+            showToast('Account', isLiveAccount ? 'Switched to Real Live Account' : 'Switched to Demo Practice Account', 'info');
+        }
+
+        function resetAccountBalance() {
+            if (isLiveAccount) {
+                showToast('Live Account', 'Balance refresh requires server sync — connect the accounts API.', 'error');
+                return;
+            }
+            account.demoBalance = 10000.00;
+            saveAccount();
+            renderAccountBadge();
+            showToast('Demo Account', 'Demo balance reset to $10,000.00', 'success');
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.add('hidden');
+        }
+
+        /* ============================================================
+           QORA AI — momentum signals with SL/TP
+        ============================================================ */
+        let aiSuggestion = null;
+
+        function runAIAnalysis() {
+            const sym = currentSymbol;
+            const hist = tickHistory[sym] || [];
+            const textEl = document.getElementById('aiModalText');
+            const confEl = document.getElementById('aiConfidenceText');
+            const metaEl = document.getElementById('aiSuggestionMeta');
+
+            if (hist.length < 10) {
+                textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym}:</strong> Collecting tick data…`;
+                confEl.textContent = '—';
+                confEl.className = 'font-bold text-slate-400';
+                metaEl.innerHTML = '';
+                aiSuggestion = null;
+                return;
+            }
+
+            const recent = hist.slice(-10).reduce((a, b) => a + b, 0) / 10;
+            const olderSlice = hist.slice(-30, -10);
+            const older = olderSlice.reduce((a, b) => a + b, 0) / olderSlice.length;
+            const momentum = (recent - older) / older;
+
+            const bullish = momentum > 0;
+            const strength = Math.min(0.02, Math.abs(momentum));
+            const confidence = Math.round(50 + (strength / 0.02) * 45);
+            const dirLabel = bullish ? 'Bullish' : 'Bearish';
+            const label = confidence >= 75 ? dirLabel : confidence >= 60 ? `Cautiously ${dirLabel}` : 'Neutral / Range-bound';
+
+            confEl.textContent = `${confidence}% ${label}`;
+            confEl.className = `font-bold ${bullish ? 'text-emerald-600' : 'text-rose-600'}`;
+            textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym} (${document.getElementById('timeframeSelect').selectedOptions[0].text}):</strong> ` +
+                (Math.abs(momentum) < 0.0005 ?
+                    'Price is consolidating in a tight range — no directional edge detected.' :
+                    `${bullish ? 'Steady upward bullish momentum' : 'Downward bearish momentum'} detected across the recent tick sample.`);
+
+            const q = quoteSymbol(sym);
+            const type = bullish ? 'BUY' : 'SELL';
+            const entry = type === 'BUY' ? q.buy : q.sell;
+            const sl = +(type === 'BUY' ? entry * 0.995 : entry * 1.005).toFixed(decimals(sym));
+            const tp = +(type === 'BUY' ? entry * 1.010 : entry * 0.990).toFixed(decimals(sym));
+
+            metaEl.innerHTML = `
+        <div><span class="font-semibold">Suggested:</span> ${type} ${sym}</div>
+        <div><span class="font-semibold">Entry:</span> ${entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sl} · <span class="font-semibold">TP:</span> ${tp}</div>
+        <div class="text-[10px] text-slate-400">Risk/reward 1:2 · SL/TP enforced automatically. Heuristic signal — not financial advice.</div>`;
+
+            aiSuggestion = {
+                type,
+                symbol: sym,
+                lot: parseFloat(document.getElementById('lotInput').value) || 0.10,
+                sl,
+                tp
+            };
+        }
+
+        function toggleAIPanel() {
+            document.getElementById('aiModal').classList.toggle('hidden');
+            runAIAnalysis();
+        }
+
+        function applyAISuggestion() {
+            if (!aiSuggestion) {
+                showToast('Qora AI', 'Not enough tick data yet — wait a few seconds.', 'error');
+                return;
+            }
+            document.getElementById('aiModal').classList.add('hidden');
+            executeTrade(aiSuggestion.type, {
+                symbol: aiSuggestion.symbol,
+                lot: aiSuggestion.lot,
+                sl: aiSuggestion.sl,
+                tp: aiSuggestion.tp
+            });
+        }
+
+        /* ============================================================
+           SEARCH
+        ============================================================ */
+        function handleSearch(event) {
+            if (event.key !== 'Enter') return;
+            const q = event.target.value.trim().toUpperCase();
+            if (symbolsDatabase[q]) {
+                selectCategory(symbolsDatabase[q].category);
+                switchSymbol(q);
+                event.target.value = '';
+                showToast('Symbol', `Loaded ${q}`, 'info');
+            } else {
+                showToast('Search', `Symbol "${q}" not found`, 'error');
+            }
+        }
+
+        /* ============================================================
+           TOAST
+        ============================================================ */
+        let toastTimer = null;
+
+        function showToast(title, message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const map = {
+                success: ['fa-circle-check', 'text-emerald-400'],
+                error: ['fa-circle-xmark', 'text-rose-400'],
+                info: ['fa-circle-info', 'text-sky-400']
+            };
+            const [cls, color] = map[type] || map.info;
+            icon.className = `fa-solid ${cls} ${color} text-base`;
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = message;
+            toast.classList.remove('-translate-y-20', 'opacity-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3500);
+        }
+
+        /* ============================================================
+           BOOT
+        ============================================================ */
+        window.onload = function() {
+            isLiveAccount = !!account.isLive;
+            renderAccountBadge();
+
+            selectCategory('Commodities');
+            connectCryptoFeed();
+
+            setInterval(() => {
+                Object.keys(symbolsDatabase).forEach(sym => {
+                    if (!symbolsDatabase[sym].feed) simTick(sym);
+                });
+                if (Math.random() < 0.25) renderSubSymbols();
+            }, SIM_TICK_MS);
+
+            setInterval(updateMarketCountdown, 1000);
+            setInterval(runAIAnalysis, AI_REFRESH_MS);
+            updateMarketCountdown();
+        };
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qora Trading - Trades / NOONES</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#8b1d38',
+                            brightRed: '#e53e3e',
+                            softRed: '#fff5f5',
+                            darkNav: '#0f172a',
+                            blueAccent: '#2563eb'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="bg-white min-h-screen flex flex-col justify-between pb-24 select-none">
+
+    <!-- TOP HEADER -->
+    <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+
+            <!-- Left Header: Back Button & Logo & Deposit Funds -->
+            <div class="flex items-center space-x-3">
+                <!-- Back Button pointing to dashboard/index.html -->
+                <a href="dashboard/index.html" class="flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Back</span>
+                </a>
+
+                <!-- Logo -->
+                <a href="../tradeschart/index.html" class="flex items-center space-x-2">
+                    <div class="w-9 h-9 rounded-full bg-black text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/30 shadow-sm">
+                        <span class="tracking-tighter">QORA</span>
+                    </div>
+                </a>
+
+                <!-- Deposit Funds Button -->
+                <a href="../wallet/index.html" class="flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
+                    <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
+                    <span>Deposit Funds</span>
+                </a>
+            </div>
+
+            <!-- Right Header: Account Status & Quick Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Account Dropdown Trigger -->
+                <div class="relative">
+                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+            <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
+            <div class="text-right">
+              <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
+              <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+            </div>
+          </button>
+
+                    <!-- Dropdown Modal -->
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
+
+                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+              <div>
+                <div class="text-xs font-bold text-gray-800">Demo Account</div>
+                <div class="text-[11px] text-gray-500">ID: DNP142887</div>
+              </div>
+              <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
+            </button>
+
+                        <button onclick="selectAccount('Real', '$0.00', 'RNP982314')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+              <div>
+                <div class="text-xs font-bold text-gray-800">Real Account</div>
+                <div class="text-[11px] text-gray-500">ID: RNP982314</div>
+              </div>
+              <div class="text-xs font-bold text-gray-700">$0.00</div>
+            </button>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
+
+                <a href="../settings/index.html" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                </a>
+
+                <a href="../profile/index.html" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
+                    <i class="fa-regular fa-user text-xs"></i>
+                </a>
+
+                <button onclick="showLogoutToast()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i>
+        </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN TRADES CONTENT -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
+
+        <!-- PAGE TITLE -->
+        <div class="mb-6">
+            <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">TRADES</div>
+            <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">NOONES</h1>
+        </div>
+
+        <!-- QUICK LINKS ROW (CENTERED) -->
+        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-8 border-b border-gray-100 pb-6">
+            <a href="../tradeschart/index.html" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                    <i class="fa-solid fa-house text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
+            </a>
+
+            <a href="../wallet/index.html" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                    <i class="fa-regular fa-credit-card text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Wallet</span>
+            </a>
+        </div>
+
+        <!-- TRADE BOOK CONTAINER -->
+        <div class="space-y-6">
+
+            <!-- TRADE BOOK HEADER SUMMARY -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <div class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase mb-1">TRADE BOOK</div>
+                    <div class="text-sm font-bold text-gray-900">Demo · DNP142887</div>
+                </div>
+
+                <div class="text-left sm:text-right">
+                    <div class="text-base font-extrabold text-blue-600 tracking-tight">+$32.68</div>
+                    <div class="text-[10px] text-gray-400 font-medium">Live open P/L</div>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS ROW -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
+                    <div class="text-xs text-gray-400 font-medium mb-1">Open</div>
+                    <div class="text-xl font-extrabold text-gray-900">1</div>
+                </div>
+
+                <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
+                    <div class="text-xs text-gray-400 font-medium mb-1">Balance</div>
+                    <div class="text-xl font-extrabold text-gray-900">$10,000.00</div>
+                </div>
+
+                <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
+                    <div class="text-xs text-gray-400 font-medium mb-1">Equity</div>
+                    <div class="text-xl font-extrabold text-gray-900">$10,032.68</div>
+                </div>
+            </div>
+
+            <!-- TAB SWITCHER: OPEN TRADES / HISTORY -->
+            <div class="bg-gray-100/80 p-1 rounded-2xl flex items-center">
+                <button id="openTabBtn" onclick="switchTradeTab('open')" class="flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all">
+          Open Trades
+        </button>
+                <button id="historyTabBtn" onclick="switchTradeTab('history')" class="flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm">
+          History
+        </button>
+            </div>
+
+            <!-- OPEN TRADES VIEW (HIDDEN IN HISTORY SNAPSHOT) -->
+            <div id="openTradesView" class="hidden space-y-4">
+                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-extrabold text-gray-900">BTCUSD,</span>
+                                <span class="text-xs font-bold text-red-600">sell 0.10</span>
+                            </div>
+                            <div class="text-xs font-medium text-gray-500 mt-1">
+                                80,549.90 &rarr; 80,217.12
+                            </div>
+                        </div>
+
+                        <div class="text-left sm:text-right">
+                            <div class="text-sm font-extrabold text-blue-600">+32.68</div>
+                            <div class="text-[10px] text-gray-400 font-medium mt-0.5">10/24/2026, 05:13:20 PM</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="showToast('Modifying position SL/TP...')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors flex items-center space-x-1">
+                <i class="fa-solid fa-pen text-[10px]"></i>
+                <span>Manage</span>
+              </button>
+                            <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">SL --</span>
+                            <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">TP --</span>
+                        </div>
+
+                        <button onclick="showToast('Analyzing trade setup with Qora AI...')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg transition-all">
+              <i class="fa-solid fa-cube text-xs"></i>
+              <span>Qora AI</span>
+            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORY VIEW (ACTIVE MATCHING SCREENSHOT) -->
+            <div id="historyTradesView" class="space-y-4">
+
+                <!-- TIMEFRAME FILTER PILLS -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="setFilter('All Time', this)" class="filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors">
+            All Time
+          </button>
+                    <button onclick="setFilter('Today', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
+            Today
+          </button>
+                    <button onclick="setFilter('7D', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
+            7D
+          </button>
+                    <button onclick="setFilter('30D', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
+            30D
+          </button>
+                </div>
+
+                <!-- EMPTY HISTORY CONTAINER WITH FLOATING QORA AI BUTTON -->
+                <div class="bg-gray-50/70 border border-gray-100/80 rounded-2xl p-6 relative flex items-center justify-between min-h-[110px]">
+                    <div class="text-xs text-gray-400 font-medium">
+                        No trade history for this filter yet.
+                    </div>
+
+                    <!-- FLOATING QORA AI BUTTON -->
+                    <button onclick="showToast('Launching Qora AI history analysis...')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg transition-all">
+            <i class="fa-solid fa-cube text-xs"></i>
+            <span>Qora AI</span>
+          </button>
+                </div>
+
+            </div>
+
+            <!-- LOWER SUMMARY METRICS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-regular fa-credit-card text-red-500 text-sm"></i>
+                    <div>
+                        <div class="text-[10px] text-gray-400 font-medium">Balance</div>
+                        <div class="text-xs font-bold text-gray-900">$10,000.00</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-chart-line text-red-500 text-sm"></i>
+                    <div>
+                        <div class="text-[10px] text-gray-400 font-medium">History</div>
+                        <div class="text-xs font-bold text-gray-900" id="historyCountLabel">0</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <i class="fa-regular fa-clock text-red-500 text-sm"></i>
+                    <div>
+                        <div class="text-[10px] text-gray-400 font-medium">Filter</div>
+                        <div class="text-xs font-bold text-gray-900" id="activeFilterLabel">All Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POSITION LIFECYCLE GUIDELINES -->
+            <div class="space-y-3 pt-4 border-t border-gray-100">
+                <div class="text-xs font-bold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-regular fa-calendar-days text-red-500 text-xs"></i>
+                    <span>Position lifecycle</span>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="p-3.5 bg-gray-50/70 text-gray-600 text-xs rounded-xl border border-gray-100/80">
+                        Open trades stay active until take profit, stop loss, or manual close.
+                    </div>
+                    <div class="p-3.5 bg-gray-50/70 text-gray-600 text-xs rounded-xl border border-gray-100/80">
+                        Closed trade profit or loss is applied back to the selected demo balance.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION DOCK -->
+    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+        <div class="flex items-center justify-between">
+
+            <!-- Menu Tab -->
+            <a href="../menu/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-solid fa-bars text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Menu</span>
+            </a>
+
+            <!-- Trades Tab (Active) -->
+            <a href="index.html" class="flex flex-col items-center flex-1 py-1 text-red-600 relative">
+                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$32.88</span>
+                <i class="fa-regular fa-folder text-sm mb-1"></i>
+                <span class="text-[10px] font-bold">Trades</span>
+            </a>
+
+            <!-- Trade Chart Tab -->
+            <a href="../tradeschart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-solid fa-house text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Trade chart</span>
+            </a>
+
+            <!-- Markets & News Tab -->
+            <a href="../markets&news/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-newspaper text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Markets&News</span>
+            </a>
+
+            <!-- More Tab -->
+            <a href="../more/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-user text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">More</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-info text-amber-400"></i>
+        <span id="toastMsg">Action triggered</span>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // Switch between Open Trades and History Tabs
+        function switchTradeTab(tab) {
+            const openBtn = document.getElementById('openTabBtn');
+            const historyBtn = document.getElementById('historyTabBtn');
+            const openView = document.getElementById('openTradesView');
+            const historyView = document.getElementById('historyTradesView');
+
+            if (tab === 'open') {
+                openBtn.className = "flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm";
+                historyBtn.className = "flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all";
+                openView.classList.remove('hidden');
+                historyView.classList.add('hidden');
+            } else {
+                historyBtn.className = "flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm";
+                openBtn.className = "flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all";
+                historyView.classList.remove('hidden');
+                openView.classList.add('hidden');
+            }
+        }
+
+        // Timeframe Filter Buttons
+        function setFilter(filterName, element) {
+            const pills = document.querySelectorAll('.filter-pill');
+            pills.forEach(p => {
+                p.className = "filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors";
+            });
+
+            element.className = "filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors";
+            document.getElementById('activeFilterLabel').innerText = filterName;
+            showToast(`Filter set to: ${filterName}`);
+        }
+
+        // Dropdown account toggler
+        function toggleAccountDropdown() {
+            const dropdown = document.getElementById('accountDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('accountDropdown');
+            const dropdownBtn = document.getElementById('accountDropdownBtn');
+            if (dropdown && dropdownBtn && !dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function selectAccount(type, balance, id) {
+            document.getElementById('activeAccountType').innerText = `${type} ${balance}`;
+            document.getElementById('activeAccountId').innerText = id;
+            toggleAccountDropdown();
+            showToast(`Switched to ${type} Account (${balance})`);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 2500);
+        }
+
+        function showLogoutToast() {
+            showToast("Session security active. Logging out...");
+        }
+    </script>
+
+</body>
+
+</html>

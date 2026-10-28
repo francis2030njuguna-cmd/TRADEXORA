@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qora Trading - Menu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#8b1d38',
+                            brightRed: '#e53e3e',
+                            softRed: '#fff5f5',
+                            border: '#e2e8f0',
+                            bg: '#f8f9fc',
+                            cardBorder: '#e8ecef',
+                            textDark: '#1a202c',
+                            textMuted: '#718096',
+                            green: '#16a34a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #2d3748;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: #cbd5e1;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex flex-col justify-between pb-28 select-none">
+
+    <!-- TOP HEADER -->
+    <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+
+            <!-- Left Header: Back Button OR Logo & Deposit Funds -->
+            <div class="flex items-center space-x-3">
+                <!-- Top Left Back Button for Sub-pages -->
+                <button id="topPageBackBtn" onclick="openView('menu')" class="hidden flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Back</span>
+                </button>
+
+                <a href="../tradeschart/index.html" class="flex items-center space-x-2" id="headerLogoBtn">
+                    <div class="w-9 h-9 rounded-full bg-black text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/30 shadow-sm">
+                        <span class="tracking-tighter">QORA</span>
+                    </div>
+                </a>
+
+                <button onclick="openView('wallet'); setWalletTab('deposit');" class="flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
+                    <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
+                    <span>Deposit Funds</span>
+                </button>
+            </div>
+
+            <!-- Right Header: Account Status & Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="relative">
+                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
+                        <div class="text-right">
+                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
+                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+                        </div>
+                    </button>
+
+                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
+
+                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+                            <div>
+                                <div class="text-xs font-bold text-gray-800">Demo Account</div>
+                                <div class="text-[11px] text-gray-500">ID: DNP142887</div>
+                            </div>
+                            <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
+                        </button>
+
+                        <button onclick="selectAccount('Real', '$0.00', 'LIV982104')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+                            <div>
+                                <div class="text-xs font-bold text-gray-800">Real Account</div>
+                                <div class="text-[11px] text-gray-500">ID: LIV982104</div>
+                            </div>
+                            <div class="text-xs font-bold text-gray-700">$0.00</div>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                </button>
+
+                <button onclick="openView('settings')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                </button>
+
+                <button onclick="openView('profile')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
+                    <i class="fa-regular fa-user text-xs"></i>
+                </button>
+
+                <button onclick="handleLogout()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
+
+        <!-- PAGE TITLE SECTION -->
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase" id="pageCategoryLabel">MENU</div>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight" id="pageTitleLabel">Welcome back</h1>
+            </div>
+            <!-- Logged-in user badge (synced with landing page auth) -->
+            <div id="userBadge" class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+                <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span id="user-display-email" class="text-xs font-semibold text-slate-700">user@qora.com</span>
+            </div>
+        </div>
+
+        <!-- QUICK LINKS ROW (CENTERED) -->
+        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-8 border-b border-gray-100 pb-6">
+            <a href="../tradeschart/index.html" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                    <i class="fa-solid fa-house text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
+            </a>
+
+            <button onclick="openView('wallet')" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                    <i class="fa-regular fa-credit-card text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Wallet</span>
+            </button>
+
+            <a href="../index.html" class="group flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mb-1.5 group-hover:bg-slate-200 transition-colors">
+                    <i class="fa-solid fa-globe text-sm"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-slate-900 transition-colors">Homepage</span>
+            </a>
+        </div>
+
+        <!-- VIEW 1: MENU GRID OVERVIEW -->
+        <div id="view-menu" class="view-panel">
+            <!-- SECTION 1: TRADING WORKSPACE -->
+            <section class="mb-10">
+                <h2 class="text-sm font-bold text-gray-900 mb-4 tracking-wide">Trading workspace</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                    <button onclick="openView('portfolio')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-clock text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Portfolio</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Balance, equity, margin, performance, analytics
+                        </p>
+                    </button>
+
+                    <button onclick="openView('wallet')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-credit-card text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Wallet</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Deposit, withdraw, transfers, history, payment methods
+                        </p>
+                    </button>
+
+                    <button onclick="openView('ai-assistant')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-brain text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">AI Assistant</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Chat, recommendations, analysis, explanations, signals
+                        </p>
+                    </button>
+
+                    <button onclick="openView('notifications')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-bell text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Notifications</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Trade alerts, system alerts, security alerts
+                        </p>
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- SECTION 2: ACCOUNT AND SUPPORT -->
+            <section>
+                <h2 class="text-sm font-bold text-gray-900 mb-4 tracking-wide">Account and support</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    <button onclick="openView('profile')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-user text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Profile</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Personal information, verification, KYC, devices
+                        </p>
+                    </button>
+
+                    <button onclick="openView('settings')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-gear text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Settings</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            Theme, language, preferences, privacy, security
+                        </p>
+                    </button>
+
+                    <button onclick="openView('help')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-circle-question text-base"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">Help Center</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            FAQ, support, live chat, documentation
+                        </p>
+                    </button>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: PORTFOLIO -->
+        <div id="view-portfolio" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-credit-card text-red-500 mr-1"></i> Balance</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="portfolioBalance">$10,000.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-clock text-red-500 mr-1"></i> Equity</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="portfolioEquity">$10,000.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Margin</div>
+                    <div class="text-xl font-extrabold text-gray-900">$0.00</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Performance</div>
+                    <div class="text-xl font-extrabold text-emerald-600">+0.00%</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-center">
+                <div>
+                    <div class="text-sm font-bold text-gray-800" id="portfolioAccountName">Demo account portfolio</div>
+                    <div class="text-xs text-gray-500" id="portfolioAccountId">DNP142887</div>
+                </div>
+                <span class="text-xs bg-gray-200 text-gray-700 px-2.5 py-1 rounded-md font-bold" id="portfolioAccountTag">DEMO</span>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-sm font-bold text-gray-900">Analytics</h3>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Win rate and risk/reward analytics extend from live order history.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Portfolio breakdown stays focused on balance, equity, margin, and performance.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Use Trades and Trading for execution, then return here for summary analytics.</div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: WALLET -->
+        <div id="view-wallet" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
+                        <i class="fa-regular fa-credit-card text-red-500 mr-1.5"></i> Live wallet
+                    </div>
+                    <div class="text-2xl font-extrabold text-gray-900" id="walletLiveBalance">$0.00</div>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                    <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
+                        <i class="fa-solid fa-building-columns text-red-500 mr-1.5"></i> Demo balance
+                    </div>
+                    <div class="text-2xl font-extrabold text-gray-900" id="walletDemoBalance">$10,000.00</div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-50 text-gray-500 text-xs rounded-xl border border-gray-100">
+                Wallet actions fund and withdraw from real accounts only. Demo balance is reset from the trading chart header.
+            </div>
+
+            <!-- DEPOSIT / WITHDRAW TOGGLE -->
+            <div class="grid grid-cols-2 gap-3">
+                <button id="depositTabBtn" onclick="setWalletTab('deposit')" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600">
+                    Deposit
+                </button>
+                <button id="withdrawTabBtn" onclick="setWalletTab('withdraw')" class="py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100">
+                    Withdraw
+                </button>
+            </div>
+
+            <!-- PAYMENT METHODS -->
+            <div class="border border-gray-200/80 rounded-2xl p-5 bg-white space-y-4">
+                <div class="text-xs font-bold text-gray-900 flex items-center">
+                    <i class="fa-regular fa-credit-card text-blue-600 mr-2"></i> Choose Payment Method
+                </div>
+
+                <div class="space-y-2">
+                    <!-- M-PESA -->
+                    <label class="flex items-center justify-between p-3.5 border border-blue-500 bg-blue-50/10 rounded-2xl cursor-pointer hover:bg-blue-50/20 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <input type="radio" name="payment_method" value="mpesa" checked class="text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs font-bold text-gray-900">Use M-Pesa</span>
+                        </div>
+                        <div class="border border-green-200 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-600">
+                            M-PESA
+                        </div>
+                    </label>
+
+                    <!-- USDT -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <input type="radio" name="payment_method" value="usdt" class="text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs font-bold text-gray-900">USDT</span>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]">
+                            T
+                        </div>
+                    </label>
+
+                    <!-- ETHEREUM -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <input type="radio" name="payment_method" value="ethereum" class="text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs font-bold text-gray-900">Ethereum</span>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-[10px]">
+                            <i class="fa-brands fa-ethereum"></i>
+                        </div>
+                    </label>
+
+                    <!-- BTC -->
+                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <input type="radio" name="payment_method" value="btc" class="text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs font-bold text-gray-900">BTC</span>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-[10px]">
+                            <i class="fa-brands fa-bitcoin"></i>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Amount input -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Amount (USD)</label>
+                    <input id="walletAmount" type="number" min="1" step="0.01" value="10.00" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                </div>
+
+                <button onclick="handleWalletSubmit()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all shadow-sm">
+                    Continue
+                </button>
+
+                <div class="flex items-center space-x-1.5 text-[10px] text-emerald-600 font-medium pt-1">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                    <span>The connection is secured</span>
+                </div>
+            </div>
+
+            <!-- TRANSACTION HISTORY -->
+            <div class="space-y-3 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-gray-900">Transaction history</h3>
+                    <span class="text-[10px] text-gray-400 font-medium" id="txCountLabel">0 records</span>
+                </div>
+
+                <div id="txHistoryList" class="space-y-2">
+                    <!-- Populated dynamically from localStorage -->
+                    <div class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs text-gray-400 text-center">
+                        No transactions yet. Your deposits and withdrawals will appear here.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- VIEW 4: AI ASSISTANT -->
+        <div id="view-ai-assistant" class="view-panel hidden">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors mb-6">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-4">
+                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-brain text-red-500 mr-2"></i> Chat and analysis</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
+                            <p class="text-xs text-gray-700 mt-1">Analyze EURUSD and explain the current short-term structure.</p>
+                        </div>
+                        <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                            <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
+                            <p class="text-xs text-gray-800 mt-1">EURUSD keeps a constructive intraday bias above 1.0820 with steady higher lows and better momentum through London support.</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
+                            <p class="text-xs text-gray-700 mt-1">What is the preferred risk area for a continuation setup?</p>
+                        </div>
+                        <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                            <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
+                            <p class="text-xs text-gray-800 mt-1">A continuation setup favors pullbacks into support while maintaining defined risk below the latest higher low.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-bolt text-red-500 mr-2"></i> AI signals</h3>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-900">EURUSD · Buy Bias</div>
+                        <div class="text-[10px] text-gray-400">Confidence 80%</div>
+                        <p class="text-[11px] text-gray-600">Range-bound movement between support and resistance.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-900">XAUUSD · Momentum Long</div>
+                        <div class="text-[10px] text-gray-400">Confidence 95%</div>
+                        <p class="text-[11px] text-gray-600">Strong safe-haven demand on the gold spot market.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-900">BTCUSD · Neutral</div>
+                        <div class="text-[10px] text-gray-400">Confidence 54%</div>
+                        <p class="text-[11px] text-gray-600">Testing major resistance level on the 24/7 crypto feed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: NOTIFICATIONS -->
+        <div id="view-notifications" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
+                    <p class="text-xs text-gray-400">0 unread · 0 total · Account: <span id="notifAccountName">QORA TRADER</span></p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-lg font-bold">All</button>
+                    <button class="px-3 py-1 bg-gray-50 text-gray-400 text-xs rounded-lg">Unread</button>
+                </div>
+            </div>
+
+            <div class="py-12 text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto">
+                    <i class="fa-regular fa-bell-slash text-xl"></i>
+                </div>
+                <div class="text-sm font-bold text-gray-800">No notifications</div>
+                <p class="text-xs text-gray-400">Updates will appear here as they happen.</p>
+                <button onclick="openView('wallet')" class="text-xs text-red-600 font-bold hover:underline">Go to Wallet &rarr;</button>
+            </div>
+        </div>
+
+        <!-- VIEW 6: PROFILE -->
+        <div id="view-profile" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-regular fa-user text-red-500 mr-2"></i> Personal information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Name</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileName">Not set</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Email</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileEmail">Not set</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Phone Number</div>
+                        <div class="text-xs font-bold text-gray-800">Not set</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="text-[10px] text-gray-400">Country</div>
+                        <div class="text-xs font-bold text-gray-800" id="profileCountry">Not set</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-gray-800">Verification</span>
+                        <span class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-extrabold">PENDING</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 leading-normal">Upload your ID, passport, or driver's license together with a utility bill or bank statement.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span class="text-xs font-bold text-gray-800">Devices</span>
+                    <p class="text-[11px] text-gray-500 leading-normal">Current device session verified and secured.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span class="text-xs font-bold text-gray-800">Security</span>
+                    <p class="text-[11px] text-gray-500 leading-normal">Password and device controls live alongside alerts and settings.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: SETTINGS -->
+        <div id="view-settings" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-800">Appearance</h3>
+                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold cursor-pointer">Light Mode</div>
+                <div class="p-3 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold cursor-pointer hover:bg-gray-50 transition-colors">Dark Mode</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Language</h4>
+                    <select class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium">
+                        <option>English</option>
+                        <option>French</option>
+                        <option>Swahili</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Notifications</h4>
+                    <label class="flex items-center space-x-2 text-xs text-gray-700">
+                        <input type="checkbox" checked class="rounded text-red-600">
+                        <span>Price alerts</span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-xs text-gray-700">
+                        <input type="checkbox" checked class="rounded text-red-600">
+                        <span>Security alerts</span>
+                    </label>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-gray-800">Privacy</h4>
+                    <p class="text-xs text-gray-500">Session security enabled.</p>
+                    <p class="text-xs text-gray-500">Manual theme and language preferences saved locally.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: HELP CENTER -->
+        <div id="view-help" class="view-panel hidden space-y-6">
+            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>Back to Menu</span>
+            </button>
+
+            <div class="text-center py-4 space-y-2">
+                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-regular fa-comments"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Get Help</h2>
+                <p class="text-xs text-gray-500">Find answers to common questions or reach out to our support team</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-circle-question text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">FAQ</div>
+                    <p class="text-[10px] text-gray-500">Browse frequently asked questions</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-file-lines text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">Documentation</div>
+                    <p class="text-[10px] text-gray-500">Learn how to use the platform</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                    <i class="fa-regular fa-envelope text-lg text-gray-700"></i>
+                    <div class="text-xs font-bold text-gray-900">Email Support</div>
+                    <p class="text-[10px] text-gray-500">support@qoratrading.com</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 pt-4 border-t border-gray-100">
+                <h3 class="text-sm font-bold text-gray-900">Frequently Asked Questions</h3>
+                <div class="space-y-2">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-800">How do I create an account?</div>
+                        <p class="text-xs text-gray-500">Click the "Create Account" button on the homepage, fill in your details, and follow the verification process.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-800">What markets can I trade?</div>
+                        <p class="text-xs text-gray-500">Qora Trading offers access to forex, cryptocurrencies, stocks, commodities, and indices.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
+                        <div class="text-xs font-bold text-gray-800">How do Demo and Live accounts differ?</div>
+                        <p class="text-xs text-gray-500">Demo accounts start with $10,000 in virtual funds for practice. Live accounts require a deposit and trade with real money.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION DOCK -->
+    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+        <div class="flex items-center justify-between">
+
+            <button onclick="openView('menu')" class="flex flex-col items-center flex-1 py-1 text-red-600">
+                <i class="fa-solid fa-bars text-sm mb-1"></i>
+                <span class="text-[10px] font-bold">Menu</span>
+            </button>
+
+            <a href="../trades/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
+                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$8.52</span>
+                <i class="fa-regular fa-folder text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Trades</span>
+            </a>
+
+            <a href="../tradeschart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-solid fa-house text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Trade chart</span>
+            </a>
+
+            <a href="../markets&news/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-newspaper text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">Markets&News</span>
+            </a>
+
+            <a href="../more/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+                <i class="fa-regular fa-user text-sm mb-1"></i>
+                <span class="text-[10px] font-medium">More</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <!-- Notification Toast Container -->
+    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-info text-amber-400" id="toastIcon"></i>
+        <span id="toastMsg">Action triggered</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const USERS_KEY = 'registeredUsers';
+        const CURRENT_USER_KEY = 'currentUser';
+        const ACCOUNT_STATE_KEY = 'qoraAccountState';
+        const TX_KEY = 'qoraTransactions';
+        const INDEX_URL = '../index.html';
+
+        let activeWalletMode = 'deposit';
+        let accountState = {
+            activeType: 'Demo',
+            demoBalance: 10000.00,
+            liveBalance: 0.00
+        };
+
+        /* ============ SHARED AUTH / STORAGE HELPERS ============ */
+
+        function getRegisteredUsers() {
+            try {
+                const users = localStorage.getItem(USERS_KEY);
+                return users ? JSON.parse(users) : [];
+            } catch (e) {
+                console.error("Error parsing registered users", e);
+                return [];
+            }
+        }
+
+        function getCurrentUser() {
+            try {
+                const user = localStorage.getItem(CURRENT_USER_KEY);
+                return user ? JSON.parse(user) : null;
+            } catch (e) {
+                console.error("Error parsing current user", e);
+                return null;
+            }
+        }
+
+        function loadAccountState() {
+            try {
+                const saved = localStorage.getItem(ACCOUNT_STATE_KEY);
+                if (saved) accountState = Object.assign(accountState, JSON.parse(saved));
+            } catch (e) {
+                console.error("Error loading account state", e);
+            }
+        }
+
+        function saveAccountState() {
+            localStorage.setItem(ACCOUNT_STATE_KEY, JSON.stringify(accountState));
+        }
+
+        function loadTransactions() {
+            try {
+                const tx = localStorage.getItem(TX_KEY);
+                return tx ? JSON.parse(tx) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveTransactions(list) {
+            localStorage.setItem(TX_KEY, JSON.stringify(list));
+        }
+
+        /* ============ INIT ============ */
+
+        function initAuthUI() {
+            const user = getCurrentUser();
+
+            if (!user || !user.email) {
+                // Not logged in: redirect to landing page login
+                window.location.href = INDEX_URL;
+                return;
+            }
+
+            const badge = document.getElementById('userBadge');
+            const emailLabel = document.getElementById('user-display-email');
+            if (emailLabel) emailLabel.textContent = user.email;
+            if (badge) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            }
+
+            document.getElementById('pageTitleLabel').textContent =
+                'Welcome, ' + (user.fullName ? user.fullName.split(' ')[0] : user.email.split('@')[0]);
+            document.getElementById('notifAccountName').textContent = (user.fullName || user.email).toUpperCase();
+
+            // Profile view population
+            document.getElementById('profileName').textContent = user.fullName || 'Not set';
+            document.getElementById('profileEmail').textContent = user.email || 'Not set';
+            document.getElementById('profileCountry').textContent = user.country || 'Not set';
+        }
+
+        function updateAccountDisplays() {
+            const isActiveDemo = accountState.activeType === 'Demo';
+            const balance = isActiveDemo ? accountState.demoBalance : accountState.liveBalance;
+            const id = isActiveDemo ? 'DNP142887' : 'LIV982104';
+            const formatted = `$${balance.toFixed(2)}`;
+
+            document.getElementById('activeAccountType').textContent = `${accountState.activeType} ${formatted}`;
+            document.getElementById('activeAccountId').textContent = id;
+
+            // Portfolio sync
+            document.getElementById('portfolioBalance').textContent = formatted;
+            document.getElementById('portfolioEquity').textContent = formatted;
+            document.getElementById('portfolioAccountName').textContent = `${accountState.activeType} account portfolio`;
+            document.getElementById('portfolioAccountId').textContent = id;
+            document.getElementById('portfolioAccountTag').textContent = isActiveDemo ? 'DEMO' : 'LIVE';
+
+            // Wallet sync
+            document.getElementById('walletLiveBalance').textContent = `$${accountState.liveBalance.toFixed(2)}`;
+            document.getElementById('walletDemoBalance').textContent = `$${accountState.demoBalance.toFixed(2)}`;
+        }
+
+        function renderTransactions() {
+            const list = loadTransactions();
+            const container = document.getElementById('txHistoryList');
+            const countLabel = document.getElementById('txCountLabel');
+            countLabel.textContent = `${list.length} record${list.length === 1 ? '' : 's'}`;
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs text-gray-400 text-center">
+                        No transactions yet. Your deposits and withdrawals will appear here.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(tx => `
+                <div class="p-4 bg-white border border-gray-200/80 rounded-2xl flex items-center justify-between shadow-xs">
+                    <div>
+                        <div class="text-xs font-bold text-gray-900">${tx.type} - ${tx.method.replace('_', ' ').toUpperCase()}</div>
+                        <div class="text-[10px] text-gray-400">${tx.date}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-extrabold text-gray-900">$${tx.amount.toFixed(2)}</div>
+                        <div class="text-[9px] font-bold ${tx.status === 'COMPLETED' ? 'text-emerald-600' : 'text-red-500'} uppercase tracking-wider">${tx.status}</div>
+                    </div>
+                </div>`).join('');
+        }
+
+        /* ============ VIEW NAVIGATION ============ */
+
+        function openView(viewName) {
+            const panels = document.querySelectorAll('.view-panel');
+            panels.forEach(panel => panel.classList.add('hidden'));
+
+            const catLabel = document.getElementById('pageCategoryLabel');
+            const backBtn = document.getElementById('topPageBackBtn');
+            const logoBtn = document.getElementById('headerLogoBtn');
+
+            const targetPanel = document.getElementById(`view-${viewName}`);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+
+            if (viewName === 'menu') {
+                catLabel.innerText = 'MENU';
+                backBtn.classList.add('hidden');
+                backBtn.classList.remove('flex');
+                logoBtn.classList.remove('hidden');
+                const user = getCurrentUser();
+                document.getElementById('pageTitleLabel').textContent = user ?
+                    ('Welcome, ' + (user.fullName ? user.fullName.split(' ')[0] : user.email.split('@')[0])) : 'Qora Trading';
+            } else {
+                catLabel.innerText = viewName.toUpperCase().replace('-', ' ');
+                document.getElementById('pageTitleLabel').textContent =
+                    viewName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                // Header back button visible on every sub-page
+                backBtn.classList.remove('hidden');
+                backBtn.classList.add('flex');
+                logoBtn.classList.add('hidden');
+            }
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        /* ============ WALLET ============ */
+
+        function setWalletTab(mode) {
+            activeWalletMode = mode;
+            const depositBtn = document.getElementById('depositTabBtn');
+            const withdrawBtn = document.getElementById('withdrawTabBtn');
+
+            if (mode === 'deposit') {
+                depositBtn.className = "py-3 bg-emerald-600 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600";
+                withdrawBtn.className = "py-3 bg-red-50 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100";
+            } else {
+                withdrawBtn.className = "py-3 bg-red-600 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-red-600";
+                depositBtn.className = "py-3 bg-emerald-50 text-emerald-600 font-bold rounded-2xl text-xs transition-all border border-emerald-100";
+            }
+
+            // Make sure the wallet view is open when the tab is set
+            openView('wallet');
+        }
+
+        function handleWalletSubmit() {
+            const paymentInput = document.querySelector('input[name="payment_method"]:checked');
+            const selected = (paymentInput && paymentInput.value) || 'mpesa';
+            const amountInput = document.getElementById('walletAmount');
+            const amount = parseFloat(amountInput.value);
+
+            if (!amount || amount <= 0) {
+                showToast('Please enter a valid amount.');
+                return;
+            }
+
+            const tx = {
+                type: activeWalletMode.toUpperCase(),
+                method: selected,
+                amount: amount,
+                status: 'PENDING',
+                date: new Date().toLocaleString()
+            };
+
+            const list = loadTransactions();
+            list.unshift(tx);
+            saveTransactions(list);
+            renderTransactions();
+
+            if (activeWalletMode === 'deposit' && accountState.activeType === 'Real') {
+                accountState.liveBalance += amount;
+                tx.status = 'COMPLETED';
+                saveTransactions(list);
+                saveAccountState();
+                updateAccountDisplays();
+                showToast(`Deposit of $${amount.toFixed(2)} completed via ${selected.toUpperCase()}`);
+            } else if (activeWalletMode === 'withdraw' && accountState.activeType === 'Real') {
+                if (amount > accountState.liveBalance) {
+                    showToast('Insufficient live balance for this withdrawal.');
+                    return;
+                }
+                accountState.liveBalance -= amount;
+                tx.status = 'COMPLETED';
+                saveTransactions(list);
+                saveAccountState();
+                updateAccountDisplays();
+                showToast(`Withdrawal of $${amount.toFixed(2)} completed via ${selected.toUpperCase()}`);
+            } else {
+                showToast(`Initiating ${activeWalletMode.toUpperCase()} of $${amount.toFixed(2)} via ${selected.toUpperCase()}...`);
+            }
+        }
+
+        /* ============ ACCOUNT SWITCHING ============ */
+
+        function toggleAccountDropdown() {
+            document.getElementById('accountDropdown').classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('accountDropdown');
+            const dropdownBtn = document.getElementById('accountDropdownBtn');
+            if (dropdown && dropdownBtn && !dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function selectAccount(type, balanceLabel, id) {
+            accountState.activeType = type;
+            saveAccountState();
+            updateAccountDisplays();
+            toggleAccountDropdown();
+            showToast(`Switched to ${type} Account (${balanceLabel})`);
+        }
+
+        /* ============ LOGOUT (clears session and redirects to index.html) ============ */
+
+        function handleLogout() {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            showToast("Session cleared. Logging out...");
+            setTimeout(() => {
+                window.location.href = INDEX_URL;
+            }, 900);
+        }
+
+        /* ============ TOAST ============ */
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 2500);
+        }
+
+        /* ============ BOOT ============ */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAccountState();
+            updateAccountDisplays();
+            initAuthUI();
+            renderTransactions();
+            openView('menu');
+        });
+    </script>
+
+</body>
+
+</html>
