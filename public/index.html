@@ -9,8 +9,16 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
+        // Initialize EmailJS with Public Key
+        (function() {
+            emailjs.init("z-u0EEe3-RtZKP6cJ");
+        })();
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -23,12 +31,8 @@
                     },
                     keyframes: {
                         marquee: {
-                            '0%': {
-                                transform: 'translateX(0%)'
-                            },
-                            '100%': {
-                                transform: 'translateX(-50%)'
-                            }
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
                         }
                     },
                     animation: {
@@ -96,7 +100,7 @@
             <div id="auth-logged-in" class="hidden items-center gap-3">
                 <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3 py-1">
                     <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
-                    <span id="user-display-email" class="text-xs font-semibold text-slate-700">user@qora.com</span>
+                    <span id="user-display-email" class="text-xs font-semibold text-slate-700">user@tradexora.com</span>
                 </div>
                 <a href="Dashboard/index.html" class="rounded-lg border border-brand-red bg-brand-red px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-red-hover">
                     Dashboard
@@ -128,8 +132,7 @@
 
         <!-- Subheading -->
         <p class="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            Trade global markets from one powerful platform with live charts, real-time market data, secure Demo and Live accounts, and Tradexora AI - your intelligent trading assistant that analyzes the markets, identifies trading opportunities, and can automatically
-            execute trades with smart Stop Loss (SL) and Take Profit (TP) risk management.
+            Trade global markets from one powerful platform with live charts, real-time market data, secure Demo and Live accounts, and Tradexora AI - your intelligent trading assistant that analyzes the markets, identifies trading opportunities, and can automatically execute trades with smart Stop Loss (SL) and Take Profit (TP) risk management.
         </p>
 
         <!-- CTA Buttons -->
@@ -215,7 +218,7 @@
                     <div class="space-y-3 text-xs">
                         <div>
                             <span class="block text-[10px] font-bold text-slate-400 uppercase">Email</span>
-                            <a href="mailto:support@qoratrading.com" class="font-semibold text-slate-800 hover:underline">support@tradexora.com</a>
+                            <a href="mailto:support@tradexora.com" class="font-semibold text-slate-800 hover:underline">support@tradexora.com</a>
                         </div>
                         <div>
                             <span class="block text-[10px] font-bold text-slate-400 uppercase">Telephone</span>
@@ -286,147 +289,124 @@
             <div class="flex items-center justify-between pb-2">
                 <div>
                     <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
-                    <h3 id="register-modal-title" class="text-xl font-extrabold text-slate-900">Create Account</h3>
+                    <h3 class="text-xl font-extrabold text-slate-900">Create Account</h3>
                 </div>
                 <button onclick="closeModal('register-modal')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
             </div>
 
-            <!-- STEP 1: Registration Form -->
-            <div id="register-step-form">
-                <form id="register-form" class="mt-3 space-y-2.5 text-left">
-                    <div id="register-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200"></div>
-                    <div id="register-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
-                        <input id="reg-fullname" type="text" required placeholder="John Doe" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                        <input id="reg-email" type="email" required placeholder="name@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Country</label>
-                        <select id="reg-country" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20">
-                            <option selected>United States</option>
-                            <option>United Kingdom</option>
-                            <option>Canada</option>
-                            <option>Australia</option>
-                            <option>Kenya</option>
-                            <option>France</option>
-                            <option>Spain</option>
-                            <option>Italy</option>
-                            <option>Netherlands</option>
-                            <option>Belgium</option>
-                            <option>Sweden</option>
-                            <option>Norway</option>
-                            <option>Denmark</option>
-                            <option>Finland</option>
-                            <option>Switzerland</option>
-                            <option>Australia</option>
-                            <option>Austria</option>
-                            <option>New Zealand</option>
-                            <option>Japan</option>
-                            <option>South Korea</option>
-                            <option>Singapore</option>
-                            <option>Hong Kong</option>
-                            <option>India</option>
-                            <option>Brazil</option>
-                            <option>Mexico</option>
-                            <option>Argentina</option>
-                            <option>Tanzania</option>
-                            <option>Uganda</option>
-                            <option>South Africa</option>
-                            <option>Nigeria</option>
-                            <option>Egypt</option>
-                            <option>United Arab Emirates</option>
-                            <option>South Arabia</option>
-                            <option>Qatar</option>
-                            <option>Israel</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
-                        <input id="reg-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Confirm Password</label>
-                        <input id="reg-confirm-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <button type="submit" id="reg-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-3">
-                        Create Account
-                    </button>
-                </form>
-                <p class="mt-3 text-center text-xs text-slate-500">
-                    Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="font-semibold text-brand-red hover:underline">Login</button>
-                </p>
-            </div>
-
-            <!-- STEP 2: Email OTP Verification -->
-            <div id="register-step-otp" class="hidden">
-                <div id="otp-error" class="hidden mb-3 text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200"></div>
-                <div id="otp-success" class="hidden mb-3 text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
-                <p class="text-xs leading-relaxed text-slate-600 mb-4 text-left">
-                    We've sent a verification code to <span id="otp-email-label" class="font-semibold text-slate-900"></span>. Enter the code below to verify your email address.
-                </p>
-                <form id="otp-form" class="space-y-3 text-left">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                        <input id="otp-email" type="email" required placeholder="name@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Verification Code</label>
-                        <input id="otp-code" type="text" inputmode="numeric" autocomplete="one-time-code" required placeholder="••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs tracking-[0.4em] text-center text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                    </div>
-                    <button type="submit" id="otp-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition">
-                        Verify Email
-                    </button>
-                    <button type="button" id="otp-resend-btn" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                        Resend Code
-                    </button>
-                </form>
-                <p class="mt-3 text-center text-xs text-slate-500">
-                    Didn't get a code? Wait for the cooldown, then press <span class="font-semibold">Resend Code</span>.
-                </p>
-            </div>
-
-            <!-- STEP 3: Verification Complete -->
-            <div id="register-step-done" class="hidden">
-                <div class="text-center py-4">
-                    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xl font-bold">✓</div>
-                    <h4 class="text-sm font-bold text-slate-900">Email verified successfully!</h4>
-                    <p class="mt-2 text-xs text-slate-600">Your account is ready. You can now log in to your dashboard.</p>
-                    <button type="button" id="otp-done-login-btn" class="mt-4 w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition">
-                        Go to Login
-                    </button>
+            <form id="register-form" class="mt-3 space-y-2.5 text-left">
+                <div id="register-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200 font-mono break-words"></div>
+                <div id="register-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+                    <input id="reg-fullname" type="text" required placeholder="John Doe" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
                 </div>
-            </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
+                    <input id="reg-email" type="email" required placeholder="name@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Country</label>
+                    <select id="reg-country" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20">
+                        <option selected>United States</option>
+                        <option>United Kingdom</option>
+                        <option>Canada</option>
+                        <option>Australia</option>
+                        <option>Kenya</option>
+                        <option>France</option>
+                        <option>Spain</option>
+                        <option>Italy</option>
+                        <option>Netherlands</option>
+                        <option>Belgium</option>
+                        <option>Sweden</option>
+                        <option>Norway</option>
+                        <option>Denmark</option>
+                        <option>Finland</option>
+                        <option>Switzerland</option>
+                        <option>Austria</option>
+                        <option>New Zealand</option>
+                        <option>Japan</option>
+                        <option>South Korea</option>
+                        <option>Singapore</option>
+                        <option>Hong Kong</option>
+                        <option>India</option>
+                        <option>Brazil</option>
+                        <option>Mexico</option>
+                        <option>Argentina</option>
+                        <option>Tanzania</option>
+                        <option>Uganda</option>
+                        <option>South Africa</option>
+                        <option>Nigeria</option>
+                        <option>Egypt</option>
+                        <option>United Arab Emirates</option>
+                        <option>Saudi Arabia</option>
+                        <option>Qatar</option>
+                        <option>Israel</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                    <input id="reg-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Confirm Password</label>
+                    <input id="reg-confirm-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                </div>
+                <button type="submit" id="reg-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-3">
+                    Create Account
+                </button>
+            </form>
+            <p class="mt-3 text-center text-xs text-slate-500">
+                Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="font-semibold text-brand-red hover:underline">Login</button>
+            </p>
         </div>
     </div>
 
-    <!-- SUPABASE AUTHENTICATION SCRIPT -->
+    <!-- EMAIL VERIFICATION OTP MODAL -->
+    <div id="verify-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+        <div class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl transition-all">
+            <div class="flex items-center justify-between pb-2">
+                <div>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
+                    <h3 class="text-xl font-extrabold text-slate-900">Verify Email</h3>
+                </div>
+                <button onclick="closeModal('verify-modal')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+            </div>
+
+            <p class="text-xs text-slate-600 mt-2">
+                We sent a 6-digit verification code to <strong id="verify-email-target" class="text-slate-800"></strong>.Check email inbox or spasm folder Please enter it below.
+            </p>
+
+            <form id="verify-form" class="mt-4 space-y-3 text-left">
+                <div id="verify-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200 font-mono break-words"></div>
+                <div id="verify-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Verification Code</label>
+                    <input id="verify-otp-input" type="text" maxlength="6" required placeholder="000000" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-center text-lg font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                </div>
+
+                <button type="submit" id="verify-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-2">
+                    Verify Code
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOCALSTORAGE AUTHENTICATION & EMAILJS SCRIPT -->
     <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const SUPABASE_URL = "https://nogfridujrpvdjgygrjo.supabase.co";
-        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oPBmsgTtmlrVEWVbYiMa6g_QBrDVU1k";
+        const USERS_KEY = 'registeredUsers';
+        const CURRENT_USER_KEY = 'currentUser';
+        
+        // EMAILJS CONFIGURATION
+        const EMAILJS_SERVICE_ID = "service_17tzvj7";
+        const EMAILJS_TEMPLATE_ID = "template_hkvbru3";
+        const EMAILJS_PUBLIC_KEY = "z-u0EEe3-RtZKP6cJ";
 
-        // Must match the OTP length configured in Supabase
-        // (Auth > Email Templates > {{ .Token }}, and Auth settings "OTP length").
-        const OTP_LENGTH = 6;
+        let pendingUserData = null; // Stores pending registration data while waiting for OTP verification
 
-        // Seconds to wait before allowing "Resend Code" again.
-        const RESEND_COOLDOWN_SECONDS = 60;
-
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-        );
-
-        // ============================================
-        // MODAL CONTROLS
-        // ============================================
+        // Modal Controls
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
         }
@@ -440,39 +420,37 @@
             openModal(toId);
         }
 
-        function showBox(el, message) {
-            el.textContent = message;
-            el.classList.remove('hidden');
-        }
-
-        function hideBox(el) {
-            el.textContent = '';
-            el.classList.add('hidden');
-        }
-
-        function setBusy(btn, busy, busyText) {
-            if (busy) {
-                btn.dataset.originalText = btn.textContent;
-                btn.textContent = busyText;
-                btn.disabled = true;
-            } else {
-                btn.textContent = btn.dataset.originalText || btn.textContent;
-                btn.disabled = false;
+        // Helper: Get registered users safely
+        function getRegisteredUsers() {
+            try {
+                const users = localStorage.getItem(USERS_KEY);
+                return users ? JSON.parse(users) : [];
+            } catch (e) {
+                console.error("Error parsing registered users from localStorage", e);
+                return [];
             }
         }
 
-        // ============================================
-        // NAV / SESSION UI
-        // ============================================
-        function updateAuthState(session) {
+        // Helper: Get current active user safely
+        function getCurrentUser() {
+            try {
+                const user = localStorage.getItem(CURRENT_USER_KEY);
+                return user ? JSON.parse(user) : null;
+            } catch (e) {
+                console.error("Error parsing current user from localStorage", e);
+                return null;
+            }
+        }
+
+        // UI Session Check on Load
+        function updateAuthState() {
+            const currentUser = getCurrentUser();
             const loggedOutBar = document.getElementById('auth-logged-out');
             const loggedInBar = document.getElementById('auth-logged-in');
             const userEmailLabel = document.getElementById('user-display-email');
 
-            const user = session && session.user ? session.user : null;
-
-            if (user && user.email) {
-                if (userEmailLabel) userEmailLabel.textContent = user.email;
+            if (currentUser && currentUser.email) {
+                if (userEmailLabel) userEmailLabel.textContent = currentUser.email;
                 if (loggedOutBar) loggedOutBar.classList.add('hidden');
                 if (loggedInBar) {
                     loggedInBar.classList.remove('hidden');
@@ -487,14 +465,9 @@
             }
         }
 
-        // ============================================
-        // REGISTRATION (SIGN UP + EMAIL OTP VERIFICATION)
-        // ============================================
-        let pendingVerificationEmail = null;
-
-        async function handleRegister(event) {
+        // Registration Handler with EmailJS
+        function handleRegister(event) {
             event.preventDefault();
-
             const fullName = document.getElementById('reg-fullname').value.trim();
             const email = document.getElementById('reg-email').value.trim().toLowerCase();
             const country = document.getElementById('reg-country').value;
@@ -505,329 +478,172 @@
             const succBox = document.getElementById('register-success');
             const regBtn = document.getElementById('reg-btn');
 
-            hideBox(errBox);
-            hideBox(succBox);
+            errBox.classList.add('hidden');
+            succBox.classList.add('hidden');
 
-            if (!fullName || !email || !country || !password || !confirmPassword) {
-                showBox(errBox, "All required fields must be filled.");
+            if (!fullName || !email || !password) {
+                errBox.textContent = "All required fields must be filled.";
+                errBox.classList.remove('hidden');
                 return;
             }
-            if (password.length < 6) {
-                showBox(errBox, "Password must be at least 6 characters long.");
-                return;
-            }
+
             if (password !== confirmPassword) {
-                showBox(errBox, "Passwords do not match.");
+                errBox.textContent = "Passwords do not match.";
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            setBusy(regBtn, true, "Creating account...");
-
-            try {
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                            country: country
-                        }
-                    }
-                });
-
-                if (error) {
-                    if (error.status === 422 || /already registered/i.test(error.message || '')) {
-                        showBox(errBox, "An account with this email address already exists. Please log in instead.");
-                    } else {
-                        showBox(errBox, error.message || "Registration failed. Please try again.");
-                    }
-                    return;
-                }
-
-                // Check if email confirmation is required.
-                // If data.session exists, Supabase did NOT require confirmation.
-                if (data.session && data.user) {
-                    // Email confirmation disabled in Supabase (not recommended here):
-                    // the user is already logged in.
-                    updateAuthState(data.session);
-                    showBox(succBox, "Registration successful! You are now logged in.");
-                    document.getElementById('register-form').reset();
-                    return;
-                }
-
-                // Email confirmation required -> show OTP verification step.
-                pendingVerificationEmail = email;
-                showBox(succBox, "Account created! Check your email for the verification code.");
-                setTimeout(() => {
-                    hideBox(succBox);
-                    showOtpStep();
-                }, 1200);
-            } catch (e) {
-                showBox(errBox, "Unexpected error: " + (e.message || e));
-            } finally {
-                setBusy(regBtn, false);
+            const users = getRegisteredUsers();
+            const existingUser = users.find(u => u.email.toLowerCase() === email);
+            if (existingUser) {
+                errBox.textContent = "An account with this email address already exists.";
+                errBox.classList.remove('hidden');
+                return;
             }
+
+            // Generate random 6-digit verification code
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Store temporary user data awaiting verification
+            pendingUserData = {
+                fullName,
+                email,
+                country,
+                password,
+                generatedCode: verificationCode
+            };
+
+            regBtn.disabled = true;
+            regBtn.textContent = "Sending Verification Code...";
+
+            // Send via explicit emailjs.send call passing public key as 4th param
+            const templateParams = {
+                to_name: fullName,
+                to_email: email,
+                reply_to: email,
+                code: verificationCode,
+                expiry_time: '1 hour'
+            };
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
+                .then((response) => {
+                    console.log("EmailJS Success:", response);
+                    regBtn.disabled = false;
+                    regBtn.textContent = "Create Account";
+
+                    document.getElementById('verify-email-target').textContent = email;
+                    switchModal('register-modal', 'verify-modal');
+                })
+                .catch((error) => {
+                    console.error("EmailJS Detailed Error:", error);
+                    regBtn.disabled = false;
+                    regBtn.textContent = "Create Account";
+
+                    const details = error && error.text ? error.text : JSON.stringify(error);
+                    errBox.textContent = "EmailJS Error (422): " + details + " — Please ensure 'To Email' in EmailJS Dashboard is set to {{to_email}}.";
+                    errBox.classList.remove('hidden');
+                });
         }
 
-        function showOtpStep() {
-            document.getElementById('register-step-form').classList.add('hidden');
-            document.getElementById('register-step-otp').classList.remove('hidden');
-            document.getElementById('register-modal-title').textContent = 'Verify Email';
-            document.getElementById('otp-email-label').textContent = pendingVerificationEmail || '';
-            document.getElementById('otp-email').value = pendingVerificationEmail || '';
-            document.getElementById('otp-code').maxLength = OTP_LENGTH;
-            document.getElementById('otp-code').placeholder = '•'.repeat(OTP_LENGTH);
-            startResendCooldown();
-        }
-
-        function resetRegisterModal() {
-            document.getElementById('register-step-otp').classList.add('hidden');
-            document.getElementById('register-step-done').classList.add('hidden');
-            document.getElementById('register-step-form').classList.remove('hidden');
-            document.getElementById('register-modal-title').textContent = 'Create Account';
-            pendingVerificationEmail = null;
-            stopResendCooldown();
-            hideBox(document.getElementById('otp-error'));
-            hideBox(document.getElementById('otp-success'));
-        }
-
-        async function handleVerifyOtp(event) {
+        // Verification Code Submission Handler
+        function handleVerifyCode(event) {
             event.preventDefault();
+            const inputCode = document.getElementById('verify-otp-input').value.trim();
+            const errBox = document.getElementById('verify-error');
+            const succBox = document.getElementById('verify-success');
 
-            const email = document.getElementById('otp-email').value.trim().toLowerCase();
-            const token = document.getElementById('otp-code').value.trim();
-            const errBox = document.getElementById('otp-error');
-            const succBox = document.getElementById('otp-success');
-            const otpBtn = document.getElementById('otp-btn');
+            errBox.classList.add('hidden');
+            succBox.classList.add('hidden');
 
-            hideBox(errBox);
-            hideBox(succBox);
-
-            if (!email) {
-                showBox(errBox, "Please enter your email address.");
-                return;
-            }
-            if (!token || token.length !== OTP_LENGTH) {
-                showBox(errBox, "Please enter the " + OTP_LENGTH + "-digit verification code from your email.");
+            if (!pendingUserData) {
+                errBox.textContent = "Session expired. Please register again.";
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            setBusy(otpBtn, true, "Verifying...");
-
-            try {
-                const { error } = await supabaseClient.auth.verifyOtp({
-                    email: email,
-                    token: token,
-                    type: 'signup'
-                });
-
-                if (error) {
-                    if (/expired/i.test(error.message || '')) {
-                        showBox(errBox, "This verification code has expired. Please request a new one.");
-                    } else {
-                        showBox(errBox, error.message || "Invalid or expired code. Please try again.");
-                    }
-                    return;
-                }
-
-                // Verified. Show success step.
-                document.getElementById('register-step-otp').classList.add('hidden');
-                document.getElementById('register-step-done').classList.remove('hidden');
-                stopResendCooldown();
-            } catch (e) {
-                showBox(errBox, "Unexpected error: " + (e.message || e));
-            } finally {
-                setBusy(otpBtn, false);
-            }
-        }
-
-        // ============================================
-        // RESEND OTP (with cooldown)
-        // ============================================
-        let resendTimer = null;
-
-        function startResendCooldown() {
-            const resendBtn = document.getElementById('otp-resend-btn');
-            let remaining = RESEND_COOLDOWN_SECONDS;
-            resendBtn.disabled = true;
-            resendBtn.textContent = "Resend Code (" + remaining + "s)";
-
-            stopResendCooldown();
-            resendTimer = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    stopResendCooldown();
-                    resendBtn.disabled = false;
-                    resendBtn.textContent = "Resend Code";
-                } else {
-                    resendBtn.textContent = "Resend Code (" + remaining + "s)";
-                }
-            }, 1000);
-        }
-
-        function stopResendCooldown() {
-            if (resendTimer) {
-                clearInterval(resendTimer);
-                resendTimer = null;
-            }
-        }
-
-        async function handleResendOtp() {
-            const email = document.getElementById('otp-email').value.trim().toLowerCase();
-            const errBox = document.getElementById('otp-error');
-            const succBox = document.getElementById('otp-success');
-            const resendBtn = document.getElementById('otp-resend-btn');
-
-            hideBox(errBox);
-            hideBox(succBox);
-
-            if (!email) {
-                showBox(errBox, "Please enter your email address first.");
+            if (inputCode !== pendingUserData.generatedCode) {
+                errBox.textContent = "Invalid verification code. Please try again.";
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            setBusy(resendBtn, true, "Sending...");
+            // Correct code provided: complete user registration
+            const users = getRegisteredUsers();
+            const newUser = {
+                fullName: pendingUserData.fullName,
+                email: pendingUserData.email,
+                country: pendingUserData.country,
+                password: pendingUserData.password
+            };
 
-            try {
-                const { error } = await supabaseClient.auth.resend({
-                    type: 'signup',
-                    email: email
-                });
+            users.push(newUser);
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
 
-                if (error) {
-                    showBox(errBox, error.message || "Could not resend the code. Please try again later.");
-                    return;
-                }
+            succBox.textContent = "Email verified successfully! Redirecting to login...";
+            succBox.classList.remove('hidden');
 
-                showBox(succBox, "A new verification code has been sent to your email.");
-                startResendCooldown();
-            } catch (e) {
-                showBox(errBox, "Unexpected error: " + (e.message || e));
-            }
+            document.getElementById('register-form').reset();
+            document.getElementById('verify-form').reset();
+            pendingUserData = null;
+
+            setTimeout(() => {
+                succBox.classList.add('hidden');
+                switchModal('verify-modal', 'login-modal');
+            }, 1200);
         }
 
-        // ============================================
-        // LOGIN
-        // ============================================
-        async function handleLogin(event) {
+        // Login Handler
+        function handleLogin(event) {
             event.preventDefault();
-
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value;
             const errBox = document.getElementById('login-error');
-            const loginBtn = document.getElementById('login-btn');
 
-            hideBox(errBox);
+            errBox.classList.add('hidden');
 
             if (!email || !password) {
-                showBox(errBox, "Please enter both email and password.");
+                errBox.textContent = "Please enter both email and password.";
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            // Prevent duplicate submissions while processing.
-            if (loginBtn.disabled) return;
-            setBusy(loginBtn, true, "Logging in...");
+            const users = getRegisteredUsers();
+            const validUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
 
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) {
-                    if (error.code === 'email_not_confirmed') {
-                        // Respect Supabase email-confirmation requirements:
-                        // route the user into the OTP verification flow instead.
-                        pendingVerificationEmail = email;
-                        closeModal('login-modal');
-                        openModal('register-modal');
-                        showOtpStep();
-                        showBox(document.getElementById('otp-error'),
-                            "Your email is not verified yet. Enter the verification code we just sent to your inbox.");
-                    } else if (/invalid login credentials/i.test(error.message || '')) {
-                        showBox(errBox, "Invalid email address or password.");
-                    } else {
-                        showBox(errBox, error.message || "Login failed. Please try again.");
-                    }
-                    return;
-                }
-
-                // Successful login. onAuthStateChange will update the navigation.
-                closeModal('login-modal');
-                document.getElementById('login-form').reset();
-                window.location.href = "Dashboard/index.html";
-            } catch (e) {
-                showBox(errBox, "Unexpected error: " + (e.message || e));
-            } finally {
-                setBusy(loginBtn, false);
+            if (!validUser) {
+                errBox.textContent = "Invalid email address or password.";
+                errBox.classList.remove('hidden');
+                return;
             }
+
+            const sessionData = {
+                fullName: validUser.fullName,
+                email: validUser.email
+            };
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(sessionData));
+
+            window.location.href = "Dashboard/index.html";
         }
 
-        // ============================================
-        // LOGOUT
-        // ============================================
-        async function handleLogout() {
-            try {
-                const { error } = await supabaseClient.auth.signOut();
-                if (error) {
-                    console.error("Logout failed:", error.message);
-                    alert("Logout failed. Please try again.");
-                    return;
-                }
-                updateAuthState(null);
-                // Return to the public home page.
-                window.location.href = "index.html";
-            } catch (e) {
-                console.error("Logout error:", e);
-                alert("Logout failed. Please try again.");
-            }
+        // Logout Handler
+        function handleLogout() {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            updateAuthState();
+            window.location.reload();
         }
 
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Event listeners (attached once, guarded against duplicates).
+        // Initialize event listeners on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthState();
+
             const regForm = document.getElementById('register-form');
             if (regForm) regForm.addEventListener('submit', handleRegister);
 
-            const otpForm = document.getElementById('otp-form');
-            if (otpForm) otpForm.addEventListener('submit', handleVerifyOtp);
-
-            const resendBtn = document.getElementById('otp-resend-btn');
-            if (resendBtn) resendBtn.addEventListener('click', handleResendOtp);
-
-            const doneLoginBtn = document.getElementById('otp-done-login-btn');
-            if (doneLoginBtn) doneLoginBtn.addEventListener('click', () => {
-                resetRegisterModal();
-                switchModal('register-modal', 'login-modal');
-            });
+            const verifyForm = document.getElementById('verify-form');
+            if (verifyForm) verifyForm.addEventListener('submit', handleVerifyCode);
 
             const loginForm = document.getElementById('login-form');
             if (loginForm) loginForm.addEventListener('submit', handleLogin);
-
-            // Restore any existing session on page load.
-            try {
-                const { data, error } = await supabaseClient.auth.getSession();
-                if (error) {
-                    console.error("Session restore failed:", error.message);
-                }
-                updateAuthState(data ? data.session : null);
-
-                // If already logged in on the public home page, we deliberately
-                // do not auto-redirect; the Dashboard link becomes visible.
-                // (Set the line below if you prefer auto-redirect:
-                // if (data && data.session) window.location.href = "Dashboard/index.html";)
-            } catch (e) {
-                console.error("Session check error:", e);
-                updateAuthState(null);
-            }
-
-            // Keep the interface in sync with auth state changes
-            // (login, logout, token refresh, sign-out in another tab).
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                updateAuthState(session);
-            });
         });
     </script>
 </body>
