@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>TRADEXORA Trading - More</title>
 
     <!-- Tailwind CSS -->
@@ -37,40 +37,77 @@
     </script>
 
     <style>
+        :root {
+            --safe-t: env(safe-area-inset-top, 0px);
+            --safe-b: env(safe-area-inset-bottom, 0px);
+            --safe-r: env(safe-area-inset-right, 0px);
+        }
+
+        html {
+            overscroll-behavior: none;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #ffffff;
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
+            /* Clear the fixed bottom dock + safe area */
+            padding-bottom: calc(7rem + var(--safe-b));
         }
-        
+
+        /* Restrict selection blocking to interactive controls, not body */
+        nav a,
+        button,
+        #accountDropdownBtn {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
         .card-hover {
             transition: all 0.2s ease-in-out;
         }
-        
+
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             border-color: #cbd5e1;
         }
-        
-         ::-webkit-scrollbar {
+
+        /* Fixed bottom dock, safe-area aware */
+        .bottom-nav {
+            bottom: calc(1rem + var(--safe-b));
+        }
+
+        /* Toast: safe-area aware, above everything */
+        #toast {
+            top: calc(1rem + var(--safe-t));
+            right: calc(1rem + var(--safe-r));
+            z-index: 60;
+        }
+
+        /* Account dropdown: never overflow narrow viewports */
+        #accountDropdown {
+            max-width: calc(100vw - 2rem);
+        }
+
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
-         ::-webkit-scrollbar-track {
+
+        ::-webkit-scrollbar-track {
             background: #f8fafc;
         }
-        
-         ::-webkit-scrollbar-thumb {
+
+        ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 3px;
         }
     </style>
 </head>
 
-<body class="bg-white min-h-screen flex flex-col justify-between pb-28 select-none">
+<body class="bg-white min-h-screen flex flex-col justify-between">
 
     <!-- TOP HEADER -->
     <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
@@ -171,21 +208,21 @@
         </div>
 
         <!-- QUICK LINKS ROW -->
-        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-6 border-b border-gray-100 pb-6">
-            <a href="../TradesChart/index.html" class="group flex flex-col items-center">
+        <div class="flex items-center justify-center gap-10 sm:gap-20 mb-6 border-b border-gray-100 pb-6">
+            <a href="../TradesChart/index.html" class="group flex flex-col items-center min-w-[72px]">
                 <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-house text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">
                     Back to Trading
                 </span>
             </a>
 
-            <a href="../deposit/index.html" class="group flex flex-col items-center">
+            <a href="../deposit/index.html" class="group flex flex-col items-center min-w-[72px]">
                 <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-regular fa-credit-card text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">
                     Wallet
                 </span>
             </a>
@@ -269,7 +306,7 @@
     </main>
 
     <!-- BOTTOM NAVIGATION DOCK -->
-    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+    <nav class="bottom-nav fixed left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
         <div class="flex items-center justify-between">
 
             <!-- Menu Tab -->
@@ -307,7 +344,7 @@
     </nav>
 
     <!-- Toast Container -->
-    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+    <div id="toast" class="fixed bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-[60] flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-amber-400"></i>
         <span id="toastMsg">Action triggered</span>
     </div>
