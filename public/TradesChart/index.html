@@ -43,42 +43,42 @@
             user-select: none;
             overflow-x: hidden;
         }
-        
+
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
-        
+
         .ai-shadow {
             box-shadow: 0 10px 25px -5px rgba(45, 96, 247, .4), 0 8px 10px -6px rgba(45, 96, 247, .2);
         }
-        
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-        
+
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
+
         .flash-up {
             animation: flashUp .5s ease-out;
         }
-        
+
         .flash-down {
             animation: flashDown .5s ease-out;
         }
-        
+
         @keyframes flashUp {
             0% {
                 background: rgba(80, 227, 150, .35);
@@ -87,7 +87,7 @@
                 background: transparent;
             }
         }
-        
+
         @keyframes flashDown {
             0% {
                 background: rgba(255, 123, 137, .35);
@@ -96,7 +96,7 @@
                 background: transparent;
             }
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -107,22 +107,15 @@
                 transform: none;
             }
         }
-        
+
         .animate-fadeIn {
             animation: fadeIn .2s ease-out;
         }
-        
+
         tv-advanced-chart {
             display: block;
             width: 100%;
             height: 100%;
-        }
-
-        /* ZOOM LOCK: block all pointer interactions (wheel zoom, pinch zoom,
-           pan, crosshair) inside the TradingView widget iframe. The chart
-           always stays at its standard/default zoom. */
-        tv-advanced-chart iframe {
-            pointer-events: none !important;
         }
 
         #tv_chart_container {
@@ -135,6 +128,13 @@
 
         #fallbackCanvas {
             touch-action: none;
+            cursor: grab;
+        }
+
+        /* ZOOM LOCK: block all pointer interaction (wheel / pinch / click zoom)
+           inside the TradingView widget iframe. Chart becomes display-only. */
+        tv-advanced-chart iframe {
+            pointer-events: none !important;
         }
     </style>
 </head>
@@ -357,13 +357,9 @@
         /* ============================================================
            CONFIG
         ============================================================ */
-        /* Twelve Data is the PRIMARY market data provider.
-           Get a free API key at https://twelvedata.com/ (800 credits/day, 8/min).
-           If the key is empty or the API fails, the app falls back to
-           Binance crypto websockets + simulated ticks. */
         const TWELVE_DATA_API_KEY = '5015275b680b478cab9eed2bcd49749b';
-        const TD_POLL_MS = 8000;        // poll the active symbol every 8s (1 credit)
-        const TD_WATCH_MS = 16000;      // staggered watchlist refresh
+        const TD_POLL_MS = 8000;
+        const TD_WATCH_MS = 16000;
         const SPREAD_PCT = 0.0002;
         const LEVERAGE = 100;
         const SIM_TICK_MS = 800;
@@ -438,7 +434,7 @@
                 contractSize: 1
             },
             'BTCUSD': {
-                tvSymbol: 'BITSTAMP:BTCUSD',
+                tvSymbol: 'BINANCE:BTCUSDT',
                 tdSymbol: 'BTC/USD',
                 category: 'Crypto',
                 base: 68450,
@@ -448,7 +444,7 @@
                 feed: 'live'
             },
             'ETHUSD': {
-                tvSymbol: 'BITSTAMP:ETHUSD',
+                tvSymbol: 'BINANCE:ETHUSDT',
                 tdSymbol: 'ETH/USD',
                 category: 'Crypto',
                 base: 2640,
@@ -519,6 +515,20 @@
         Object.keys(symbolsDatabase).forEach(s => {
             tickHistory[s] = [];
             candles[s] = [];
+            // Seed initial dummy candles so chart is populated immediately
+            let basePrice = symbolsDatabase[s].base;
+            let now = Date.now();
+            for (let i = 25; i >= 0; i--) {
+                let t = now - i * CANDLE_MS;
+                let delta = (Math.random() - 0.49) * (basePrice * 0.001);
+                let op = basePrice + delta;
+                let cl = op + (Math.random() - 0.49) * (basePrice * 0.001);
+                let hi = Math.max(op, cl) + Math.random() * (basePrice * 0.0005);
+                let lo = Math.min(op, cl) - Math.random() * (basePrice * 0.0005);
+                candles[s].push({ time: t, open: op, high: hi, low: lo, close: cl });
+                basePrice = cl;
+            }
+            symbolsDatabase[s].price = basePrice;
         });
 
         /* ============================================================
@@ -617,8 +627,6 @@
 
         /* ============================================================
            TWELVE DATA — PRIMARY MARKET DATA PROVIDER
-           /quote costs 1 credit per symbol. Active symbol is polled
-           every TD_POLL_MS and watchlist symbols every TD_WATCH_MS.
         ============================================================ */
         let tdHealthy = false;
         let tdFailures = 0;
@@ -647,7 +655,6 @@
                 if (price > 0) {
                     const prev = priceOf(sym);
                     d.price = price;
-                    d.tdLive = true;
                     pushTick(sym, price);
                     tdHealthy = true;
                     tdFailures = 0;
@@ -690,8 +697,6 @@
             setInterval(refreshWatchlistFromTd, TD_WATCH_MS);
         }
 
-        /* Binance websocket — secondary live feed for crypto (fallback,
-           and gap-filler between Twelve Data polls for crypto symbols) */
         let binanceWs = null;
 
         function connectCryptoFeed() {
@@ -709,7 +714,6 @@
                         const stream = msg.stream || '';
                         const sym = stream.startsWith('btcusdt') ? 'BTCUSD' : stream.startsWith('ethusdt') ? 'ETHUSD' : null;
                         if (!sym || !msg.data) return;
-                        // Skip if Twelve Data already provides this symbol live
                         if (tdHealthy && symbolsDatabase[sym].tdLive) return;
                         const price = +(+msg.data.p).toFixed(decimals(sym));
                         symbolsDatabase[sym].price = price;
@@ -717,7 +721,7 @@
                         pushTick(sym, price);
                         if (sym === currentSymbol) renderPrices(sym);
                         updateTradesBadge();
-                    } catch (e) { /* ignore malformed frames */ }
+                    } catch (e) {}
                 };
             } catch (e) {
                 console.error('Binance feed failed:', e);
@@ -863,8 +867,7 @@
             runAIAnalysis();
             const chart = document.getElementById('tvChart');
             if (chart) chart.setAttribute('symbol', symbolsDatabase[sym].tvSymbol);
-            // Immediately pull the new symbol from Twelve Data
-            if (TWELVE_DATA_API_KEY && TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
+            if (tdHealthy || TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
         }
 
         function renderPrices(sym) {
@@ -899,11 +902,7 @@
         }
 
         /* ============================================================
-           CHART — Web Component (candles default) + candle fallback
-           ZOOM LOCK: the TradingView widget iframe gets pointer-events
-           none (see CSS + sizeTradingViewChart) so wheel/pinch zoom and
-           pan are blocked — the chart stays at standard zoom. The
-           fallback canvas renders all candles with no zoom either.
+           CHART — Web Component (zoom locked) + candle fallback
         ============================================================ */
         let fallbackActive = false;
         let fallbackRaf = null;
@@ -956,21 +955,18 @@
             chart.style.width = rect.width + 'px';
             chart.style.height = rect.height + 'px';
             const root = chart.shadowRoot;
-            if (root) {
-                if (!root.getElementById('tx-fit-chart')) {
-                    const style = document.createElement('style');
-                    style.id = 'tx-fit-chart';
-                    style.textContent =
-                        ':host, iframe, .container, div { width:100% !important; height:100% !important; } ' +
-                        'iframe { border:0; pointer-events:none; }';
-                    root.appendChild(style);
-                }
-                root.querySelectorAll('iframe').forEach(frame => {
-                    frame.style.width = '100%';
-                    frame.style.height = '100%';
-                    frame.style.pointerEvents = 'none';
-                });
+            if (!root) return;
+            if (!root.getElementById('tx-fit-chart')) {
+                const style = document.createElement('style');
+                style.id = 'tx-fit-chart';
+                style.textContent = ':host, iframe, .container, div { width:100% !important; height:100% !important; } iframe { border:0; pointer-events:none !important; }';
+                root.appendChild(style);
             }
+            root.querySelectorAll('iframe').forEach(frame => {
+                frame.style.width = '100%';
+                frame.style.height = '100%';
+                frame.style.pointerEvents = 'none';
+            });
         }
 
         function fallbackDrawLoop() {
@@ -1030,8 +1026,9 @@
             const w = rect.width - pad.l - pad.r;
             const h = rect.height - pad.t - pad.b;
 
-            // Standard zoom: always show all available candles — no zoom/pan
-            const data = series.slice();
+            // FIXED ZOOM: always show a fixed recent window so it never zooms out
+            const ZOOM_WINDOW = 30;
+            const data = series.slice(-ZOOM_WINDOW);
 
             let min = Infinity,
                 max = -Infinity;
@@ -1294,8 +1291,10 @@
             const total = positions.filter(p => p.account === key)
                 .reduce((s, p) => s + positionPL(p), 0);
             const badge = document.getElementById('tradesProfitBadge');
-            badge.textContent = (total >= 0 ? '+ $' : '- $') + formatUsd(Math.abs(total));
-            badge.className = `absolute -top-2 text-[9px] font-bold px-1.5 py-0.2 rounded-full border shadow-2xs ${total >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`;
+            if (badge) {
+                badge.textContent = (total >= 0 ? '+ $' : '- $') + formatUsd(Math.abs(total));
+                badge.className = `absolute -top-2 text-[9px] font-bold px-1.5 py-0.2 rounded-full border shadow-2xs ${total >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`;
+            }
         }
 
         /* ============================================================
@@ -1367,8 +1366,8 @@
 
             const recent = hist.slice(-10).reduce((a, b) => a + b, 0) / 10;
             const olderSlice = hist.slice(-30, -10);
-            const older = olderSlice.reduce((a, b) => a + b, 0) / olderSlice.length;
-            const momentum = (recent - older) / older;
+            const older = olderSlice.length ? olderSlice.reduce((a, b) => a + b, 0) / olderSlice.length : recent;
+            const momentum = older !== 0 ? (recent - older) / older : 0;
 
             const bullish = momentum > 0;
             const strength = Math.min(0.02, Math.abs(momentum));
@@ -1468,7 +1467,7 @@
             renderAccountBadge();
             sizeTradingViewChart();
             window.addEventListener('resize', sizeTradingViewChart);
-            setInterval(sizeTradingViewChart, 1500); // re-applies the zoom lock on the widget iframe
+            setInterval(sizeTradingViewChart, 1500); // re-applies the zoom lock on iframe rebuild
 
             selectCategory('Commodities');
             connectCryptoFeed();
@@ -1479,7 +1478,8 @@
                 if (tdHealthy) return;
                 Object.keys(symbolsDatabase).forEach(sym => {
                     const d = symbolsDatabase[sym];
-                    if (d.feed) return; // crypto keeps its Binance fallback feed
+                    // crypto symbols keep their Binance fallback feed instead
+                    if (d.feed) return;
                     simTick(sym);
                 });
                 if (Math.random() < 0.25) renderSubSymbols();
