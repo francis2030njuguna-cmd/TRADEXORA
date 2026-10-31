@@ -811,7 +811,7 @@
             const isActiveDemo = accountState.activeType === 'Demo';
             const balance = isActiveDemo ? accountState.demoBalance : accountState.liveBalance;
             const id = isActiveDemo ? 'DNP142887' : 'LIV982104';
-            const formatted = `$${balance.toFixed(2)}`;
+            const formatted = `$${Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
             document.getElementById('activeAccountType').textContent = `${accountState.activeType} ${formatted}`;
             document.getElementById('activeAccountId').textContent = id;
@@ -824,8 +824,8 @@
             document.getElementById('portfolioAccountTag').textContent = isActiveDemo ? 'DEMO' : 'LIVE';
 
             // Wallet sync
-            document.getElementById('walletLiveBalance').textContent = `$${accountState.liveBalance.toFixed(2)}`;
-            document.getElementById('walletDemoBalance').textContent = `$${accountState.demoBalance.toFixed(2)}`;
+            document.getElementById('walletLiveBalance').textContent = `$${Number(accountState.liveBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('walletDemoBalance').textContent = `$${Number(accountState.demoBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         function renderTransactions() {

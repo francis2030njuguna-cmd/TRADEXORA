@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tradexora Trading Platform</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -116,6 +116,19 @@
             display: block;
             width: 100%;
             height: 100%;
+        }
+
+        #tv_chart_container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #fallbackCanvas {
+            touch-action: none;
+            cursor: grab;
         }
     </style>
 </head>
@@ -231,7 +244,7 @@
             <!-- 5. CHART AREA -->
             <div class="relative w-full h-[300px] md:h-[340px] my-1 bg-white overflow-hidden">
                 <div id="tv_chart_container" class="w-full h-full">
-                    <tv-advanced-chart id="tvChart" symbol="TVC:USOIL" interval="15" timezone="Etc/UTC" theme="light" chart-type="candles" locale="en" autosize allow-symbol-change hide-volume>
+                    <tv-advanced-chart id="tvChart" symbol="TVC:USOIL" interval="15" timezone="Etc/UTC" theme="light" chart-type="candles" locale="en" autosize allow-symbol-change hide-volume hide-side-toolbar>
                     </tv-advanced-chart>
                 </div>
                 <canvas id="fallbackCanvas" class="hidden absolute inset-0 w-full h-full bg-white z-0"></canvas>
@@ -536,6 +549,13 @@
         });
         let positions = store.get('qora_positions', []);
 
+        function formatUsd(n) {
+            return Number(n || 0).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
         function saveAccount() {
             store.set('qora_account', account);
         }
@@ -815,6 +835,8 @@
         ============================================================ */
         let fallbackActive = false;
         let fallbackRaf = null;
+        let chartView = { candles: 48, pan: 0 };
+        let chartZoomBound = false;
 
         function changeTimeframe(tf) {
             const chart = document.getElementById('tvChart');
@@ -854,6 +876,97 @@
             document.getElementById('fallbackCanvas').classList.add('hidden');
             document.getElementById('tv_chart_container').classList.remove('hidden');
             document.getElementById('chartFallbackNotice').classList.add('hidden');
+        }
+
+        function sizeTradingViewChart() {
+            const chart = document.getElementById('tvChart');
+            const container = document.getElementById('tv_chart_container');
+            if (!chart || !container) return;
+            const rect = container.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            chart.style.width = rect.width + 'px';
+            chart.style.height = rect.height + 'px';
+            const root = chart.shadowRoot;
+            if (!root) return;
+            if (!root.getElementById('tx-fit-chart')) {
+                const style = document.createElement('style');
+                style.id = 'tx-fit-chart';
+                style.textContent = ':host, iframe, .container, div { width:100% !important; height:100% !important; } iframe { border:0; }';
+                root.appendChild(style);
+            }
+            root.querySelectorAll('iframe').forEach(frame => {
+                frame.style.width = '100%';
+                frame.style.height = '100%';
+            });
+        }
+
+        function bindFallbackChartZoom() {
+            if (chartZoomBound) return;
+            const canvas = document.getElementById('fallbackCanvas');
+            if (!canvas) return;
+            chartZoomBound = true;
+
+            const clampZoom = (n) => Math.max(8, Math.min(240, n));
+            const touchDist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const factor = e.deltaY > 0 ? 1.12 : 0.88;
+                chartView.candles = clampZoom(chartView.candles * factor);
+                if (fallbackActive) drawFallbackChart();
+            }, { passive: false });
+
+            let drag = null;
+            let pinch = 0;
+
+            canvas.addEventListener('mousedown', (e) => {
+                drag = { x: e.clientX, pan: chartView.pan };
+                canvas.style.cursor = 'grabbing';
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!drag) return;
+                const slot = Math.max(4, canvas.getBoundingClientRect().width / Math.max(8, chartView.candles));
+                chartView.pan = Math.max(0, Math.round(drag.pan + (drag.x - e.clientX) / slot));
+                if (fallbackActive) drawFallbackChart();
+            });
+            window.addEventListener('mouseup', () => {
+                drag = null;
+                canvas.style.cursor = 'grab';
+            });
+
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    pinch = touchDist(e.touches[0], e.touches[1]);
+                    drag = null;
+                } else if (e.touches.length === 1) {
+                    drag = { x: e.touches[0].clientX, pan: chartView.pan };
+                    pinch = 0;
+                }
+            }, { passive: true });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const d = touchDist(e.touches[0], e.touches[1]);
+                    if (pinch) {
+                        chartView.candles = clampZoom(chartView.candles * (pinch / d));
+                    }
+                    pinch = d;
+                    if (fallbackActive) drawFallbackChart();
+                    return;
+                }
+                if (e.touches.length === 1 && drag) {
+                    e.preventDefault();
+                    const slot = Math.max(4, canvas.getBoundingClientRect().width / Math.max(8, chartView.candles));
+                    chartView.pan = Math.max(0, Math.round(drag.pan + (drag.x - e.touches[0].clientX) / slot));
+                    if (fallbackActive) drawFallbackChart();
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('touchend', () => {
+                pinch = 0;
+                drag = null;
+            });
         }
 
         function fallbackDrawLoop() {
@@ -919,9 +1032,15 @@
             const w = rect.width - pad.l - pad.r;
             const h = rect.height - pad.t - pad.b;
 
-            // fit candles to width: show as many as possible, min 8px per candle
-            const show = Math.max(2, Math.min(series.length, Math.floor(w / 8)));
-            const data = series.slice(-show);
+            // zoom/pan: visible candle count, pan is how many candles from the right edge
+            const minShow = 8;
+            const maxShow = Math.max(minShow, series.length);
+            const show = Math.max(minShow, Math.min(maxShow, Math.round(chartView.candles)));
+            const maxPan = Math.max(0, series.length - show);
+            chartView.pan = Math.max(0, Math.min(maxPan, chartView.pan));
+            const end = series.length - chartView.pan;
+            const start = Math.max(0, end - show);
+            const data = series.slice(start, end);
 
             let min = Infinity,
                 max = -Infinity;
@@ -1207,12 +1326,12 @@
             if (isLiveAccount) {
                 btnText.textContent = 'Switch to Demo';
                 badge.className = 'flex flex-col items-end px-3 py-1 bg-slate-900 text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
-                balDisp.textContent = `Live $${account.liveBalance.toFixed(2)}`;
+                balDisp.textContent = `Live $${formatUsd(account.liveBalance)}`;
                 idDisp.textContent = account.accountIdLive;
             } else {
                 btnText.textContent = 'Switch to Live';
                 badge.className = 'flex flex-col items-end px-3 py-1 bg-[#801336] text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
-                balDisp.textContent = `Demo $${account.demoBalance.toFixed(2)}`;
+                balDisp.textContent = `Demo $${formatUsd(account.demoBalance)}`;
                 idDisp.textContent = account.accountIdDemo;
             }
             updateMarginEstimate();
@@ -1364,6 +1483,10 @@
         window.onload = function() {
             isLiveAccount = !!account.isLive;
             renderAccountBadge();
+            bindFallbackChartZoom();
+            sizeTradingViewChart();
+            window.addEventListener('resize', sizeTradingViewChart);
+            setInterval(sizeTradingViewChart, 1500);
 
             selectCategory('Commodities');
             connectCryptoFeed();
