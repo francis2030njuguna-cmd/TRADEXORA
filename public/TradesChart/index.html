@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TRADEXORA Trading Platform</title>
+    <title>Tradexora Trading Platform</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icon Library -->
@@ -44,16 +44,16 @@
             overflow-x: hidden;
         }
         
-         ::-webkit-scrollbar {
+        ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
         
-         ::-webkit-scrollbar-track {
+        ::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
         
-         ::-webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
@@ -118,6 +118,13 @@
             height: 100%;
         }
 
+        /* ZOOM LOCK: block all pointer interactions (wheel zoom, pinch zoom,
+           pan, crosshair) inside the TradingView widget iframe. The chart
+           always stays at its standard/default zoom. */
+        tv-advanced-chart iframe {
+            pointer-events: none !important;
+        }
+
         #tv_chart_container {
             width: 100%;
             height: 100%;
@@ -128,7 +135,6 @@
 
         #fallbackCanvas {
             touch-action: none;
-            cursor: grab;
         }
     </style>
 </head>
@@ -228,7 +234,7 @@
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="feedStatusText">Connecting feed…</span>
+                <span id="feedStatusText">Connecting Twelve Data feed…</span>
                 </span>
             </div>
 
@@ -238,11 +244,10 @@
                     <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
                     <span id="marketNoticeText">Calculating market status…</span>
                 </div>
-                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-100/80 rounded text-amber-800">Indicative</span>
             </div>
 
             <!-- 5. CHART AREA -->
-            <div class="relative w-full h-[450px] md:h-[500px] my-1 bg-white overflow-hidden">
+            <div class="relative w-full h-[300px] md:h-[340px] my-1 bg-white overflow-hidden">
                 <div id="tv_chart_container" class="w-full h-full">
                     <tv-advanced-chart id="tvChart" symbol="TVC:USOIL" interval="15" timezone="Etc/UTC" theme="light" chart-type="candles" locale="en" autosize allow-symbol-change hide-volume hide-side-toolbar>
                     </tv-advanced-chart>
@@ -254,7 +259,7 @@
 
                 <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
                 <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-                <span>Qora AI</span>
+                <span>TRADEXORA AI</span>
             </button>
 
                 <div id="aiModal" class="hidden absolute bottom-18 right-6 z-20 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 space-y-3 transition-all animate-fadeIn">
@@ -350,12 +355,19 @@
     <!-- 8. APPLICATION SCRIPT -->
     <script>
         /* ============================================================
-                           CONFIG
-                        ============================================================ */
+           CONFIG
+        ============================================================ */
+        /* Twelve Data is the PRIMARY market data provider.
+           Get a free API key at https://twelvedata.com/ (800 credits/day, 8/min).
+           If the key is empty or the API fails, the app falls back to
+           Binance crypto websockets + simulated ticks. */
+        const TWELVE_DATA_API_KEY = '5015275b680b478cab9eed2bcd49749b';
+        const TD_POLL_MS = 8000;        // poll the active symbol every 8s (1 credit)
+        const TD_WATCH_MS = 16000;      // staggered watchlist refresh
         const SPREAD_PCT = 0.0002;
         const LEVERAGE = 100;
         const SIM_TICK_MS = 800;
-        const CANDLE_MS = 5000; // fallback candle aggregation window (5s candles)
+        const CANDLE_MS = 5000;
         const AI_REFRESH_MS = 5000;
         const TICK_HISTORY_MAX = 90;
         const CANDLE_MAX = 60;
@@ -363,6 +375,7 @@
         const symbolsDatabase = {
             'USOIL': {
                 tvSymbol: 'TVC:USOIL',
+                tdSymbol: 'WTI/USD',
                 category: 'Commodities',
                 base: 103.27,
                 pipSize: 0.01,
@@ -370,6 +383,7 @@
             },
             'NATGAS': {
                 tvSymbol: 'NYMEX:NG1!',
+                tdSymbol: 'NG/USD',
                 category: 'Commodities',
                 base: 3.05,
                 pipSize: 0.001,
@@ -377,6 +391,7 @@
             },
             'EURUSD': {
                 tvSymbol: 'FX:EURUSD',
+                tdSymbol: 'EUR/USD',
                 category: 'Forex',
                 base: 1.0845,
                 pipSize: 0.0001,
@@ -384,6 +399,7 @@
             },
             'GBPUSD': {
                 tvSymbol: 'FX:GBPUSD',
+                tdSymbol: 'GBP/USD',
                 category: 'Forex',
                 base: 1.2910,
                 pipSize: 0.0001,
@@ -391,6 +407,7 @@
             },
             'USDJPY': {
                 tvSymbol: 'FX:USDJPY',
+                tdSymbol: 'USD/JPY',
                 category: 'Forex',
                 base: 154.20,
                 pipSize: 0.01,
@@ -398,6 +415,7 @@
             },
             'AAPL': {
                 tvSymbol: 'NASDAQ:AAPL',
+                tdSymbol: 'AAPL',
                 category: 'Stocks',
                 base: 232.50,
                 pipSize: 0.01,
@@ -405,6 +423,7 @@
             },
             'NVDA': {
                 tvSymbol: 'NASDAQ:NVDA',
+                tdSymbol: 'NVDA',
                 category: 'Stocks',
                 base: 138.25,
                 pipSize: 0.01,
@@ -412,6 +431,7 @@
             },
             'TSLA': {
                 tvSymbol: 'NASDAQ:TSLA',
+                tdSymbol: 'TSLA',
                 category: 'Stocks',
                 base: 218.40,
                 pipSize: 0.01,
@@ -419,6 +439,7 @@
             },
             'BTCUSD': {
                 tvSymbol: 'BITSTAMP:BTCUSD',
+                tdSymbol: 'BTC/USD',
                 category: 'Crypto',
                 base: 68450,
                 pipSize: 0.01,
@@ -428,6 +449,7 @@
             },
             'ETHUSD': {
                 tvSymbol: 'BITSTAMP:ETHUSD',
+                tdSymbol: 'ETH/USD',
                 category: 'Crypto',
                 base: 2640,
                 pipSize: 0.01,
@@ -437,6 +459,7 @@
             },
             'XAUUSD': {
                 tvSymbol: 'OANDA:XAUUSD',
+                tdSymbol: 'XAU/USD',
                 category: 'Metals',
                 base: 2735.80,
                 pipSize: 0.01,
@@ -444,6 +467,7 @@
             },
             'XAGUSD': {
                 tvSymbol: 'OANDA:XAGUSD',
+                tdSymbol: 'XAG/USD',
                 category: 'Metals',
                 base: 33.70,
                 pipSize: 0.001,
@@ -451,6 +475,7 @@
             },
             'US30': {
                 tvSymbol: 'CURRENCYCOM:US30',
+                tdSymbol: 'DJI',
                 category: 'Indices',
                 base: 42110,
                 pipSize: 0.1,
@@ -458,6 +483,7 @@
             },
             'SPX500': {
                 tvSymbol: 'OANDA:SPX500USD',
+                tdSymbol: 'SPX',
                 category: 'Indices',
                 base: 5815,
                 pipSize: 0.1,
@@ -475,47 +501,21 @@
         };
 
         const SESSIONS = {
-            'Crypto': {
-                open247: true
-            },
-            'Forex': {
-                openUtc: [22, 0],
-                closeUtc: [22, 0],
-                openDay: 0,
-                closeDay: 5
-            },
-            'Commodities': {
-                openUtc: [22, 0],
-                closeUtc: [21, 0],
-                openDay: 0,
-                closeDay: 5
-            },
-            'Indices': {
-                openUtc: [22, 0],
-                closeUtc: [21, 0],
-                openDay: 0,
-                closeDay: 5
-            },
-            'Metals': {
-                openUtc: [23, 0],
-                closeUtc: [21, 0],
-                openDay: 0,
-                closeDay: 5
-            },
-            'Stocks': {
-                weekdays: true,
-                openMins: 13 * 60 + 30,
-                closeMins: 20 * 60
-            }
+            'Crypto': { open247: true },
+            'Forex': { openUtc: [22, 0], closeUtc: [22, 0], openDay: 0, closeDay: 5 },
+            'Commodities': { openUtc: [22, 0], closeUtc: [21, 0], openDay: 0, closeDay: 5 },
+            'Indices': { openUtc: [22, 0], closeUtc: [21, 0], openDay: 0, closeDay: 5 },
+            'Metals': { openUtc: [23, 0], closeUtc: [21, 0], openDay: 0, closeDay: 5 },
+            'Stocks': { weekdays: true, openMins: 13 * 60 + 30, closeMins: 20 * 60 }
         };
 
         let currentSymbol = 'USOIL';
         let currentCategory = 'Commodities';
-        let currentChartType = 'candles'; // candles | hollow-candles | heikin-ashi | line | bars | area
+        let currentChartType = 'candles';
         let isLiveAccount = false;
 
         const tickHistory = {};
-        const candles = {}; // per-symbol OHLC series for the fallback renderer
+        const candles = {};
         Object.keys(symbolsDatabase).forEach(s => {
             tickHistory[s] = [];
             candles[s] = [];
@@ -594,7 +594,6 @@
             updateCandle(sym, price);
         }
 
-        /* OHLC candle builder — aggregates ticks into CANDLE_MS candles */
         function updateCandle(sym, price) {
             const series = candles[sym];
             const now = Date.now();
@@ -616,16 +615,93 @@
             }
         }
 
+        /* ============================================================
+           TWELVE DATA — PRIMARY MARKET DATA PROVIDER
+           /quote costs 1 credit per symbol. Active symbol is polled
+           every TD_POLL_MS and watchlist symbols every TD_WATCH_MS.
+        ============================================================ */
+        let tdHealthy = false;
+        let tdFailures = 0;
+        const TD_MAX_FAILURES = 3;
+
+        function setFeedStatus(text) {
+            const el = document.getElementById('feedStatusText');
+            if (el) el.textContent = text;
+        }
+
+        async function fetchTdQuote(sym) {
+            const d = symbolsDatabase[sym];
+            const url = `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(d.tdSymbol)}&apikey=${TWELVE_DATA_API_KEY}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Twelve Data HTTP ' + res.status);
+            const j = await res.json();
+            if (j.status === 'error' || !j.close) throw new Error('Twelve Data: ' + (j.message || 'no data'));
+            return j;
+        }
+
+        async function refreshSymbolFromTd(sym) {
+            try {
+                const j = await fetchTdQuote(sym);
+                const d = symbolsDatabase[sym];
+                const price = +(+j.close).toFixed(decimals(sym));
+                if (price > 0) {
+                    const prev = priceOf(sym);
+                    d.price = price;
+                    d.tdLive = true;
+                    pushTick(sym, price);
+                    tdHealthy = true;
+                    tdFailures = 0;
+                    if (sym === currentSymbol) renderPrices(sym);
+                    updateTradesBadge();
+                    if (prev !== price && sym === currentSymbol) {
+                        setFeedStatus('Live Feed · Twelve Data · ' + d.tdSymbol);
+                    }
+                }
+            } catch (e) {
+                tdFailures++;
+                if (tdFailures >= TD_MAX_FAILURES && tdHealthy) {
+                    tdHealthy = false;
+                    setFeedStatus('Twelve Data unavailable — fallback feed active');
+                    showToast('Feed', 'Twelve Data unreachable — switched to fallback feed', 'error');
+                }
+            }
+        }
+
+        async function refreshActiveFromTd() {
+            await refreshSymbolFromTd(currentSymbol);
+        }
+
+        async function refreshWatchlistFromTd() {
+            const list = categorySymbols[currentCategory] || [];
+            for (const sym of list) {
+                if (sym === currentSymbol) continue;
+                await refreshSymbolFromTd(sym);
+            }
+        }
+
+        function startTdPolling() {
+            if (!TWELVE_DATA_API_KEY || TWELVE_DATA_API_KEY === 'YOUR_TWELVEDATA_API_KEY') {
+                setFeedStatus('No Twelve Data key — fallback feed active');
+                return;
+            }
+            refreshActiveFromTd();
+            refreshWatchlistFromTd();
+            setInterval(refreshActiveFromTd, TD_POLL_MS);
+            setInterval(refreshWatchlistFromTd, TD_WATCH_MS);
+        }
+
+        /* Binance websocket — secondary live feed for crypto (fallback,
+           and gap-filler between Twelve Data polls for crypto symbols) */
         let binanceWs = null;
 
         function connectCryptoFeed() {
             try {
                 binanceWs = new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt/aggTrade/ethusdt/aggTrade');
                 binanceWs.onopen = () => {
-                    document.getElementById('feedStatusText').textContent = 'Live Feed (Crypto: Binance · Others: Simulated)';
+                    if (!tdHealthy) setFeedStatus('Live Feed (Crypto: Binance · Others: Simulated)');
                 };
                 binanceWs.onerror = () => {
-                    document.getElementById('feedStatusText').textContent = 'Crypto feed error — simulated fallback';
+                    if (!tdHealthy) setFeedStatus('Crypto feed error — simulated fallback');
                 };
                 binanceWs.onmessage = (ev) => {
                     try {
@@ -633,8 +709,11 @@
                         const stream = msg.stream || '';
                         const sym = stream.startsWith('btcusdt') ? 'BTCUSD' : stream.startsWith('ethusdt') ? 'ETHUSD' : null;
                         if (!sym || !msg.data) return;
+                        // Skip if Twelve Data already provides this symbol live
+                        if (tdHealthy && symbolsDatabase[sym].tdLive) return;
                         const price = +(+msg.data.p).toFixed(decimals(sym));
                         symbolsDatabase[sym].price = price;
+                        symbolsDatabase[sym].tdLive = false;
                         pushTick(sym, price);
                         if (sym === currentSymbol) renderPrices(sym);
                         updateTradesBadge();
@@ -642,7 +721,6 @@
                 };
             } catch (e) {
                 console.error('Binance feed failed:', e);
-                document.getElementById('feedStatusText').textContent = 'Simulated Feed';
             }
         }
 
@@ -694,24 +772,12 @@
             const dow = now.getUTCDay();
             const mins = now.getUTCHours() * 60 + now.getUTCMinutes();
 
-            if (s.open247) return {
-                open: true,
-                label: 'Market open 24/7',
-                next: null
-            };
+            if (s.open247) return { open: true, label: 'Market open 24/7', next: null };
 
             if (s.weekdays) {
                 const open = dow >= 1 && dow <= 5 && mins >= s.openMins && mins < s.closeMins;
-                if (open) return {
-                    open: true,
-                    label: 'US Stock Exchange market open',
-                    next: null
-                };
-                return {
-                    open: false,
-                    label: 'US Stock Exchange market closed',
-                    next: nextStockOpenMs(now)
-                };
+                if (open) return { open: true, label: 'US Stock Exchange market open', next: null };
+                return { open: false, label: 'US Stock Exchange market closed', next: nextStockOpenMs(now) };
             }
 
             const om = toMins(s.openUtc[0], s.openUtc[1]);
@@ -797,6 +863,8 @@
             runAIAnalysis();
             const chart = document.getElementById('tvChart');
             if (chart) chart.setAttribute('symbol', symbolsDatabase[sym].tvSymbol);
+            // Immediately pull the new symbol from Twelve Data
+            if (TWELVE_DATA_API_KEY && TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
         }
 
         function renderPrices(sym) {
@@ -827,16 +895,18 @@
 
         function updateMarginEstimate() {
             const lot = parseFloat(document.getElementById('lotInput').value) || 0;
-            document.getElementById('marginEstimate').textContent = '$' + requiredMargin(currentSymbol, lot).toFixed(2);
+            document.getElementById('marginEstimate').textContent = '$' + formatUsd(requiredMargin(currentSymbol, lot));
         }
 
         /* ============================================================
            CHART — Web Component (candles default) + candle fallback
+           ZOOM LOCK: the TradingView widget iframe gets pointer-events
+           none (see CSS + sizeTradingViewChart) so wheel/pinch zoom and
+           pan are blocked — the chart stays at standard zoom. The
+           fallback canvas renders all candles with no zoom either.
         ============================================================ */
         let fallbackActive = false;
         let fallbackRaf = null;
-        let chartView = { candles: 48, pan: 0 };
-        let chartZoomBound = false;
 
         function changeTimeframe(tf) {
             const chart = document.getElementById('tvChart');
@@ -846,11 +916,10 @@
         function changeChartType(type) {
             currentChartType = type;
             const chart = document.getElementById('tvChart');
-            if (chart) chart.setAttribute('chart-type', type); // live update, no rebuild
+            if (chart) chart.setAttribute('chart-type', type);
             showToast('Chart', 'Chart view: ' + document.getElementById('chartTypeSelect').selectedOptions[0].text, 'info');
         }
 
-        /* Watchdog: if the Web Component fails to render, use canvas candles */
         setTimeout(() => {
             const chart = document.getElementById('tvChart');
             const appeared = chart && chart.shadowRoot && chart.shadowRoot.querySelector('*');
@@ -887,86 +956,21 @@
             chart.style.width = rect.width + 'px';
             chart.style.height = rect.height + 'px';
             const root = chart.shadowRoot;
-            if (!root) return;
-            if (!root.getElementById('tx-fit-chart')) {
-                const style = document.createElement('style');
-                style.id = 'tx-fit-chart';
-                style.textContent = ':host, iframe, .container, div { width:100% !important; height:100% !important; } iframe { border:0; }';
-                root.appendChild(style);
+            if (root) {
+                if (!root.getElementById('tx-fit-chart')) {
+                    const style = document.createElement('style');
+                    style.id = 'tx-fit-chart';
+                    style.textContent =
+                        ':host, iframe, .container, div { width:100% !important; height:100% !important; } ' +
+                        'iframe { border:0; pointer-events:none; }';
+                    root.appendChild(style);
+                }
+                root.querySelectorAll('iframe').forEach(frame => {
+                    frame.style.width = '100%';
+                    frame.style.height = '100%';
+                    frame.style.pointerEvents = 'none';
+                });
             }
-            root.querySelectorAll('iframe').forEach(frame => {
-                frame.style.width = '100%';
-                frame.style.height = '100%';
-            });
-        }
-
-        function bindFallbackChartZoom() {
-            if (chartZoomBound) return;
-            const canvas = document.getElementById('fallbackCanvas');
-            if (!canvas) return;
-            chartZoomBound = true;
-
-            const clampZoom = (n) => Math.max(8, Math.min(240, n));
-            const touchDist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-
-            canvas.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const factor = e.deltaY > 0 ? 1.12 : 0.88;
-                chartView.candles = clampZoom(chartView.candles * factor);
-                if (fallbackActive) drawFallbackChart();
-            }, { passive: false });
-
-            let drag = null;
-            let pinch = 0;
-
-            canvas.addEventListener('mousedown', (e) => {
-                drag = { x: e.clientX, pan: chartView.pan };
-                canvas.style.cursor = 'grabbing';
-            });
-            window.addEventListener('mousemove', (e) => {
-                if (!drag) return;
-                const slot = Math.max(4, canvas.getBoundingClientRect().width / Math.max(8, chartView.candles));
-                chartView.pan = Math.max(0, Math.round(drag.pan + (drag.x - e.clientX) / slot));
-                if (fallbackActive) drawFallbackChart();
-            });
-            window.addEventListener('mouseup', () => {
-                drag = null;
-                canvas.style.cursor = 'grab';
-            });
-
-            canvas.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    pinch = touchDist(e.touches[0], e.touches[1]);
-                    drag = null;
-                } else if (e.touches.length === 1) {
-                    drag = { x: e.touches[0].clientX, pan: chartView.pan };
-                    pinch = 0;
-                }
-            }, { passive: true });
-
-            canvas.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2) {
-                    e.preventDefault();
-                    const d = touchDist(e.touches[0], e.touches[1]);
-                    if (pinch) {
-                        chartView.candles = clampZoom(chartView.candles * (pinch / d));
-                    }
-                    pinch = d;
-                    if (fallbackActive) drawFallbackChart();
-                    return;
-                }
-                if (e.touches.length === 1 && drag) {
-                    e.preventDefault();
-                    const slot = Math.max(4, canvas.getBoundingClientRect().width / Math.max(8, chartView.candles));
-                    chartView.pan = Math.max(0, Math.round(drag.pan + (drag.x - e.touches[0].clientX) / slot));
-                    if (fallbackActive) drawFallbackChart();
-                }
-            }, { passive: false });
-
-            canvas.addEventListener('touchend', () => {
-                pinch = 0;
-                drag = null;
-            });
         }
 
         function fallbackDrawLoop() {
@@ -978,7 +982,6 @@
             draw();
         }
 
-        /* Heikin Ashi transform for the fallback renderer */
         function heikinAshi(series) {
             const out = [];
             series.forEach((c, i) => {
@@ -1023,24 +1026,12 @@
             const isBars = currentChartType === 'bars';
             const isArea = currentChartType === 'area';
 
-            const pad = {
-                t: 24,
-                r: 64,
-                b: 24,
-                l: 10
-            };
+            const pad = { t: 24, r: 64, b: 24, l: 10 };
             const w = rect.width - pad.l - pad.r;
             const h = rect.height - pad.t - pad.b;
 
-            // zoom/pan: visible candle count, pan is how many candles from the right edge
-            const minShow = 8;
-            const maxShow = Math.max(minShow, series.length);
-            const show = Math.max(minShow, Math.min(maxShow, Math.round(chartView.candles)));
-            const maxPan = Math.max(0, series.length - show);
-            chartView.pan = Math.max(0, Math.min(maxPan, chartView.pan));
-            const end = series.length - chartView.pan;
-            const start = Math.max(0, end - show);
-            const data = series.slice(start, end);
+            // Standard zoom: always show all available candles — no zoom/pan
+            const data = series.slice();
 
             let min = Infinity,
                 max = -Infinity;
@@ -1056,7 +1047,6 @@
             const range = max - min;
             const yFor = v => pad.t + h - ((v - min) / range) * h;
 
-            // grid
             ctx.strokeStyle = '#f1f5f9';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
@@ -1075,9 +1065,7 @@
                     const cx = pad.l + slot * i + slot / 2;
                     const up = c.close >= c.open;
                     const col = up ? '#10b981' : '#f43f5e';
-                    const lineCol = (currentChartType === 'hollow-candles' && up) ? col : col;
 
-                    // wick
                     ctx.strokeStyle = col;
                     ctx.lineWidth = 1.5;
                     ctx.beginPath();
@@ -1086,7 +1074,6 @@
                     ctx.stroke();
 
                     if (isBars) {
-                        // OHLC bars: open tick left, close tick right
                         const yo = yFor(c.open),
                             yc = yFor(c.close);
                         ctx.beginPath();
@@ -1096,7 +1083,6 @@
                         ctx.lineTo(cx + bodyW / 2, yc);
                         ctx.stroke();
                     } else {
-                        // body (hollow for up candles in hollow-candles mode)
                         const yTop = yFor(Math.max(c.open, c.close));
                         const yBot = yFor(Math.min(c.open, c.close));
                         const bodyH = Math.max(1, yBot - yTop);
@@ -1112,7 +1098,6 @@
                     }
                 });
 
-                // last price line + label
                 const lastC = data[data.length - 1];
                 const ly = yFor(lastC.close);
                 const up = lastC.close >= lastC.open;
@@ -1129,7 +1114,6 @@
                 ctx.textAlign = 'left';
                 ctx.fillText(lastC.close.toFixed(decimals(sym)), pad.l + w + 4, ly + 4);
             } else {
-                // line / area view from closes
                 const xStep = w / (data.length - 1);
                 const lineColor = data[data.length - 1].close >= data[0].open ? '#10b981' : '#f43f5e';
                 ctx.strokeStyle = lineColor;
@@ -1155,7 +1139,6 @@
                 ctx.fillText(last.toFixed(decimals(sym)), pad.l + (data.length - 1) * xStep + 6, yFor(last) + 4);
             }
 
-            // high/low labels
             ctx.fillStyle = '#94a3b8';
             ctx.font = '10px Inter, sans-serif';
             ctx.textAlign = 'left';
@@ -1223,7 +1206,7 @@
             const freeMargin = activeBalance() - openMarginUsed();
             if (margin > freeMargin) {
                 document.getElementById('depositModalText').textContent =
-                    `Required margin $${margin.toFixed(2)} exceeds free margin $${Math.max(0, freeMargin).toFixed(2)}. Please deposit funds.`;
+                    `Required margin $${formatUsd(margin)} exceeds free margin $${formatUsd(Math.max(0, freeMargin))}. Please deposit funds.`;
                 document.getElementById('depositModal').classList.remove('hidden');
                 return;
             }
@@ -1280,10 +1263,10 @@
             const pl = (closePrice - p.entry) * dir * p.lot * d.contractSize;
             setActiveBalance(activeBalance() + pl);
             showToast(reason || 'Position Closed',
-                `${p.type} ${p.symbol} closed @ ${closePrice.toFixed(decimals(p.symbol))} — P/L ${pl >= 0 ? '+' : '-'}$${Math.abs(pl).toFixed(2)}`,
+                `${p.type} ${p.symbol} closed @ ${closePrice.toFixed(decimals(p.symbol))} — P/L ${pl >= 0 ? '+' : '-'}$${formatUsd(Math.abs(pl))}`,
                 pl >= 0 ? 'success' : 'error');
             const history = store.get('qora_history', []);
-            history.push({...p,
+            history.push({ ...p,
                 closePrice,
                 pl,
                 reason,
@@ -1311,7 +1294,7 @@
             const total = positions.filter(p => p.account === key)
                 .reduce((s, p) => s + positionPL(p), 0);
             const badge = document.getElementById('tradesProfitBadge');
-            badge.textContent = (total >= 0 ? '+ $' : '- $') + Math.abs(total).toFixed(2);
+            badge.textContent = (total >= 0 ? '+ $' : '- $') + formatUsd(Math.abs(total));
             badge.className = `absolute -top-2 text-[9px] font-bold px-1.5 py-0.2 rounded-full border shadow-2xs ${total >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`;
         }
 
@@ -1354,7 +1337,7 @@
             account.demoBalance = 10000.00;
             saveAccount();
             renderAccountBadge();
-            showToast('Demo Account', 'Demo balance reset to $10,000.00', 'success');
+            showToast('Demo Account', `Demo balance reset to $${formatUsd(account.demoBalance)}`, 'success');
         }
 
         function closeDepositModal() {
@@ -1374,7 +1357,7 @@
             const metaEl = document.getElementById('aiSuggestionMeta');
 
             if (hist.length < 10) {
-                textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym}:</strong> Collecting tick data…`;
+                textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym}:</strong> Collecting market data…`;
                 confEl.textContent = '—';
                 confEl.className = 'font-bold text-slate-400';
                 metaEl.innerHTML = '';
@@ -1398,7 +1381,7 @@
             textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym} (${document.getElementById('timeframeSelect').selectedOptions[0].text}):</strong> ` +
                 (Math.abs(momentum) < 0.0005 ?
                     'Price is consolidating in a tight range — no directional edge detected.' :
-                    `${bullish ? 'Steady upward bullish momentum' : 'Downward bearish momentum'} detected across the recent tick sample.`);
+                    `${bullish ? 'Steady upward bullish momentum' : 'Downward bearish momentum'} detected across the recent price sample.`);
 
             const q = quoteSymbol(sym);
             const type = bullish ? 'BUY' : 'SELL';
@@ -1427,7 +1410,7 @@
 
         function applyAISuggestion() {
             if (!aiSuggestion) {
-                showToast('Qora AI', 'Not enough tick data yet — wait a few seconds.', 'error');
+                showToast('Qora AI', 'Not enough market data yet — wait a few seconds.', 'error');
                 return;
             }
             document.getElementById('aiModal').classList.add('hidden');
@@ -1483,23 +1466,28 @@
         window.onload = function() {
             isLiveAccount = !!account.isLive;
             renderAccountBadge();
-            bindFallbackChartZoom();
             sizeTradingViewChart();
             window.addEventListener('resize', sizeTradingViewChart);
-            setInterval(sizeTradingViewChart, 1500);
+            setInterval(sizeTradingViewChart, 1500); // re-applies the zoom lock on the widget iframe
 
             selectCategory('Commodities');
             connectCryptoFeed();
+            startTdPolling(); // Twelve Data primary feed
 
+            // Simulated ticks fill gaps only while Twelve Data is NOT healthy
             setInterval(() => {
+                if (tdHealthy) return;
                 Object.keys(symbolsDatabase).forEach(sym => {
-                    if (!symbolsDatabase[sym].feed) simTick(sym);
+                    const d = symbolsDatabase[sym];
+                    if (d.feed) return; // crypto keeps its Binance fallback feed
+                    simTick(sym);
                 });
                 if (Math.random() < 0.25) renderSubSymbols();
             }, SIM_TICK_MS);
 
             setInterval(updateMarketCountdown, 1000);
             setInterval(runAIAnalysis, AI_REFRESH_MS);
+            setInterval(renderSubSymbols, TD_POLL_MS);
             updateMarketCountdown();
         };
     </script>
