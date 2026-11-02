@@ -9,14 +9,14 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
         // Initialize EmailJS with Public Key
         (function() {
-            emailjs.init("z-u0EEe3-RtZKP6cJ");
+            emailjs.init("qI3WHVzvggbLvVgGX");
         })();
 
         tailwind.config = {
@@ -47,11 +47,11 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        
+
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
-        
+
         .hide-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -246,151 +246,197 @@
     </main>
 
     <!-- LOGIN MODAL -->
-    <div id="login-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-        <div class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl transition-all">
-            <div class="flex items-center justify-between pb-2">
-                <div>
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
-                    <h3 class="text-xl font-extrabold text-slate-900">Login</h3>
-                </div>
-                <button onclick="closeModal('login-modal')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
-            </div>
+    <div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl transition-all">
+            <!-- Top Accent Bar -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-brand-red via-rose-500 to-amber-400"></div>
 
-            <form id="login-form" class="mt-4 space-y-3 text-left">
-                <div id="login-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200"></div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                    <input id="login-email" type="email" required placeholder="enter your email" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+            <div class="p-8 sm:p-10">
+                <div class="flex items-center justify-between pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 shadow-md">
+                            <span class="text-sm font-black text-amber-400">TX</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
+                            <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Welcome Back</h3>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('login-modal')" class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600 text-lg font-bold">✕</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
-                    <input id="login-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                <p class="text-xs text-slate-500">Login to access your trading dashboard and AI assistant.</p>
+
+                <form id="login-form" class="mt-6 space-y-4 text-left">
+                    <div id="login-error" class="hidden text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-200"></div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
+                        <input id="login-email" type="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
+                        <input id="login-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-1">
+                        <label class="flex items-center gap-2 font-medium text-slate-600 cursor-pointer">
+                            <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-brand-red focus:ring-brand-red" />
+                            Remember Me
+                        </label>
+                        <a href="More/index.html" class="font-semibold text-brand-red hover:underline">Forgot Password?</a>
+                    </div>
+                    <button type="submit" id="login-btn" class="w-full rounded-xl bg-brand-red py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/25 hover:bg-brand-red-hover hover:shadow-brand-red/40 active:scale-[0.98] transition mt-2">
+                        Login to Dashboard
+                    </button>
+                </form>
+
+                <div class="my-6 flex items-center gap-3">
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">or</span>
+                    <div class="h-px flex-1 bg-slate-200"></div>
                 </div>
-                <div class="flex items-center justify-between text-xs pt-1">
-                    <label class="flex items-center gap-1.5 font-medium text-slate-600">
-                        <input type="checkbox" class="rounded border-slate-300 text-brand-red focus:ring-brand-red" />
-                        Remember Me
-                    </label>
-                    <a href="More/index.html" class="font-semibold text-brand-red hover:underline">Forgot Password</a>
-                </div>
-                <button type="submit" id="login-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-2">
-                    Login
-                </button>
-            </form>
-            <p class="mt-4 text-center text-xs text-slate-500">
-                New to Tradexora? <button onclick="switchModal('login-modal', 'register-modal')" class="font-semibold text-brand-red hover:underline">Create Account</button>
-            </p>
+
+                <p class="text-center text-xs text-slate-500">
+                    New to Tradexora? <button onclick="switchModal('login-modal', 'register-modal')" class="font-bold text-brand-red hover:underline">Create a free account</button>
+                </p>
+            </div>
         </div>
     </div>
 
     <!-- REGISTER MODAL -->
-    <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-        <div class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl transition-all">
-            <div class="flex items-center justify-between pb-2">
-                <div>
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
-                    <h3 class="text-xl font-extrabold text-slate-900">Create Account</h3>
-                </div>
-                <button onclick="closeModal('register-modal')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
-            </div>
+    <div id="register-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto hide-scrollbar rounded-3xl bg-white shadow-2xl transition-all">
+            <!-- Top Accent Bar -->
+            <div class="sticky top-0 z-10 h-1.5 w-full bg-gradient-to-r from-brand-red via-rose-500 to-amber-400"></div>
 
-            <form id="register-form" class="mt-3 space-y-2.5 text-left">
-                <div id="register-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200 font-mono break-words"></div>
-                <div id="register-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
-                    <input id="reg-fullname" type="text" required placeholder="John Doe" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+            <div class="p-8 sm:p-10">
+                <div class="flex items-center justify-between pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 shadow-md">
+                            <span class="text-sm font-black text-amber-400">TX</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
+                            <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Create Account</h3>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('register-modal')" class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600 text-lg font-bold">✕</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                    <input id="reg-email" type="email" required placeholder="name@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
+                <p class="text-xs text-slate-500">Join thousands of traders. Free demo account included.</p>
+
+                <form id="register-form" class="mt-6 space-y-4 text-left">
+                    <div id="register-error" class="hidden text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 font-mono break-words"></div>
+                    <div id="register-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-200"></div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Full Name</label>
+                        <input id="reg-fullname" type="text" required placeholder="John Doe" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
+                        <input id="reg-email" type="email" required placeholder="name@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Country</label>
+                        <select id="reg-country" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition">
+                            <option selected>United States</option>
+                            <option>United Kingdom</option>
+                            <option>Canada</option>
+                            <option>Australia</option>
+                            <option>Kenya</option>
+                            <option>France</option>
+                            <option>Spain</option>
+                            <option>Italy</option>
+                            <option>Netherlands</option>
+                            <option>Belgium</option>
+                            <option>Sweden</option>
+                            <option>Norway</option>
+                            <option>Denmark</option>
+                            <option>Finland</option>
+                            <option>Switzerland</option>
+                            <option>Austria</option>
+                            <option>New Zealand</option>
+                            <option>Japan</option>
+                            <option>South Korea</option>
+                            <option>Singapore</option>
+                            <option>Hong Kong</option>
+                            <option>India</option>
+                            <option>Brazil</option>
+                            <option>Mexico</option>
+                            <option>Argentina</option>
+                            <option>Tanzania</option>
+                            <option>Uganda</option>
+                            <option>South Africa</option>
+                            <option>Nigeria</option>
+                            <option>Egypt</option>
+                            <option>United Arab Emirates</option>
+                            <option>Saudi Arabia</option>
+                            <option>Qatar</option>
+                            <option>Israel</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
+                        <input id="reg-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Confirm Password</label>
+                        <input id="reg-confirm-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red focus:bg-white transition" />
+                    </div>
+                    <button type="submit" id="reg-btn" class="w-full rounded-xl bg-brand-red py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-red/25 hover:bg-brand-red-hover hover:shadow-brand-red/40 active:scale-[0.98] transition mt-3">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="my-6 flex items-center gap-3">
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">or</span>
+                    <div class="h-px flex-1 bg-slate-200"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Country</label>
-                    <select id="reg-country" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20">
-                        <option selected>United States</option>
-                        <option>United Kingdom</option>
-                        <option>Canada</option>
-                        <option>Australia</option>
-                        <option>Kenya</option>
-                        <option>France</option>
-                        <option>Spain</option>
-                        <option>Italy</option>
-                        <option>Netherlands</option>
-                        <option>Belgium</option>
-                        <option>Sweden</option>
-                        <option>Norway</option>
-                        <option>Denmark</option>
-                        <option>Finland</option>
-                        <option>Switzerland</option>
-                        <option>Austria</option>
-                        <option>New Zealand</option>
-                        <option>Japan</option>
-                        <option>South Korea</option>
-                        <option>Singapore</option>
-                        <option>Hong Kong</option>
-                        <option>India</option>
-                        <option>Brazil</option>
-                        <option>Mexico</option>
-                        <option>Argentina</option>
-                        <option>Tanzania</option>
-                        <option>Uganda</option>
-                        <option>South Africa</option>
-                        <option>Nigeria</option>
-                        <option>Egypt</option>
-                        <option>United Arab Emirates</option>
-                        <option>Saudi Arabia</option>
-                        <option>Qatar</option>
-                        <option>Israel</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
-                    <input id="reg-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Confirm Password</label>
-                    <input id="reg-confirm-password" type="password" required placeholder="••••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                </div>
-                <button type="submit" id="reg-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-3">
-                    Create Account
-                </button>
-            </form>
-            <p class="mt-3 text-center text-xs text-slate-500">
-                Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="font-semibold text-brand-red hover:underline">Login</button>
-            </p>
+
+                <p class="text-center text-xs text-slate-500">
+                    Already have an account? <button onclick="switchModal('register-modal', 'login-modal')" class="font-bold text-brand-red hover:underline">Login instead</button>
+                </p>
+            </div>
         </div>
     </div>
 
     <!-- EMAIL VERIFICATION OTP MODAL -->
-    <div id="verify-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-        <div class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl transition-all">
-            <div class="flex items-center justify-between pb-2">
-                <div>
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
-                    <h3 class="text-xl font-extrabold text-slate-900">Verify Email</h3>
+    <div id="verify-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl transition-all">
+            <!-- Top Accent Bar -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500"></div>
+
+            <div class="p-8 sm:p-10">
+                <div class="flex items-center justify-between pb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 ring-4 ring-emerald-100">
+                            <span class="text-xl">✉️</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">TRADEXORA TRADING</span>
+                            <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Verify Email</h3>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('verify-modal')" class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600 text-lg font-bold">✕</button>
                 </div>
-                <button onclick="closeModal('verify-modal')" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+
+                <p class="text-xs leading-relaxed text-slate-600 mt-2">
+                    We sent a 6-digit verification code to <strong id="verify-email-target" class="text-slate-900"></strong>. Check your inbox or spam folder, then enter it below.
+                </p>
+
+                <form id="verify-form" class="mt-6 space-y-4 text-left">
+                    <div id="verify-error" class="hidden text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 font-mono break-words"></div>
+                    <div id="verify-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-200"></div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Verification Code</label>
+                        <input id="verify-otp-input" type="text" maxlength="6" required placeholder="••••••" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-center text-2xl font-mono font-bold tracking-[0.5em] text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 focus:bg-white transition" />
+                    </div>
+
+                    <button type="submit" id="verify-btn" class="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 hover:shadow-emerald-600/40 active:scale-[0.98] transition mt-2">
+                        Verify Code
+                    </button>
+                </form>
             </div>
-
-            <p class="text-xs text-slate-600 mt-2">
-                We sent a 6-digit verification code to <strong id="verify-email-target" class="text-slate-800"></strong>.Check email inbox or spasm folder Please enter it below.
-            </p>
-
-            <form id="verify-form" class="mt-4 space-y-3 text-left">
-                <div id="verify-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200 font-mono break-words"></div>
-                <div id="verify-success" class="hidden text-xs text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200"></div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Verification Code</label>
-                    <input id="verify-otp-input" type="text" maxlength="6" required placeholder="000000" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-center text-lg font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-red/20" />
-                </div>
-
-                <button type="submit" id="verify-btn" class="w-full rounded-xl bg-brand-red py-2.5 text-xs font-bold text-white shadow-md hover:bg-brand-red-hover transition mt-2">
-                    Verify Code
-                </button>
-            </form>
         </div>
     </div>
 
@@ -398,21 +444,25 @@
     <script>
         const USERS_KEY = 'registeredUsers';
         const CURRENT_USER_KEY = 'currentUser';
-        
+
         // EMAILJS CONFIGURATION
-        const EMAILJS_SERVICE_ID = "service_17tzvj7";
-        const EMAILJS_TEMPLATE_ID = "template_hkvbru3";
-        const EMAILJS_PUBLIC_KEY = "z-u0EEe3-RtZKP6cJ";
+        const EMAILJS_SERVICE_ID = "service_mfx9ion";
+        const EMAILJS_TEMPLATE_ID = "template_40vu8di";
+        const EMAILJS_PUBLIC_KEY = "qI3WHVzvggbLvVgGX";
 
         let pendingUserData = null; // Stores pending registration data while waiting for OTP verification
 
         // Modal Controls
         function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            el.classList.add('flex');
         }
 
         function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
+            const el = document.getElementById(id);
+            el.classList.add('hidden');
+            el.classList.remove('flex');
         }
 
         function switchModal(fromId, toId) {
@@ -540,7 +590,7 @@
                     regBtn.textContent = "Create Account";
 
                     const details = error && error.text ? error.text : JSON.stringify(error);
-                    errBox.textContent = "EmailJS Error (422): " + details + " — Please ensure 'To Email' in EmailJS Dashboard is set to {{to_email}}.";
+                    errBox.textContent = "EmailJS Error: " + details + " — Please ensure 'To Email' in EmailJS Dashboard is set to {{to_email}}.";
                     errBox.classList.remove('hidden');
                 });
         }
@@ -625,11 +675,11 @@
             window.location.href = "Dashboard/index.html";
         }
 
-        // Logout Handler
+        // Logout Handler - clears session and immediately returns to index.html
         function handleLogout() {
             localStorage.removeItem(CURRENT_USER_KEY);
             updateAuthState();
-            window.location.reload();
+            window.location.href = "index.html";
         }
 
         // Initialize event listeners on DOMContentLoaded
