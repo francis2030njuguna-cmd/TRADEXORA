@@ -11,8 +11,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- TradingView Web Component loader (Advanced Chart) -->
-    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-advanced-chart.js" crossorigin=""></script>
+    <!-- TradingView Lightweight Charts — multi-CDN fallback loader -->
+    <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+    <script>
+        // Fallback: if unpkg failed, load from jsdelivr
+        if (typeof LightweightCharts === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"><\/script>');
+        }
+    </script>
     <script>
         tailwind.config = {
             theme: {
@@ -112,36 +118,10 @@
             animation: fadeIn .2s ease-out;
         }
 
-        tv-advanced-chart {
-            display: block;
+        #lwc_chart_container {
             width: 100%;
             height: 100%;
-        }
-
-        #tv_chart_container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            touch-action: none;
-        }
-
-        #fallbackCanvas {
-            touch-action: none;
-            cursor: grab;
-        }
-
-        /* TF popover is appended to <body> with fixed positioning,
-           so no parent overflow can ever clip it. */
-        #tfDropdownMenu {
-            position: fixed;
-            z-index: 60;
-        }
-
-        /* ZOOM LOCK: block all pointer interaction (wheel / pinch / click zoom)
-           inside the TradingView widget iframe. Chart becomes display-only. */
-        tv-advanced-chart iframe {
-            pointer-events: none !important;
+            min-height: 300px;
         }
     </style>
 </head>
@@ -212,12 +192,10 @@
 
         <!-- 3. MAIN CHART PANEL -->
         <main class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative">
-            <!-- NOTE: no overflow-x-auto here — it clipped the TF popover. flex-wrap instead. -->
             <div class="p-2 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs bg-slate-50/50">
                 <div class="flex items-center gap-2 flex-wrap">
                     <!-- TF Two-Column Dropdown -->
                     <div class="relative" id="tfDropdownRoot">
-                        <!-- Trigger Button: displays current timeframe (e.g. TF 15m) -->
                         <button id="tfTriggerBtn" onclick="event.stopPropagation(); toggleTfDropdown();" class="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-md shadow-2xs text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
                             <span class="text-slate-500 font-medium">TF</span>
                             <span id="tfSelectedLabel">15m</span>
@@ -227,12 +205,12 @@
                     <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs">
                         <i class="fa-solid fa-chart-candlestick text-slate-500 text-xs"></i>
                         <select id="chartTypeSelect" onchange="changeChartType(this.value)" class="bg-transparent font-semibold text-slate-800 text-xs focus:outline-none cursor-pointer">
-                            <option value="candles" selected>Chart Candles</option>
+                            <option value="candles" selected>Candles</option>
                             <option value="hollow-candles">Hollow Candles</option>
                             <option value="heikin-ashi">Heikin Ashi</option>
-                            <option value="line">Line Chart</option>
-                            <option value="bars">OHLC Bars</option>
-                            <option value="area">Area View</option>
+                            <option value="line">Line</option>
+                            <option value="area">Area</option>
+                            <option value="bars">Bars</option>
                         </select>
                     </div>
                     <button onclick="showToast('Indicators', 'Technical Indicators panel loaded', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Indicators">
@@ -241,6 +219,12 @@
                     <button onclick="showToast('Drawing', 'Drawing tools activated', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
                         <i class="fa-solid fa-pencil text-xs"></i>
                     </button>
+                    <!-- Live symbol + price readout -->
+                    <div class="flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-md shadow-2xs">
+                        <span id="chartSymbolLabel" class="font-bold text-slate-900">USOIL</span>
+                        <span id="chartLastPrice" class="font-bold text-slate-600">—</span>
+                        <span id="candleCountdown" class="font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">—</span>
+                    </div>
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -256,16 +240,9 @@
                 </div>
             </div>
 
-            <!-- 5. CHART AREA -->
-            <div class="relative w-full h-[300px] md:h-[340px] my-1 bg-white overflow-hidden">
-                <div id="tv_chart_container" class="w-full h-full">
-                    <tv-advanced-chart id="tvChart" symbol="TVC:USOIL" interval="15" timezone="Etc/UTC" theme="light" chart-type="candles" locale="en" autosize allow-symbol-change hide-volume hide-side-toolbar>
-                    </tv-advanced-chart>
-                </div>
-                <canvas id="fallbackCanvas" class="hidden absolute inset-0 w-full h-full bg-white z-0"></canvas>
-                <div id="chartFallbackNotice" class="hidden absolute top-2 left-2 z-10 px-2 py-1 text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 rounded">
-                    TradingView unavailable — showing live tick candles
-                </div>
+            <!-- 5. CHART AREA — TradingView Lightweight Charts -->
+            <div class="relative w-full h-[340px] md:h-[400px] my-1 bg-white overflow-hidden">
+                <div id="lwc_chart_container"></div>
 
                 <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
                     <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
@@ -373,148 +350,61 @@
         const SPREAD_PCT = 0.0002;
         const LEVERAGE = 100;
         const SIM_TICK_MS = 800;
-        const CANDLE_MS = 5000;
         const AI_REFRESH_MS = 5000;
-        const TICK_HISTORY_MAX = 90;
-        const CANDLE_MAX = 60;
+        const TICK_HISTORY_MAX = 600;
+        const HISTORY_BARS = 300; // synthetic bars generated per timeframe
 
         /* ============================================================
            TIMEFRAME DROPDOWN DATA (two-column: category → interval)
-           label = UI text, tv = TradingView interval attribute
         ============================================================ */
         const timeframeData = {
             Minutes: [
-                { label: '1m', tv: '1' }, { label: '2m', tv: '2' }, { label: '3m', tv: '3' },
-                { label: '5m', tv: '5' }, { label: '10m', tv: '10' }, { label: '15m', tv: '15' },
-                { label: '30m', tv: '30' }, { label: '45m', tv: '45' }
+                { label: '1m', tv: '1', sec: 60 }, { label: '2m', tv: '2', sec: 120 },
+                { label: '3m', tv: '3', sec: 180 }, { label: '5m', tv: '5', sec: 300 },
+                { label: '10m', tv: '10', sec: 600 }, { label: '15m', tv: '15', sec: 900 },
+                { label: '30m', tv: '30', sec: 1800 }, { label: '45m', tv: '45', sec: 2700 }
             ],
             Hours: [
-                { label: '1h', tv: '60' }, { label: '2h', tv: '120' },
-                { label: '3h', tv: '180' }, { label: '4h', tv: '240' }
+                { label: '1h', tv: '60', sec: 3600 }, { label: '2h', tv: '120', sec: 7200 },
+                { label: '3h', tv: '180', sec: 10800 }, { label: '4h', tv: '240', sec: 14400 }
             ],
             Days: [
-                { label: '1D', tv: '1D' }, { label: '3D', tv: '3D' }
+                { label: '1D', tv: '1D', sec: 86400 }, { label: '3D', tv: '3D', sec: 259200 }
             ],
             Weeks: [
-                { label: '1W', tv: '1W' }
+                { label: '1W', tv: '1W', sec: 604800 }
             ],
             Months: [
-                { label: '1M', tv: '1M' }
+                { label: '1M', tv: '1M', sec: 2592000 }
             ]
         };
 
         let tfSelectedCategory = 'Minutes';
         let tfSelectedTf = '15m';
+        let tfSeconds = 900;
+
+        function tfSecondsOf(label) {
+            for (const cat of Object.keys(timeframeData)) {
+                const hit = timeframeData[cat].find(i => i.label === label);
+                if (hit) return hit.sec;
+            }
+            return 900;
+        }
 
         const symbolsDatabase = {
-            'USOIL': {
-                tvSymbol: 'TVC:USOIL',
-                tdSymbol: 'WTI/USD',
-                category: 'Commodities',
-                base: 103.27,
-                pipSize: 0.01,
-                contractSize: 1000
-            },
-            'NATGAS': {
-                tvSymbol: 'NYMEX:NG1!',
-                tdSymbol: 'NG/USD',
-                category: 'Commodities',
-                base: 3.05,
-                pipSize: 0.001,
-                contractSize: 10000
-            },
-            'EURUSD': {
-                tvSymbol: 'FX:EURUSD',
-                tdSymbol: 'EUR/USD',
-                category: 'Forex',
-                base: 1.0845,
-                pipSize: 0.0001,
-                contractSize: 100000
-            },
-            'GBPUSD': {
-                tvSymbol: 'FX:GBPUSD',
-                tdSymbol: 'GBP/USD',
-                category: 'Forex',
-                base: 1.2910,
-                pipSize: 0.0001,
-                contractSize: 100000
-            },
-            'USDJPY': {
-                tvSymbol: 'FX:USDJPY',
-                tdSymbol: 'USD/JPY',
-                category: 'Forex',
-                base: 154.20,
-                pipSize: 0.01,
-                contractSize: 100000
-            },
-            'AAPL': {
-                tvSymbol: 'NASDAQ:AAPL',
-                tdSymbol: 'AAPL',
-                category: 'Stocks',
-                base: 232.50,
-                pipSize: 0.01,
-                contractSize: 1
-            },
-            'NVDA': {
-                tvSymbol: 'NASDAQ:NVDA',
-                tdSymbol: 'NVDA',
-                category: 'Stocks',
-                base: 138.25,
-                pipSize: 0.01,
-                contractSize: 1
-            },
-            'BTCUSD': {
-                tvSymbol: 'BINANCE:BTCUSDT',
-                tdSymbol: 'BTC/USD',
-                category: 'Crypto',
-                base: 68450,
-                pipSize: 0.01,
-                contractSize: 1,
-                binance: 'btcusdt',
-                feed: 'live'
-            },
-            'ETHUSD': {
-                tvSymbol: 'BINANCE:ETHUSDT',
-                tdSymbol: 'ETH/USD',
-                category: 'Crypto',
-                base: 2640,
-                pipSize: 0.01,
-                contractSize: 1,
-                binance: 'ethusdt',
-                feed: 'live'
-            },
-            'XAUUSD': {
-                tvSymbol: 'OANDA:XAUUSD',
-                tdSymbol: 'XAU/USD',
-                category: 'Metals',
-                base: 2735.80,
-                pipSize: 0.01,
-                contractSize: 100
-            },
-            'XAGUSD': {
-                tvSymbol: 'OANDA:XAGUSD',
-                tdSymbol: 'XAG/USD',
-                category: 'Metals',
-                base: 33.70,
-                pipSize: 0.001,
-                contractSize: 5000
-            },
-            'US30': {
-                tvSymbol: 'CURRENCYCOM:US30',
-                tdSymbol: 'DJI',
-                category: 'Indices',
-                base: 42110,
-                pipSize: 0.1,
-                contractSize: 1
-            },
-            'NAS100': {
-                tvSymbol: 'NASDAQ:NDX',
-                tdSymbol: 'IXIC',
-                category: 'Indices',
-                base: 20250,
-                pipSize: 0.1,
-                contractSize: 1
-            }
+            'USOIL': { tdSymbol: 'WTI/USD', category: 'Commodities', base: 103.27, pipSize: 0.01, contractSize: 1000 },
+            'NATGAS': { tdSymbol: 'NG/USD', category: 'Commodities', base: 3.05, pipSize: 0.001, contractSize: 10000 },
+            'EURUSD': { tdSymbol: 'EUR/USD', category: 'Forex', base: 1.0845, pipSize: 0.0001, contractSize: 100000 },
+            'GBPUSD': { tdSymbol: 'GBP/USD', category: 'Forex', base: 1.2910, pipSize: 0.0001, contractSize: 100000 },
+            'USDJPY': { tdSymbol: 'USD/JPY', category: 'Forex', base: 154.20, pipSize: 0.01, contractSize: 100000 },
+            'AAPL': { tdSymbol: 'AAPL', category: 'Stocks', base: 232.50, pipSize: 0.01, contractSize: 1 },
+            'NVDA': { tdSymbol: 'NVDA', category: 'Stocks', base: 138.25, pipSize: 0.01, contractSize: 1 },
+            'BTCUSD': { tdSymbol: 'BTC/USD', category: 'Crypto', base: 68450, pipSize: 0.01, contractSize: 1, binance: 'btcusdt', feed: 'live' },
+            'ETHUSD': { tdSymbol: 'ETH/USD', category: 'Crypto', base: 2640, pipSize: 0.01, contractSize: 1, binance: 'ethusdt', feed: 'live' },
+            'XAUUSD': { tdSymbol: 'XAU/USD', category: 'Metals', base: 2735.80, pipSize: 0.01, contractSize: 100 },
+            'XAGUSD': { tdSymbol: 'XAG/USD', category: 'Metals', base: 33.70, pipSize: 0.001, contractSize: 5000 },
+            'US30': { tdSymbol: 'DJI', category: 'Indices', base: 42110, pipSize: 0.1, contractSize: 1 },
+            'NAS100': { tdSymbol: 'IXIC', category: 'Indices', base: 20250, pipSize: 0.1, contractSize: 1 }
         };
 
         const categorySymbols = {
@@ -539,27 +429,6 @@
         let currentCategory = 'Commodities';
         let currentChartType = 'candles';
         let isLiveAccount = false;
-
-        const tickHistory = {};
-        const candles = {};
-        Object.keys(symbolsDatabase).forEach(s => {
-            tickHistory[s] = [];
-            candles[s] = [];
-            // Seed initial dummy candles so chart is populated immediately
-            let basePrice = symbolsDatabase[s].base;
-            let now = Date.now();
-            for (let i = 25; i >= 0; i--) {
-                let t = now - i * CANDLE_MS;
-                let delta = (Math.random() - 0.49) * (basePrice * 0.001);
-                let op = basePrice + delta;
-                let cl = op + (Math.random() - 0.49) * (basePrice * 0.001);
-                let hi = Math.max(op, cl) + Math.random() * (basePrice * 0.0005);
-                let lo = Math.min(op, cl) - Math.random() * (basePrice * 0.0005);
-                candles[s].push({ time: t, open: op, high: hi, low: lo, close: cl });
-                basePrice = cl;
-            }
-            symbolsDatabase[s].price = basePrice;
-        });
 
         /* ============================================================
            PERSISTENCE
@@ -596,13 +465,8 @@
             });
         }
 
-        function saveAccount() {
-            store.set('qora_account', account);
-        }
-
-        function savePositions() {
-            store.set('qora_positions', positions);
-        }
+        function saveAccount() { store.set('qora_account', account); }
+        function savePositions() { store.set('qora_positions', positions); }
 
         /* ============================================================
            QUOTES
@@ -627,32 +491,129 @@
             };
         }
 
+        /* ============================================================
+           TICK HISTORY — source of truth for live bars
+        ============================================================ */
+        const tickHistory = {};
+        Object.keys(symbolsDatabase).forEach(s => {
+            tickHistory[s] = [];
+            let base = symbolsDatabase[s].base;
+            const now = Date.now();
+            for (let i = TICK_HISTORY_MAX; i >= 0; i--) {
+                const vol = base * 0.0006;
+                base += (Math.random() * 2 - 1) * vol;
+                tickHistory[s].push({ t: now - i * 1000, p: +base.toFixed(decimals(s)) });
+            }
+            symbolsDatabase[s].price = base;
+        });
+
         function pushTick(sym, price) {
             const h = tickHistory[sym];
-            h.push(price);
+            h.push({ t: Date.now(), p: price });
             if (h.length > TICK_HISTORY_MAX) h.shift();
-            updateCandle(sym, price);
+            if (sym === currentSymbol) updateLiveCandle(price);
         }
 
-        function updateCandle(sym, price) {
-            const series = candles[sym];
-            const now = Date.now();
-            const bucket = Math.floor(now / CANDLE_MS) * CANDLE_MS;
-            const last = series[series.length - 1];
-            if (!last || last.time !== bucket) {
-                series.push({
-                    time: bucket,
-                    open: price,
-                    high: price,
-                    low: price,
-                    close: price
+        /* ============================================================
+           BAR ENGINE — synthetic history + live tick merging
+        ============================================================ */
+        // barsCache[symbol][barSeconds] = array of {time, open, high, low, close}
+        const barsCache = {};
+
+        /* Generate deterministic-looking synthetic OHLC history ending at
+           the current price so the chart always has deep, realistic bars. */
+        function generateHistory(sym, barSec, count) {
+            const d = symbolsDatabase[sym];
+            const dec = decimals(sym);
+            const endPrice = priceOf(sym);
+            const vol = d.base * 0.0025 * Math.sqrt(barSec / 60);
+
+            // Random walk backwards from current price, then reverse
+            const closes = [];
+            let p = endPrice;
+            for (let i = 0; i < count; i++) {
+                closes.push(+p.toFixed(dec));
+                p = p - (Math.random() * 2 - 1) * vol;
+            }
+            closes.reverse();
+
+            const nowBucketSec = Math.floor(Date.now() / (barSec * 1000)) * (barSec * 1000) / 1000;
+            const bars = [];
+            for (let i = 0; i < count; i++) {
+                const c = closes[i];
+                const o = i === 0 ? c + (Math.random() * 2 - 1) * vol * 0.4 : closes[i - 1];
+                const hi = Math.max(o, c) + Math.random() * vol * 0.5;
+                const lo = Math.min(o, c) - Math.random() * vol * 0.5;
+                bars.push({
+                    time: nowBucketSec - (count - 1 - i) * barSec,
+                    open: +o.toFixed(dec),
+                    high: +hi.toFixed(dec),
+                    low: +lo.toFixed(dec),
+                    close: c
                 });
-                if (series.length > CANDLE_MAX) series.shift();
-            } else {
+            }
+            return bars;
+        }
+
+        /* Get merged bar list for a symbol/timeframe: synthetic history
+           + live ticks folded into the tail (correct OHLC accumulation). */
+        function getBars(sym, barSec, maxBars) {
+            if (!barsCache[sym]) barsCache[sym] = {};
+            if (!barsCache[sym][barSec]) {
+                barsCache[sym][barSec] = generateHistory(sym, barSec, HISTORY_BARS);
+            }
+            const bars = barsCache[sym][barSec];
+            const ticks = tickHistory[sym] || [];
+
+            for (const tk of ticks) {
+                const t = Math.floor(tk.t / (barSec * 1000)) * (barSec * 1000) / 1000;
+                const last = bars[bars.length - 1];
+                if (last && last.time === t) {
+                    // same bar → accumulate OHLC
+                    last.high = Math.max(last.high, tk.p);
+                    last.low = Math.min(last.low, tk.p);
+                    last.close = tk.p;
+                } else if (!last || t > last.time) {
+                    // new bar → open a fresh one
+                    bars.push({ time: t, open: tk.p, high: tk.p, low: tk.p, close: tk.p });
+                }
+                // ticks older than the last synthetic bar are ignored
+            }
+            while (bars.length > (maxBars || HISTORY_BARS)) bars.shift();
+            return bars;
+        }
+
+        function updateBarWithTick(sym, barSec, price) {
+            const bars = getBars(sym, barSec);
+            const t = Math.floor(Date.now() / (barSec * 1000)) * (barSec * 1000) / 1000;
+            const last = bars[bars.length - 1];
+            if (last && last.time === t) {
                 last.high = Math.max(last.high, price);
                 last.low = Math.min(last.low, price);
                 last.close = price;
+            } else {
+                bars.push({ time: t, open: price, high: price, low: price, close: price });
+                if (bars.length > HISTORY_BARS) bars.shift();
             }
+            return bars[bars.length - 1];
+        }
+
+        /* Heikin Ashi transform */
+        function heikinAshi(series) {
+            const out = [];
+            series.forEach((c, i) => {
+                const prev = out[i - 1];
+                const haClose = (c.open + c.high + c.low + c.close) / 4;
+                const haOpen = prev ? (prev.open + prev.close) / 2 : (c.open + c.close) / 2;
+                out.push({
+                    time: c.time,
+                    open: haOpen,
+                    close: haClose,
+                    high: Math.max(c.high, haOpen, haClose),
+                    low: Math.min(c.low, haOpen, haClose)
+                });
+            });
+            return out;
         }
 
         /* ============================================================
@@ -698,15 +659,13 @@
                 tdFailures++;
                 if (tdFailures >= TD_MAX_FAILURES && tdHealthy) {
                     tdHealthy = false;
-                    setFeedStatus('Twelve Data unavailable — fallback feed active');
-                    showToast('Feed', 'Twelve Data unreachable — switched to fallback feed', 'error');
+                    setFeedStatus('Twelve Data unavailable — simulated feed active');
+                    showToast('Feed', 'Twelve Data unreachable — switched to simulated feed', 'error');
                 }
             }
         }
 
-        async function refreshActiveFromTd() {
-            await refreshSymbolFromTd(currentSymbol);
-        }
+        async function refreshActiveFromTd() { await refreshSymbolFromTd(currentSymbol); }
 
         async function refreshWatchlistFromTd() {
             const list = categorySymbols[currentCategory] || [];
@@ -718,7 +677,7 @@
 
         function startTdPolling() {
             if (!TWELVE_DATA_API_KEY || TWELVE_DATA_API_KEY === 'YOUR_TWELVEDATA_API_KEY') {
-                setFeedStatus('No Twelve Data key — fallback feed active');
+                setFeedStatus('No Twelve Data key — simulated feed active');
                 return;
             }
             refreshActiveFromTd();
@@ -744,10 +703,8 @@
                         const stream = msg.stream || '';
                         const sym = stream.startsWith('btcusdt') ? 'BTCUSD' : stream.startsWith('ethusdt') ? 'ETHUSD' : null;
                         if (!sym || !msg.data) return;
-                        if (tdHealthy && symbolsDatabase[sym].tdLive) return;
                         const price = +(+msg.data.p).toFixed(decimals(sym));
                         symbolsDatabase[sym].price = price;
-                        symbolsDatabase[sym].tdLive = false;
                         pushTick(sym, price);
                         if (sym === currentSymbol) renderPrices(sym);
                         updateTradesBadge();
@@ -770,9 +727,7 @@
         /* ============================================================
            MARKET SESSIONS & COUNTDOWN
         ============================================================ */
-        function toMins(h, m) {
-            return h * 60 + m;
-        }
+        function toMins(h, m) { return h * 60 + m; }
 
         function msUntilUtc(day, hour, min) {
             const now = new Date();
@@ -862,6 +817,177 @@
         }
 
         /* ============================================================
+           CHART — TradingView Lightweight Charts
+        ============================================================ */
+        let lwcChart = null;
+        let lwcSeries = null;
+
+        function chartSeriesOptions() {
+            const green = '#10b981';
+            const red = '#f43f5e';
+            switch (currentChartType) {
+                case 'line':
+                    return { type: 'line', color: '#2d60f7', lineWidth: 2 };
+                case 'area':
+                    return { type: 'area', lineColor: '#10b981', topColor: 'rgba(16,185,129,0.25)', bottomColor: 'rgba(16,185,129,0.02)', lineWidth: 2 };
+                case 'bars':
+                    return { type: 'bar', upColor: green, downColor: red };
+                case 'hollow-candles':
+                    return {
+                        type: 'candlestick',
+                        upColor: 'rgba(0,0,0,0)', downColor: red,
+                        borderUpColor: green, borderDownColor: red,
+                        wickUpColor: green, wickDownColor: red
+                    };
+                case 'heikin-ashi':
+                case 'candles':
+                default:
+                    return {
+                        type: 'candlestick',
+                        upColor: green, downColor: red,
+                        borderUpColor: green, borderDownColor: red,
+                        wickUpColor: green, wickDownColor: red
+                    };
+            }
+        }
+
+        function createChart() {
+            if (typeof LightweightCharts === 'undefined') {
+                console.error('Lightweight Charts library failed to load from all CDNs.');
+                showToast('Chart', 'Chart library failed to load — check your connection/adblocker.', 'error');
+                return;
+            }
+            const container = document.getElementById('lwc_chart_container');
+            lwcChart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { type: 'solid', color: '#ffffff' },
+                    textColor: '#475569',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 11
+                },
+                grid: {
+                    vertLines: { color: '#f1f5f9', visible: true },
+                    horzLines: { color: '#f1f5f9', visible: true }
+                },
+                rightPriceScale: {
+                    visible: true,
+                    borderColor: '#e2e8f0',
+                    scaleMargins: { top: 0.12, bottom: 0.12 }
+                },
+                timeScale: {
+                    visible: true,
+                    borderColor: '#e2e8f0',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    rightOffset: 6,
+                    barSpacing: 8
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                    vertLine: { color: '#94a3b8', width: 1, style: 3, labelBackgroundColor: '#1e293b' },
+                    horzLine: { color: '#94a3b8', width: 1, style: 3, labelBackgroundColor: '#1e293b' }
+                },
+                handleScroll: true,
+                handleScale: true
+            });
+
+            // Explicit resize handling (more reliable than autoSize)
+            if (window.ResizeObserver) {
+                new ResizeObserver(() => {
+                    if (lwcChart) lwcChart.resize(container.clientWidth, container.clientHeight);
+                }).observe(container);
+            }
+            window.addEventListener('resize', () => {
+                if (lwcChart) lwcChart.resize(container.clientWidth, container.clientHeight);
+            });
+
+            buildSeries();
+        }
+
+        function buildSeries() {
+            if (!lwcChart) return;
+            if (lwcSeries) {
+                lwcChart.removeSeries(lwcSeries);
+                lwcSeries = null;
+            }
+            const opts = chartSeriesOptions();
+            const type = opts.type;
+            delete opts.type;
+            if (type === 'line') lwcSeries = lwcChart.addLineSeries(opts);
+            else if (type === 'area') lwcSeries = lwcChart.addAreaSeries(opts);
+            else if (type === 'bars') lwcSeries = lwcChart.addBarSeries(opts);
+            else lwcSeries = lwcChart.addCandlestickSeries(opts);
+            lwcSeries.applyOptions({
+                priceLineVisible: true,
+                lastValueVisible: true
+            });
+            reloadChartData();
+        }
+
+        function dataForChart() {
+            const bars = getBars(currentSymbol, tfSeconds, HISTORY_BARS);
+            if (currentChartType === 'line' || currentChartType === 'area') {
+                return bars.map(b => ({ time: b.time, value: b.close }));
+            }
+            if (currentChartType === 'heikin-ashi') return heikinAshi(bars);
+            return bars;
+        }
+
+        function reloadChartData(keepView) {
+            if (!lwcSeries || !lwcChart) return;
+            lwcSeries.setData(dataForChart());
+            if (!keepView) lwcChart.timeScale().fitContent();
+        }
+
+        function updateLiveCandle(price) {
+            if (!lwcSeries || !lwcChart) return;
+            const lastBar = updateBarWithTick(currentSymbol, tfSeconds, price);
+            if (currentChartType === 'line' || currentChartType === 'area') {
+                lwcSeries.update({ time: lastBar.time, value: lastBar.close });
+            } else if (currentChartType === 'heikin-ashi') {
+                lwcSeries.setData(heikinAshi(getBars(currentSymbol, tfSeconds)));
+            } else {
+                // update() merges into the existing bar at the same timestamp —
+                // pass full OHLC so high/low/open are preserved correctly.
+                lwcSeries.update({
+                    time: lastBar.time,
+                    open: lastBar.open,
+                    high: lastBar.high,
+                    low: lastBar.low,
+                    close: lastBar.close
+                });
+            }
+        }
+
+        function updateCandleCountdown() {
+            const el = document.getElementById('candleCountdown');
+            if (!el) return;
+            const remain = tfSeconds - (Math.floor(Date.now() / 1000) % tfSeconds);
+            const m = Math.floor(remain / 60);
+            const s = remain % 60;
+            el.textContent = tfSelectedTf + ' · ' + (m > 0 ? m + ':' + String(s).padStart(2, '0') : s + 's');
+        }
+
+        function changeChartType(type) {
+            currentChartType = type;
+            buildSeries();
+            showToast('Chart', 'Chart view: ' + document.getElementById('chartTypeSelect').selectedOptions[0].text, 'info');
+        }
+
+        function changeTimeframe(tvInterval) {
+            for (const cat of Object.keys(timeframeData)) {
+                const hit = timeframeData[cat].find(i => i.tv === tvInterval);
+                if (hit) {
+                    tfSeconds = hit.sec;
+                    break;
+                }
+            }
+            reloadChartData();
+        }
+
+        /* ============================================================
            CATEGORY / SYMBOL UI
         ============================================================ */
         function selectCategory(category) {
@@ -891,12 +1017,12 @@
 
         function switchSymbol(sym) {
             currentSymbol = sym;
+            document.getElementById('chartSymbolLabel').textContent = sym;
             renderSubSymbols();
             renderPrices(sym);
             updateMarketCountdown();
             runAIAnalysis();
-            const chart = document.getElementById('tvChart');
-            if (chart) chart.setAttribute('symbol', symbolsDatabase[sym].tvSymbol);
+            reloadChartData();
             if (tdHealthy || TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
         }
 
@@ -904,9 +1030,15 @@
             const q = quoteSymbol(sym);
             const sellEl = document.getElementById('sellPriceVal');
             const buyEl = document.getElementById('buyPriceVal');
+            const lastEl = document.getElementById('chartLastPrice');
             const prev = parseFloat(sellEl.textContent);
             sellEl.textContent = q.sell.toFixed(decimals(sym));
             buyEl.textContent = q.buy.toFixed(decimals(sym));
+            if (lastEl) {
+                lastEl.textContent = q.mid.toFixed(decimals(sym));
+                lastEl.className = 'font-bold ' + (q.mid >= (renderPrices.prevMid || q.mid) ? 'text-emerald-600' : 'text-rose-600');
+                renderPrices.prevMid = q.mid;
+            }
             if (!isNaN(prev) && prev !== q.sell) {
                 const cls = q.sell > prev ? 'flash-up' : 'flash-down';
                 [sellEl, buyEl].forEach(el => {
@@ -933,29 +1065,24 @@
 
         /* ============================================================
            TIMEFRAME DROPDOWN — two-column UI (category → interval)
-           The popover lives at <body> level with fixed positioning so
-           no parent (overflow containers, <main> rounding, etc.) can
-           clip or hide it.
         ============================================================ */
         let tfMenuEl = null;
 
         function buildTfMenu() {
-            // Create the popover once, appended directly to <body>
             tfMenuEl = document.createElement('div');
             tfMenuEl.id = 'tfDropdownMenu';
             tfMenuEl.className = 'hidden w-64 bg-white border border-slate-200 rounded-xl shadow-2xl flex overflow-hidden animate-fadeIn';
+            tfMenuEl.style.cssText = 'position:fixed;z-index:60;';
             tfMenuEl.innerHTML =
                 '<div id="tfCategoryCol" class="w-1/2 border-r border-slate-100 py-2 bg-white"></div>' +
                 '<div id="tfIntervalCol" class="w-1/2 py-2 max-h-64 overflow-y-auto bg-white"></div>';
-            // clicks inside the popover must not close it
             tfMenuEl.addEventListener('click', e => e.stopPropagation());
             document.body.appendChild(tfMenuEl);
         }
 
         function positionTfMenu() {
             if (!tfMenuEl) return;
-            const trigger = document.getElementById('tfTriggerBtn');
-            const r = trigger.getBoundingClientRect();
+            const r = document.getElementById('tfTriggerBtn').getBoundingClientRect();
             tfMenuEl.style.left = r.left + 'px';
             tfMenuEl.style.top = (r.bottom + 6) + 'px';
         }
@@ -1021,8 +1148,6 @@
             else closeTfDropdown();
         }
 
-        // Close the TF dropdown when clicking anywhere outside it,
-        // and reposition it if the page scrolls/resizes while open.
         document.addEventListener('click', (e) => {
             if (tfMenuEl && !tfMenuEl.classList.contains('hidden') &&
                 !tfMenuEl.contains(e.target) &&
@@ -1034,261 +1159,10 @@
         window.addEventListener('resize', () => { if (tfMenuEl && !tfMenuEl.classList.contains('hidden')) positionTfMenu(); });
 
         /* ============================================================
-           CHART — Web Component (zoom locked) + candle fallback
-        ============================================================ */
-        let fallbackActive = false;
-        let fallbackRaf = null;
-
-        function changeTimeframe(tvInterval) {
-            const chart = document.getElementById('tvChart');
-            if (chart) chart.setAttribute('interval', tvInterval);
-        }
-
-        function changeChartType(type) {
-            currentChartType = type;
-            const chart = document.getElementById('tvChart');
-            if (chart) chart.setAttribute('chart-type', type);
-            showToast('Chart', 'Chart view: ' + document.getElementById('chartTypeSelect').selectedOptions[0].text, 'info');
-        }
-
-        setTimeout(() => {
-            const chart = document.getElementById('tvChart');
-            const appeared = chart && chart.shadowRoot && chart.shadowRoot.querySelector('*');
-            if (!appeared) {
-                console.warn('TradingView Web Component did not render — activating canvas candle fallback');
-                showFallback();
-            }
-        }, 8000);
-
-        function showFallback() {
-            if (fallbackActive) return;
-            fallbackActive = true;
-            document.getElementById('tv_chart_container').classList.add('hidden');
-            document.getElementById('fallbackCanvas').classList.remove('hidden');
-            document.getElementById('chartFallbackNotice').classList.remove('hidden');
-            fallbackDrawLoop();
-        }
-
-        function hideFallback() {
-            if (!fallbackActive) return;
-            fallbackActive = false;
-            cancelAnimationFrame(fallbackRaf);
-            document.getElementById('fallbackCanvas').classList.add('hidden');
-            document.getElementById('tv_chart_container').classList.remove('hidden');
-            document.getElementById('chartFallbackNotice').classList.add('hidden');
-        }
-
-        function sizeTradingViewChart() {
-            const chart = document.getElementById('tvChart');
-            const container = document.getElementById('tv_chart_container');
-            if (!chart || !container) return;
-            const rect = container.getBoundingClientRect();
-            if (!rect.width || !rect.height) return;
-            chart.style.width = rect.width + 'px';
-            chart.style.height = rect.height + 'px';
-            const root = chart.shadowRoot;
-            if (!root) return;
-            if (!root.getElementById('tx-fit-chart')) {
-                const style = document.createElement('style');
-                style.id = 'tx-fit-chart';
-                style.textContent = ':host, iframe, .container, div { width:100% !important; height:100% !important; } iframe { border:0; pointer-events:none !important; }';
-                root.appendChild(style);
-            }
-            root.querySelectorAll('iframe').forEach(frame => {
-                frame.style.width = '100%';
-                frame.style.height = '100%';
-                frame.style.pointerEvents = 'none';
-            });
-        }
-
-        function fallbackDrawLoop() {
-            const draw = () => {
-                if (!fallbackActive) return;
-                drawFallbackChart();
-                fallbackRaf = requestAnimationFrame(() => setTimeout(draw, CANDLE_MS / 2));
-            };
-            draw();
-        }
-
-        function heikinAshi(series) {
-            const out = [];
-            series.forEach((c, i) => {
-                const prev = out[i - 1];
-                const haClose = (c.open + c.high + c.low + c.close) / 4;
-                const haOpen = prev ? (prev.open + prev.close) / 2 : (c.open + c.close) / 2;
-                out.push({
-                    time: c.time,
-                    open: haOpen,
-                    close: haClose,
-                    high: Math.max(c.high, haOpen, haClose),
-                    low: Math.min(c.low, haOpen, haClose)
-                });
-            });
-            return out;
-        }
-
-        function drawFallbackChart() {
-            const canvas = document.getElementById('fallbackCanvas');
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width === 0 || rect.height === 0) return;
-            canvas.width = rect.width * devicePixelRatio;
-            canvas.height = rect.height * devicePixelRatio;
-            const ctx = canvas.getContext('2d');
-            ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-            ctx.clearRect(0, 0, rect.width, rect.height);
-
-            const sym = currentSymbol;
-            let series = (candles[sym] || []).slice();
-
-            if (series.length < 2) {
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '12px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Collecting candle data for ' + sym + '…', rect.width / 2, rect.height / 2);
-                return;
-            }
-
-            if (currentChartType === 'heikin-ashi') series = heikinAshi(series);
-
-            const isCandles = currentChartType === 'candles' || currentChartType === 'hollow-candles' || currentChartType === 'heikin-ashi';
-            const isBars = currentChartType === 'bars';
-            const isArea = currentChartType === 'area';
-
-            const pad = { t: 24, r: 64, b: 24, l: 10 };
-            const w = rect.width - pad.l - pad.r;
-            const h = rect.height - pad.t - pad.b;
-
-            // FIXED ZOOM: always show a fixed recent window so it never zooms out
-            const ZOOM_WINDOW = 30;
-            const data = series.slice(-ZOOM_WINDOW);
-
-            let min = Infinity,
-                max = -Infinity;
-            data.forEach(c => {
-                min = Math.min(min, c.low);
-                max = Math.max(max, c.high);
-            });
-            if (min === max) {
-                const padV = min * 0.001 || 1;
-                min -= padV;
-                max += padV;
-            }
-            const range = max - min;
-            const yFor = v => pad.t + h - ((v - min) / range) * h;
-
-            ctx.strokeStyle = '#f1f5f9';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 4; i++) {
-                const y = pad.t + (h / 4) * i;
-                ctx.beginPath();
-                ctx.moveTo(pad.l, y);
-                ctx.lineTo(pad.l + w, y);
-                ctx.stroke();
-            }
-
-            const slot = w / data.length;
-            const bodyW = Math.max(2, slot * 0.6);
-
-            if (isCandles || isBars) {
-                data.forEach((c, i) => {
-                    const cx = pad.l + slot * i + slot / 2;
-                    const up = c.close >= c.open;
-                    const col = up ? '#10b981' : '#f43f5e';
-
-                    ctx.strokeStyle = col;
-                    ctx.lineWidth = 1.5;
-                    ctx.beginPath();
-                    ctx.moveTo(cx, yFor(c.high));
-                    ctx.lineTo(cx, yFor(c.low));
-                    ctx.stroke();
-
-                    if (isBars) {
-                        const yo = yFor(c.open),
-                            yc = yFor(c.close);
-                        ctx.beginPath();
-                        ctx.moveTo(cx - bodyW / 2, yo);
-                        ctx.lineTo(cx, yo);
-                        ctx.moveTo(cx, yc);
-                        ctx.lineTo(cx + bodyW / 2, yc);
-                        ctx.stroke();
-                    } else {
-                        const yTop = yFor(Math.max(c.open, c.close));
-                        const yBot = yFor(Math.min(c.open, c.close));
-                        const bodyH = Math.max(1, yBot - yTop);
-                        const hollow = currentChartType === 'hollow-candles' && up;
-                        if (hollow) {
-                            ctx.strokeStyle = col;
-                            ctx.lineWidth = 1.5;
-                            ctx.strokeRect(cx - bodyW / 2, yTop, bodyW, bodyH);
-                        } else {
-                            ctx.fillStyle = col;
-                            ctx.fillRect(cx - bodyW / 2, yTop, bodyW, bodyH);
-                        }
-                    }
-                });
-
-                const lastC = data[data.length - 1];
-                const ly = yFor(lastC.close);
-                const up = lastC.close >= lastC.open;
-                ctx.setLineDash([4, 3]);
-                ctx.strokeStyle = up ? '#10b981' : '#f43f5e';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(pad.l, ly);
-                ctx.lineTo(pad.l + w, ly);
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.fillStyle = up ? '#065f46' : '#881337';
-                ctx.font = 'bold 11px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(lastC.close.toFixed(decimals(sym)), pad.l + w + 4, ly + 4);
-            } else {
-                const xStep = w / (data.length - 1);
-                const lineColor = data[data.length - 1].close >= data[0].open ? '#10b981' : '#f43f5e';
-                ctx.strokeStyle = lineColor;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                data.forEach((c, i) => i === 0 ? ctx.moveTo(pad.l, yFor(c.close)) : ctx.lineTo(pad.l + i * xStep, yFor(c.close)));
-                ctx.stroke();
-                if (isArea) {
-                    ctx.lineTo(pad.l + (data.length - 1) * xStep, pad.t + h);
-                    ctx.lineTo(pad.l, pad.t + h);
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(16,185,129,0.08)';
-                    ctx.fill();
-                }
-                const last = data[data.length - 1].close;
-                ctx.beginPath();
-                ctx.arc(pad.l + (data.length - 1) * xStep, yFor(last), 4, 0, Math.PI * 2);
-                ctx.fillStyle = lineColor;
-                ctx.fill();
-                ctx.fillStyle = '#065f46';
-                ctx.font = 'bold 11px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(last.toFixed(decimals(sym)), pad.l + (data.length - 1) * xStep + 6, yFor(last) + 4);
-            }
-
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '10px Inter, sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText('H ' + max.toFixed(decimals(sym)), pad.l + 4, pad.t - 8);
-            ctx.fillText('L ' + min.toFixed(decimals(sym)), pad.l + 4, pad.t + h + 14);
-
-            ctx.fillStyle = '#475569';
-            ctx.font = 'bold 12px Inter, sans-serif';
-            ctx.fillText(sym + ' · ' + currentChartType + ' · ' + tfSelectedTf, pad.l + 4, rect.height - 6);
-        }
-
-        /* ============================================================
            TRADING ENGINE
         ============================================================ */
-        function activeAccountKey() {
-            return isLiveAccount ? 'live' : 'demo';
-        }
-
-        function activeBalance() {
-            return isLiveAccount ? account.liveBalance : account.demoBalance;
-        }
+        function activeAccountKey() { return isLiveAccount ? 'live' : 'demo'; }
+        function activeBalance() { return isLiveAccount ? account.liveBalance : account.demoBalance; }
 
         function setActiveBalance(v) {
             if (isLiveAccount) account.liveBalance = v;
@@ -1496,9 +1370,9 @@
                 return;
             }
 
-            const recent = hist.slice(-10).reduce((a, b) => a + b, 0) / 10;
+            const recent = hist.slice(-10).reduce((a, b) => a + b.p, 0) / 10;
             const olderSlice = hist.slice(-30, -10);
-            const older = olderSlice.length ? olderSlice.reduce((a, b) => a + b, 0) / olderSlice.length : recent;
+            const older = olderSlice.length ? olderSlice.reduce((a, b) => a + b.p, 0) / olderSlice.length : recent;
             const momentum = older !== 0 ? (recent - older) / older : 0;
 
             const bullish = momentum > 0;
@@ -1597,33 +1471,31 @@
         window.onload = function() {
             isLiveAccount = !!account.isLive;
             renderAccountBadge();
-            sizeTradingViewChart();
-            window.addEventListener('resize', sizeTradingViewChart);
-            setInterval(sizeTradingViewChart, 1500); // re-applies the zoom lock on iframe rebuild
 
-            // Build the TF popover once at body level (never clipped)
+            createChart();
             buildTfMenu();
 
             selectCategory('Commodities');
             connectCryptoFeed();
-            startTdPolling(); // Twelve Data primary feed
+            startTdPolling();
 
             // Simulated ticks fill gaps only while Twelve Data is NOT healthy
             setInterval(() => {
                 if (tdHealthy) return;
                 Object.keys(symbolsDatabase).forEach(sym => {
                     const d = symbolsDatabase[sym];
-                    // crypto symbols keep their Binance fallback feed instead
-                    if (d.feed) return;
+                    if (d.feed) return; // crypto keeps its Binance feed
                     simTick(sym);
                 });
                 if (Math.random() < 0.25) renderSubSymbols();
             }, SIM_TICK_MS);
 
             setInterval(updateMarketCountdown, 1000);
+            setInterval(updateCandleCountdown, 250);
             setInterval(runAIAnalysis, AI_REFRESH_MS);
             setInterval(renderSubSymbols, TD_POLL_MS);
             updateMarketCountdown();
+            updateCandleCountdown();
         };
     </script>
 
