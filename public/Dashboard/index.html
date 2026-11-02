@@ -131,6 +131,13 @@
             cursor: grab;
         }
 
+        /* TF popover is appended to <body> with fixed positioning,
+           so no parent overflow can ever clip it. */
+        #tfDropdownMenu {
+            position: fixed;
+            z-index: 60;
+        }
+
         /* ZOOM LOCK: block all pointer interaction (wheel / pinch / click zoom)
            inside the TradingView widget iframe. Chart becomes display-only. */
         tv-advanced-chart iframe {
@@ -159,15 +166,15 @@
             <div class="flex-1 max-w-xl min-w-[220px]">
                 <div class="relative flex items-center">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="symbolSearch" onkeyup="handleSearch(event)" placeholder="Search All Symbols (e.g. AAPL, BTC, USOIL)" class="w-full pl-9 pr-28 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    <input type="text" id="symbolSearch" onkeyup="handleSearch(event)" placeholder="Search All Symbols (e.g. AAPL, BTC, US30)" class="w-full pl-9 pr-28 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     <div class="absolute right-1 flex items-center gap-1">
                         <button id="toggleAccountBtn" onclick="toggleAccountType()" class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-md shadow-2xs transition">
-                        <i class="fa-solid fa-sliders text-slate-400 text-[10px]"></i>
-                        <span id="toggleAccountBtnText">Switch to Live</span>
-                    </button>
+                            <i class="fa-solid fa-sliders text-slate-400 text-[10px]"></i>
+                            <span id="toggleAccountBtnText">Switch to Live</span>
+                        </button>
                         <button class="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100 transition" title="User Profile" onclick="window.location.href='../More/index.html'">
-                        <i class="fa-regular fa-user text-xs"></i>
-                    </button>
+                            <i class="fa-regular fa-user text-xs"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -181,12 +188,12 @@
                     <span id="accountIdDisplay" class="text-[9px] text-rose-200/80 tracking-wider">DNP142887</span>
                 </div>
                 <button onclick="resetAccountBalance()" title="Reset Demo Balance" class="w-8 h-8 flex items-center justify-center border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
-                <i class="fa-solid fa-rotate-right text-xs"></i>
-            </button>
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                </button>
                 <button onclick="showToast('Notifications', 'Real-time price feed synchronized', 'info')" class="relative w-8 h-8 flex items-center justify-center border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 rounded-lg transition">
-                <i class="fa-regular fa-bell text-xs"></i>
-                <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-            </button>
+                    <i class="fa-regular fa-bell text-xs"></i>
+                    <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                </button>
             </div>
         </header>
 
@@ -205,36 +212,39 @@
 
         <!-- 3. MAIN CHART PANEL -->
         <main class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative">
-            <div class="p-2 border-b border-slate-100 flex items-center justify-between gap-2 overflow-x-auto text-xs bg-slate-50/50">
-                <div class="flex items-center gap-2">
-                    <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2 py-1 shadow-2xs">
-                        <span class="text-slate-500 text-[11px] font-medium">TF</span>
-                        <select id="timeframeSelect" onchange="changeTimeframe(this.value)" class="bg-transparent font-bold text-slate-800 text-xs focus:outline-none cursor-pointer">
-                        <option value="1">1m</option><option value="5">5m</option><option value="15" selected>15m</option>
-                        <option value="30">30m</option><option value="60">1h</option><option value="240">4h</option><option value="1D">1D</option>
-                    </select>
+            <!-- NOTE: no overflow-x-auto here — it clipped the TF popover. flex-wrap instead. -->
+            <div class="p-2 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs bg-slate-50/50">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <!-- TF Two-Column Dropdown -->
+                    <div class="relative" id="tfDropdownRoot">
+                        <!-- Trigger Button: displays current timeframe (e.g. TF 15m) -->
+                        <button id="tfTriggerBtn" onclick="event.stopPropagation(); toggleTfDropdown();" class="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-md shadow-2xs text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
+                            <span class="text-slate-500 font-medium">TF</span>
+                            <span id="tfSelectedLabel">15m</span>
+                            <i id="tfChevron" class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition-transform"></i>
+                        </button>
                     </div>
                     <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs">
                         <i class="fa-solid fa-chart-candlestick text-slate-500 text-xs"></i>
                         <select id="chartTypeSelect" onchange="changeChartType(this.value)" class="bg-transparent font-semibold text-slate-800 text-xs focus:outline-none cursor-pointer">
-                        <option value="candles" selected>Chart Candles</option>
-                        <option value="hollow-candles">Hollow Candles</option>
-                        <option value="heikin-ashi">Heikin Ashi</option>
-                        <option value="line">Line Chart</option>
-                        <option value="bars">OHLC Bars</option>
-                        <option value="area">Area View</option>
-                    </select>
+                            <option value="candles" selected>Chart Candles</option>
+                            <option value="hollow-candles">Hollow Candles</option>
+                            <option value="heikin-ashi">Heikin Ashi</option>
+                            <option value="line">Line Chart</option>
+                            <option value="bars">OHLC Bars</option>
+                            <option value="area">Area View</option>
+                        </select>
                     </div>
                     <button onclick="showToast('Indicators', 'Technical Indicators panel loaded', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Indicators">
-                    <i class="fa-solid fa-chart-line text-xs"></i>
-                </button>
+                        <i class="fa-solid fa-chart-line text-xs"></i>
+                    </button>
                     <button onclick="showToast('Drawing', 'Drawing tools activated', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
-                    <i class="fa-solid fa-pencil text-xs"></i>
-                </button>
+                        <i class="fa-solid fa-pencil text-xs"></i>
+                    </button>
                 </div>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="feedStatusText">Connecting Twelve Data feed…</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="feedStatusText">Connecting Twelve Data feed…</span>
                 </span>
             </div>
 
@@ -258,9 +268,9 @@
                 </div>
 
                 <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
-                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-                <span>TRADEXORA AI</span>
-            </button>
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                    <span>TRADEXORA AI</span>
+                </button>
 
                 <div id="aiModal" class="hidden absolute bottom-18 right-6 z-20 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 space-y-3 transition-all animate-fadeIn">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -283,9 +293,9 @@
             <!-- 6. TRADE EXECUTION BAR -->
             <div class="p-3 bg-white border-t border-slate-200 grid grid-cols-12 gap-2 md:gap-3 items-center">
                 <button onclick="executeTrade('SELL')" class="col-span-5 py-3 px-4 bg-[#ff7b89] hover:bg-rose-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-rose-300">
-                <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
-                <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
-            </button>
+                    <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
+                    <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+                </button>
                 <div class="col-span-2 flex flex-col items-center justify-center border border-slate-200 rounded-xl py-1.5 px-2 bg-slate-50 shadow-2xs">
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LOT</span>
                     <div class="flex items-center gap-1 w-full justify-center mt-0.5">
@@ -296,9 +306,9 @@
                     <span class="text-[9px] text-slate-400">Est. margin <span id="marginEstimate" class="font-bold text-slate-600">$—</span></span>
                 </div>
                 <button onclick="executeTrade('BUY')" class="col-span-5 py-3 px-4 bg-[#50e396] hover:bg-emerald-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-300">
-                <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
-                <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
-            </button>
+                    <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
+                    <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+                </button>
             </div>
         </main>
     </div>
@@ -368,6 +378,34 @@
         const TICK_HISTORY_MAX = 90;
         const CANDLE_MAX = 60;
 
+        /* ============================================================
+           TIMEFRAME DROPDOWN DATA (two-column: category → interval)
+           label = UI text, tv = TradingView interval attribute
+        ============================================================ */
+        const timeframeData = {
+            Minutes: [
+                { label: '1m', tv: '1' }, { label: '2m', tv: '2' }, { label: '3m', tv: '3' },
+                { label: '5m', tv: '5' }, { label: '10m', tv: '10' }, { label: '15m', tv: '15' },
+                { label: '30m', tv: '30' }, { label: '45m', tv: '45' }
+            ],
+            Hours: [
+                { label: '1h', tv: '60' }, { label: '2h', tv: '120' },
+                { label: '3h', tv: '180' }, { label: '4h', tv: '240' }
+            ],
+            Days: [
+                { label: '1D', tv: '1D' }, { label: '3D', tv: '3D' }
+            ],
+            Weeks: [
+                { label: '1W', tv: '1W' }
+            ],
+            Months: [
+                { label: '1M', tv: '1M' }
+            ]
+        };
+
+        let tfSelectedCategory = 'Minutes';
+        let tfSelectedTf = '15m';
+
         const symbolsDatabase = {
             'USOIL': {
                 tvSymbol: 'TVC:USOIL',
@@ -425,14 +463,6 @@
                 pipSize: 0.01,
                 contractSize: 1
             },
-            'TSLA': {
-                tvSymbol: 'NASDAQ:TSLA',
-                tdSymbol: 'TSLA',
-                category: 'Stocks',
-                base: 218.40,
-                pipSize: 0.01,
-                contractSize: 1
-            },
             'BTCUSD': {
                 tvSymbol: 'BINANCE:BTCUSDT',
                 tdSymbol: 'BTC/USD',
@@ -477,11 +507,11 @@
                 pipSize: 0.1,
                 contractSize: 1
             },
-            'SPX500': {
-                tvSymbol: 'OANDA:SPX500USD',
-                tdSymbol: 'SPX',
+            'NAS100': {
+                tvSymbol: 'NASDAQ:NDX',
+                tdSymbol: 'IXIC',
                 category: 'Indices',
-                base: 5815,
+                base: 20250,
                 pipSize: 0.1,
                 contractSize: 1
             }
@@ -490,8 +520,8 @@
         const categorySymbols = {
             'Forex': ['EURUSD', 'GBPUSD', 'USDJPY'],
             'Commodities': ['USOIL', 'NATGAS'],
-            'Indices': ['US30', 'SPX500'],
-            'Stocks': ['AAPL', 'NVDA', 'TSLA'],
+            'Indices': ['US30', 'NAS100'],
+            'Stocks': ['AAPL', 'NVDA'],
             'Crypto': ['BTCUSD', 'ETHUSD'],
             'Metals': ['XAUUSD', 'XAGUSD']
         };
@@ -902,14 +932,116 @@
         }
 
         /* ============================================================
+           TIMEFRAME DROPDOWN — two-column UI (category → interval)
+           The popover lives at <body> level with fixed positioning so
+           no parent (overflow containers, <main> rounding, etc.) can
+           clip or hide it.
+        ============================================================ */
+        let tfMenuEl = null;
+
+        function buildTfMenu() {
+            // Create the popover once, appended directly to <body>
+            tfMenuEl = document.createElement('div');
+            tfMenuEl.id = 'tfDropdownMenu';
+            tfMenuEl.className = 'hidden w-64 bg-white border border-slate-200 rounded-xl shadow-2xl flex overflow-hidden animate-fadeIn';
+            tfMenuEl.innerHTML =
+                '<div id="tfCategoryCol" class="w-1/2 border-r border-slate-100 py-2 bg-white"></div>' +
+                '<div id="tfIntervalCol" class="w-1/2 py-2 max-h-64 overflow-y-auto bg-white"></div>';
+            // clicks inside the popover must not close it
+            tfMenuEl.addEventListener('click', e => e.stopPropagation());
+            document.body.appendChild(tfMenuEl);
+        }
+
+        function positionTfMenu() {
+            if (!tfMenuEl) return;
+            const trigger = document.getElementById('tfTriggerBtn');
+            const r = trigger.getBoundingClientRect();
+            tfMenuEl.style.left = r.left + 'px';
+            tfMenuEl.style.top = (r.bottom + 6) + 'px';
+        }
+
+        function renderTfCategories() {
+            const col = document.getElementById('tfCategoryCol');
+            if (!col) return;
+            col.innerHTML = '';
+            Object.keys(timeframeData).forEach(cat => {
+                const active = cat === tfSelectedCategory;
+                const btn = document.createElement('button');
+                btn.className = active
+                    ? 'block w-[calc(100%-12px)] text-left px-3 py-2.5 mx-1.5 my-0.5 text-xs font-bold text-slate-900 bg-white border-2 border-slate-900 rounded-lg shadow-sm transition-colors'
+                    : 'block w-[calc(100%-12px)] text-left px-3 py-2.5 mx-1.5 my-0.5 text-xs font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition-colors';
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    tfSelectedCategory = cat;
+                    renderTfCategories();
+                    renderTfIntervals();
+                };
+                col.appendChild(btn);
+            });
+        }
+
+        function renderTfIntervals() {
+            const col = document.getElementById('tfIntervalCol');
+            if (!col) return;
+            col.innerHTML = '';
+            (timeframeData[tfSelectedCategory] || []).forEach(item => {
+                const active = item.label === tfSelectedTf;
+                const btn = document.createElement('button');
+                btn.className = active
+                    ? 'block w-[calc(100%-12px)] text-left px-3 py-2 mx-1.5 my-0.5 text-xs font-semibold text-blue-700 bg-blue-50 rounded-md transition-colors'
+                    : 'block w-[calc(100%-12px)] text-left px-3 py-2 mx-1.5 my-0.5 text-xs text-slate-700 hover:bg-slate-50 rounded-md transition-colors';
+                btn.textContent = item.label;
+                btn.onclick = () => {
+                    tfSelectedTf = item.label;
+                    document.getElementById('tfSelectedLabel').textContent = item.label;
+                    closeTfDropdown();
+                    changeTimeframe(item.tv);
+                    runAIAnalysis();
+                };
+                col.appendChild(btn);
+            });
+        }
+
+        function openTfDropdown() {
+            positionTfMenu();
+            tfMenuEl.classList.remove('hidden');
+            document.getElementById('tfChevron').classList.add('rotate-180');
+        }
+
+        function closeTfDropdown() {
+            if (tfMenuEl) tfMenuEl.classList.add('hidden');
+            document.getElementById('tfChevron').classList.remove('rotate-180');
+        }
+
+        function toggleTfDropdown() {
+            if (!tfMenuEl) buildTfMenu();
+            renderTfCategories();
+            renderTfIntervals();
+            if (tfMenuEl.classList.contains('hidden')) openTfDropdown();
+            else closeTfDropdown();
+        }
+
+        // Close the TF dropdown when clicking anywhere outside it,
+        // and reposition it if the page scrolls/resizes while open.
+        document.addEventListener('click', (e) => {
+            if (tfMenuEl && !tfMenuEl.classList.contains('hidden') &&
+                !tfMenuEl.contains(e.target) &&
+                !document.getElementById('tfTriggerBtn').contains(e.target)) {
+                closeTfDropdown();
+            }
+        });
+        window.addEventListener('scroll', () => { if (tfMenuEl && !tfMenuEl.classList.contains('hidden')) positionTfMenu(); }, true);
+        window.addEventListener('resize', () => { if (tfMenuEl && !tfMenuEl.classList.contains('hidden')) positionTfMenu(); });
+
+        /* ============================================================
            CHART — Web Component (zoom locked) + candle fallback
         ============================================================ */
         let fallbackActive = false;
         let fallbackRaf = null;
 
-        function changeTimeframe(tf) {
+        function changeTimeframe(tvInterval) {
             const chart = document.getElementById('tvChart');
-            if (chart) chart.setAttribute('interval', tf);
+            if (chart) chart.setAttribute('interval', tvInterval);
         }
 
         function changeChartType(type) {
@@ -1144,7 +1276,7 @@
 
             ctx.fillStyle = '#475569';
             ctx.font = 'bold 12px Inter, sans-serif';
-            ctx.fillText(sym + ' · ' + currentChartType, pad.l + 4, rect.height - 6);
+            ctx.fillText(sym + ' · ' + currentChartType + ' · ' + tfSelectedTf, pad.l + 4, rect.height - 6);
         }
 
         /* ============================================================
@@ -1377,7 +1509,7 @@
 
             confEl.textContent = `${confidence}% ${label}`;
             confEl.className = `font-bold ${bullish ? 'text-emerald-600' : 'text-rose-600'}`;
-            textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym} (${document.getElementById('timeframeSelect').selectedOptions[0].text}):</strong> ` +
+            textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym} (${tfSelectedTf}):</strong> ` +
                 (Math.abs(momentum) < 0.0005 ?
                     'Price is consolidating in a tight range — no directional edge detected.' :
                     `${bullish ? 'Steady upward bullish momentum' : 'Downward bearish momentum'} detected across the recent price sample.`);
@@ -1389,9 +1521,9 @@
             const tp = +(type === 'BUY' ? entry * 1.010 : entry * 0.990).toFixed(decimals(sym));
 
             metaEl.innerHTML = `
-        <div><span class="font-semibold">Suggested:</span> ${type} ${sym}</div>
-        <div><span class="font-semibold">Entry:</span> ${entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sl} · <span class="font-semibold">TP:</span> ${tp}</div>
-        <div class="text-[10px] text-slate-400">Risk/reward 1:2 · SL/TP enforced automatically. Heuristic signal — not financial advice.</div>`;
+                <div><span class="font-semibold">Suggested:</span> ${type} ${sym}</div>
+                <div><span class="font-semibold">Entry:</span> ${entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sl} · <span class="font-semibold">TP:</span> ${tp}</div>
+                <div class="text-[10px] text-slate-400">Risk/reward 1:2 · SL/TP enforced automatically. Heuristic signal — not financial advice.</div>`;
 
             aiSuggestion = {
                 type,
@@ -1468,6 +1600,9 @@
             sizeTradingViewChart();
             window.addEventListener('resize', sizeTradingViewChart);
             setInterval(sizeTradingViewChart, 1500); // re-applies the zoom lock on iframe rebuild
+
+            // Build the TF popover once at body level (never clipped)
+            buildTfMenu();
 
             selectCategory('Commodities');
             connectCryptoFeed();
