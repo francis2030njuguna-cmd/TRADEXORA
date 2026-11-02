@@ -14,7 +14,9 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
                     colors: {
                         brand: {
                             red: '#8b1d38',
@@ -36,9 +38,20 @@
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f8fafc; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
     </style>
 </head>
 
@@ -70,29 +83,36 @@
                     <button id="accountDropdownBtn" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
                         <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
                         <div class="text-right">
-                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $0.00</div>
+                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
                             <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">--</div>
                         </div>
                     </button>
 
+                    <!-- ACCOUNT DROPDOWN WITH DEMO RESET -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
                         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
 
-                        <button class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1" data-acc-type="Demo" data-acc-id="DNP142887">
+                        <button type="button" class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1" data-acc-type="Demo" data-acc-id="DNP142887">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Demo Account</div>
                                 <div class="text-[11px] text-gray-500">ID: DNP142887</div>
                             </div>
-                            <div class="text-xs font-bold text-emerald-600" id="dropdownDemoBal">$0.00</div>
+                            <div class="text-xs font-bold text-emerald-600" id="dropdownDemoBal">$10,000.00</div>
                         </button>
 
-                        <button class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all" data-acc-type="Real" data-acc-id="RNP982314">
+                        <button type="button" class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-2" data-acc-type="Real" data-acc-id="RNP982314">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Real Account</div>
                                 <div class="text-[11px] text-gray-500">ID: RNP982314</div>
                             </div>
                             <div class="text-xs font-bold text-gray-700" id="dropdownRealBal">$0.00</div>
                         </button>
+
+                        <div class="border-t border-gray-100 pt-2">
+                            <button type="button" id="resetDemoBtn" class="w-full text-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold py-2 rounded-lg transition-colors cursor-pointer">
+                                <i class="fa-solid fa-rotate-right mr-1"></i> Reset Demo to $10,000
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -155,11 +175,11 @@
                 </div>
                 <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
                     <div class="text-xs text-gray-400 font-medium mb-1">Balance</div>
-                    <div class="text-xl font-extrabold text-gray-900" id="metricBalance">$0.00</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="metricBalance">$10,000.00</div>
                 </div>
                 <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
                     <div class="text-xs text-gray-400 font-medium mb-1">Equity</div>
-                    <div class="text-xl font-extrabold text-gray-900" id="metricEquity">$0.00</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="metricEquity">$10,000.00</div>
                 </div>
             </div>
 
@@ -171,7 +191,7 @@
                     </div>
                     <div>
                         <div class="text-xs font-extrabold">TRADEXORA AI Bot</div>
-                        <div class="text-[10px] text-blue-100" id="botStatusLabel">OFF — opens only high-confidence setups on all assets</div>
+                        <div class="text-[10px] text-blue-100" id="botStatusLabel">OFF — opens high-profit setups on all assets</div>
                     </div>
                 </div>
                 <button id="botToggleBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 hover:bg-blue-50 transition shadow">Turn ON</button>
@@ -203,7 +223,7 @@
                     <i class="fa-regular fa-credit-card text-red-500 text-sm"></i>
                     <div>
                         <div class="text-[10px] text-gray-400 font-medium">Balance</div>
-                        <div class="text-xs font-bold text-gray-900" id="lowerBalanceLabel">$0.00</div>
+                        <div class="text-xs font-bold text-gray-900" id="lowerBalanceLabel">$10,000.00</div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -227,64 +247,75 @@
     <!-- TRADEXORA AI MANUAL TRADE MODAL -->
     <div id="aiModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-gray-100">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-extrabold text-xs">
-                        <i class="fa-solid fa-cube"></i>
+                    <div class="w-7 h-7 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-extrabold text-xs">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-extrabold text-gray-900">TRADEXORA AI</h3>
-                        <p class="text-[10px] text-gray-400">Manual trade execution</p>
-                    </div>
+                    <span class="text-xs font-bold text-blue-600 tracking-wider">TRADEXORA AI</span>
                 </div>
-                <button id="aiModalClose" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+                <button id="aiModalClose" class="text-gray-400 hover:text-gray-600 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="text-lg font-extrabold text-gray-900 tracking-tight">AI-powered trade execution</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Fast market scan. Clean entries. Smart risk handling.</p>
             </div>
 
             <div class="space-y-4">
+                <!-- ACCOUNT CARD -->
+                <div class="bg-gray-50/80 border border-gray-200/80 rounded-2xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Account</span>
+                        <div class="bg-gray-200/70 p-0.5 rounded-full flex items-center">
+                            <button type="button" id="modalDemoTab" class="px-3 py-1 text-[11px] font-bold rounded-full transition-all bg-blue-600 text-white shadow-xs" onclick="setModalAccount('Demo')">DEMO</button>
+                            <button type="button" id="modalLiveTab" class="px-3 py-1 text-[11px] font-bold rounded-full transition-all text-gray-600 hover:text-gray-900" onclick="setModalAccount('Real')">LIVE</button>
+                        </div>
+                    </div>
+                    <div class="text-xl font-extrabold text-gray-900" id="modalAccountBalance">$10,000.00</div>
+                    <div class="text-[11px] font-medium text-gray-500 mt-0.5"><span id="modalAccountId">DNP142887</span> · <span id="modalStatusText">Ready to run</span></div>
+                </div>
+
+                <!-- PAIR SELECTOR -->
                 <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Select Asset</label>
-                    <select id="aiPairSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800">
-                        <optgroup label="Forex">
-                            <option value="EURUSD">EUR/USD (EURUSD)</option>
-                            <option value="GBPUSD">GBP/USD (GBPUSD)</option>
-                            <option value="USDJPY">USD/JPY (USDJPY)</option>
-                        </optgroup>
-                        <optgroup label="Commodities">
-                            <option value="USOIL" selected>Crude Oil (USOIL)</option>
-                            <option value="NATGAS">Natural Gas (NATGAS)</option>
-                        </optgroup>
-                        <optgroup label="Indices">
-                            <option value="US30">US 30 (US30)</option>
-                            <option value="NAS100">Nasdaq 100 (NAS100)</option>
-                        </optgroup>
-                        <optgroup label="Stocks">
-                            <option value="AAPL">Apple (AAPL)</option>
-                            <option value="NVDA">NVIDIA (NVDA)</option>
-                        </optgroup>
-                        <optgroup label="Crypto">
-                            <option value="BTCUSD">Bitcoin (BTCUSD)</option>
-                            <option value="ETHUSD">Ethereum (ETHUSD)</option>
-                        </optgroup>
-                        <optgroup label="Metals">
-                            <option value="XAUUSD">Gold (XAUUSD)</option>
-                            <option value="XAGUSD">Silver (XAGUSD)</option>
-                        </optgroup>
-                    </select>
+                    <label class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1.5">Pair</label>
+                    <div class="relative">
+                        <select id="aiPairSelect" class="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-900 appearance-none focus:outline-none focus:border-blue-500 transition-colors shadow-2xs">
+                            <optgroup label="Indices">
+                                <option value="NAS100" selected>Nasdaq 100 · NAS100</option>
+                                <option value="US30">US 30 · US30</option>
+                            </optgroup>
+                            <optgroup label="Forex">
+                                <option value="EURUSD">EUR/USD · EURUSD</option>
+                                <option value="GBPUSD">GBP/USD · GBPUSD</option>
+                                <option value="USDJPY">USD/JPY · USDJPY</option>
+                            </optgroup>
+                            <optgroup label="Commodities">
+                                <option value="USOIL">Crude Oil · USOIL</option>
+                                <option value="NATGAS">Natural Gas · NATGAS</option>
+                            </optgroup>
+                            <optgroup label="Metals">
+                                <option value="XAUUSD">Gold · XAUUSD</option>
+                                <option value="XAGUSD">Silver · XAGUSD</option>
+                            </optgroup>
+                            <optgroup label="Crypto">
+                                <option value="BTCUSD">Bitcoin · BTCUSD</option>
+                                <option value="ETHUSD">Ethereum · ETHUSD</option>
+                            </optgroup>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Lot Size</label>
-                    <input id="aiLotInput" type="number" step="0.01" value="0.10" min="0.01" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800" />
-                </div>
+                <input id="aiLotInput" type="hidden" value="0.10" />
 
-                <div class="p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-[10px] text-gray-500 flex items-center justify-between">
-                    <span class="font-medium">Est. margin (1:100)</span>
-                    <span class="font-bold text-gray-800" id="aiMarginEstimate">$—</span>
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <button data-ai-dir="buy" class="ai-exec flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-all">Buy</button>
-                    <button data-ai-dir="sell" class="ai-exec flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-all">Sell</button>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" id="aiCancelBtn" class="flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 text-xs font-bold py-3.5 rounded-2xl transition-all shadow-2xs">Cancel</button>
+                    <button type="button" id="aiRunBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-3.5 rounded-2xl shadow-md transition-all">Run</button>
                 </div>
             </div>
         </div>
@@ -332,13 +363,181 @@
     <script>
         'use strict';
 
-        const STORAGE_KEY_TRADES = 'tradexora_trades';
-        const STORAGE_KEY_ACCOUNT = 'tradexora_account';
-        const PURGE_KEY = 'tradexora_trades_purged';
+        /* =====================================================================
+           TRADEXORA SHARED SYNC LAYER (TX)
+           Copy this EXACT block into TradesChart/index.html as well.
+           Trades <-> TradesChart sync via shared localStorage keys.
+           ===================================================================== */
+        const TX_TRADES_KEY = 'tradexora_trades';
+        const TX_ACCOUNT_KEY = 'tradexora_account';
+
+        const TX_CONTRACT_SIZES = {
+            USOIL: 1000,
+            NATGAS: 10000,
+            EURUSD: 100000,
+            GBPUSD: 100000,
+            USDJPY: 100000,
+            AAPL: 1,
+            NVDA: 1,
+            BTCUSD: 1,
+            ETHUSD: 1,
+            XAUUSD: 100,
+            XAGUSD: 5000,
+            US30: 1,
+            NAS100: 1
+        };
+        const TX_DECIMALS = {
+            USOIL: 2,
+            NATGAS: 3,
+            EURUSD: 5,
+            GBPUSD: 5,
+            USDJPY: 3,
+            AAPL: 2,
+            NVDA: 2,
+            BTCUSD: 2,
+            ETHUSD: 2,
+            XAUUSD: 2,
+            XAGUSD: 3,
+            US30: 2,
+            NAS100: 2
+        };
+        const TX_LEVERAGE = 100;
+
+        const TX = {
+            readTrades() {
+                try {
+                    return JSON.parse(localStorage.getItem(TX_TRADES_KEY)) || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+            writeTrades(arr) {
+                localStorage.setItem(TX_TRADES_KEY, JSON.stringify(arr));
+                window.dispatchEvent(new CustomEvent('tx:trades-updated'));
+            },
+            readAccount() {
+                try {
+                    return JSON.parse(localStorage.getItem(TX_ACCOUNT_KEY)) || {
+                        balances: {
+                            Demo: 10000.00,
+                            Real: 0.00
+                        },
+                        activeType: 'Demo',
+                        activeId: 'DNP142887'
+                    };
+                } catch (e) {
+                    return {
+                        balances: {
+                            Demo: 10000.00,
+                            Real: 0.00
+                        },
+                        activeType: 'Demo',
+                        activeId: 'DNP142887'
+                    };
+                }
+            },
+            writeAccount(state) {
+                localStorage.setItem(TX_ACCOUNT_KEY, JSON.stringify(state));
+                window.dispatchEvent(new CustomEvent('tx:account-updated'));
+            },
+            tradePL(trade, currentPrice) {
+                const dir = trade.type === 'buy' ? 1 : -1;
+                const cs = TX_CONTRACT_SIZES[trade.symbol] || 1;
+                return ((Number(currentPrice) - Number(trade.entryPrice)) * dir * Number(trade.lots) * cs) / TX_LEVERAGE;
+            },
+            // price needed for a given P/L on a trade
+            priceForPL(trade, targetPL) {
+                const dir = trade.type === 'buy' ? 1 : -1;
+                const cs = TX_CONTRACT_SIZES[trade.symbol] || 1;
+                const delta = (targetPL * TX_LEVERAGE) / ((Number(trade.lots) || 0.10) * cs);
+                return trade.entryPrice + (dir === 1 ? delta : -delta);
+            },
+            openTrade({
+                symbol,
+                type,
+                lots,
+                entryPrice,
+                account,
+                source,
+                startPL
+            }) {
+                const trades = TX.readTrades();
+                const t = {
+                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    symbol: TX_CONTRACT_SIZES.hasOwnProperty(symbol) ? symbol : 'US30',
+                    type: type === 'sell' ? 'sell' : 'buy',
+                    lots: (parseFloat(lots) > 0) ? parseFloat(lots) : 0.10,
+                    entryPrice: Number(entryPrice) || 100,
+                    currentPrice: Number(entryPrice) || 100,
+                    sl: null,
+                    tp: null,
+                    date: new Date().toLocaleString(),
+                    status: 'open',
+                    account: account === 'Real' ? 'Real' : 'Demo',
+                    closedPL: 0,
+                    closedReason: '',
+                    closedAt: '',
+                    source: source === 'bot' ? 'bot' : 'manual'
+                };
+                // AI-executed trades open at a random starting profit ($20 - $40)
+                if (source === 'bot' && Number.isFinite(startPL)) {
+                    t.currentPrice = +TX.priceForPL(t, startPL).toFixed(TX_DECIMALS[t.symbol] || 2);
+                }
+                trades.unshift(t);
+                TX.writeTrades(trades);
+                return t;
+            },
+            tickPrices(priceFeed) {
+                const trades = TX.readTrades();
+                let changed = false;
+                trades.forEach(t => {
+                    if (t.status !== 'open' || priceFeed[t.symbol] === undefined) return;
+                    const np = +Number(priceFeed[t.symbol]).toFixed(TX_DECIMALS[t.symbol] || 2);
+                    if (np !== t.currentPrice) {
+                        t.currentPrice = np;
+                        changed = true;
+                    }
+                    if (t.sl !== null && ((t.type === 'buy' && np <= t.sl) || (t.type === 'sell' && np >= t.sl)))
+                        TX.closeTrade(t.id, 'Stop loss hit', np);
+                    else if (t.tp !== null && ((t.type === 'buy' && np >= t.tp) || (t.type === 'sell' && np <= t.tp)))
+                        TX.closeTrade(t.id, 'Take profit hit', np);
+                });
+                if (changed) TX.writeTrades(trades);
+            },
+            closeTrade(id, reason, closePrice) {
+                const trades = TX.readTrades();
+                const t = trades.find(x => x.id === id);
+                if (!t || t.status === 'closed') return null;
+                const price = (closePrice !== undefined && closePrice !== null) ? closePrice : t.currentPrice;
+                const pl = TX.tradePL(t, price);
+                t.status = 'closed';
+                t.closedPL = pl;
+                t.closedReason = reason || 'Manual close';
+                t.closedAt = new Date().toLocaleString();
+                t.currentPrice = Number(price);
+                const acc = TX.readAccount();
+                acc.balances[t.account] = (acc.balances[t.account] || 0) + pl;
+                TX.writeTrades(trades);
+                TX.writeAccount(acc);
+                return t;
+            },
+            resetDemoBalance() {
+                const acc = TX.readAccount();
+                acc.balances.Demo = 10000.00;
+                TX.writeAccount(acc);
+                TX.writeTrades(TX.readTrades().filter(t => !(t.account === 'Demo' && t.status === 'open')));
+            }
+        };
+
+        /* =====================================================================
+           PAGE STATE — no hardcoded trades. List starts empty and only
+           fills from trades opened by AI Run, AI Bot, or TradesChart.
+           ===================================================================== */
         const CURRENT_USER_KEY = 'currentUser';
         const INDEX_URL = '../index.html';
-
-        const LEVERAGE = 100;
+        const LEVERAGE = TX_LEVERAGE;
+        const CONTRACT_SIZES = TX_CONTRACT_SIZES;
+        const SYMBOL_DECIMALS = TX_DECIMALS;
 
         const BOT = {
             MIN_CONFIDENCE: 75,
@@ -347,47 +546,45 @@
             RISK_LOT: 0.10
         };
 
-        const CONTRACT_SIZES = {
-            USOIL: 1000, NATGAS: 10000,
-            EURUSD: 100000, GBPUSD: 100000, USDJPY: 100000,
-            AAPL: 1, NVDA: 1,
-            BTCUSD: 1, ETHUSD: 1,
-            XAUUSD: 100, XAGUSD: 5000,
-            US30: 1, NAS100: 1
-        };
+        // AI trades: random starting profit range + fast oscillation settings
+        const AI_START_PL_MIN = 20;
+        const AI_START_PL_MAX = 40;
+        const OSCILLATION_TICK_MS = 700; // faster tick
+        const OSCILLATION_STRENGTH = 0.004; // stronger jitter so P/L swings visibly
 
         const BASE_PRICES = {
-            USOIL: 77.46, NATGAS: 2.93,
-            EURUSD: 1.0845, GBPUSD: 1.2910, USDJPY: 154.20,
-            AAPL: 232.50, NVDA: 138.25,
-            BTCUSD: 77868.26, ETHUSD: 2640,
-            XAUUSD: 2735.80, XAGUSD: 33.70,
-            US30: 51770.31, NAS100: 20250
+            USOIL: 77.46,
+            NATGAS: 2.93,
+            EURUSD: 1.0845,
+            GBPUSD: 1.2910,
+            USDJPY: 154.20,
+            AAPL: 232.50,
+            NVDA: 138.25,
+            BTCUSD: 77868.26,
+            ETHUSD: 2640,
+            XAUUSD: 2735.80,
+            XAGUSD: 33.70,
+            US30: 51770.31,
+            NAS100: 20250
         };
-
-        const SYMBOL_DECIMALS = {
-            USOIL: 2, NATGAS: 3,
-            EURUSD: 5, GBPUSD: 5, USDJPY: 3,
-            AAPL: 2, NVDA: 2,
-            BTCUSD: 2, ETHUSD: 2,
-            XAUUSD: 2, XAGUSD: 3,
-            US30: 2, NAS100: 2
-        };
-
         const ALL_SYMBOLS = Object.keys(CONTRACT_SIZES);
 
-        // ---------- STATE ----------
         let activeAccount = 'Demo';
         let activeAccountId = 'DNP142887';
-        let accountBalances = { Demo: 0.00, Real: 0.00 }; // starts at zero — no hardcoded funding
-        let tradesData = []; // NO hardcoded open trades — always starts empty
+        let accountBalances = {
+            Demo: 10000.00,
+            Real: 0.00
+        };
+        let tradesData = [];
         let openManagingId = null;
         let renderLockUntil = 0;
         let botEnabled = false;
         let botLastTradeAt = {};
-
+        let modalSelectedAccount = 'Demo';
         let livePrices = {};
-        ALL_SYMBOLS.forEach(s => { livePrices[s] = BASE_PRICES[s]; });
+        ALL_SYMBOLS.forEach(s => {
+            livePrices[s] = BASE_PRICES[s];
+        });
 
         function sanitizeTrade(t) {
             const sym = String(t.symbol || 'US30');
@@ -412,71 +609,20 @@
         }
 
         function loadState() {
-            // Account state
-            try {
-                const savedAcc = localStorage.getItem(STORAGE_KEY_ACCOUNT);
-                if (savedAcc) {
-                    const parsed = JSON.parse(savedAcc);
-                    if (parsed && parsed.balances && isFinite(parsed.balances.Demo)) {
-                        accountBalances = {
-                            Demo: parseFloat(parsed.balances.Demo) || 0,
-                            Real: parseFloat(parsed.balances.Real) || 0
-                        };
-                    }
-                    activeAccount = parsed.activeType === 'Real' ? 'Real' : 'Demo';
-                    activeAccountId = parsed.activeId || 'DNP142887';
-                }
-            } catch (e) { console.warn('Account state corrupt, using defaults', e); }
+            const acc = TX.readAccount();
+            accountBalances = {
+                Demo: Number.isFinite(parseFloat(acc.balances && acc.balances.Demo)) ? parseFloat(acc.balances.Demo) : 10000.00,
+                Real: Number.isFinite(parseFloat(acc.balances && acc.balances.Real)) ? parseFloat(acc.balances.Real) : 0.00
+            };
+            activeAccount = acc.activeType === 'Real' ? 'Real' : 'Demo';
+            activeAccountId = acc.activeId || (activeAccount === 'Real' ? 'RNP982314' : 'DNP142887');
 
-            // One-time purge of old hardcoded/seeded open trades
-            try {
-                if (!localStorage.getItem(PURGE_KEY)) {
-                    localStorage.removeItem(STORAGE_KEY_TRADES);
-                    localStorage.setItem(PURGE_KEY, '1');
-                }
-            } catch (e) { console.warn('Purge failed', e); }
-
-            // Trades state — discard any stored OPEN trades, keep closed history only
-            tradesData = [];
-            try {
-                const savedTrades = localStorage.getItem(STORAGE_KEY_TRADES);
-                if (savedTrades) {
-                    const parsedTrades = JSON.parse(savedTrades);
-                    if (Array.isArray(parsedTrades)) {
-                        tradesData = parsedTrades
-                            .filter(t => t && t.status === 'closed')
-                            .map(sanitizeTrade);
-                    }
-                }
-            } catch (e) { console.warn('Trades state corrupt, resetting', e); }
-
-            saveTrades();
+            tradesData = TX.readTrades().map(sanitizeTrade);
         }
 
-        function saveState() {
-            try {
-                localStorage.setItem(STORAGE_KEY_ACCOUNT, JSON.stringify({
-                    balances: accountBalances,
-                    activeType: activeAccount,
-                    activeId: activeAccountId
-                }));
-            } catch (e) { console.warn('saveState failed', e); }
-        }
-
-        function saveTrades() {
-            try {
-                localStorage.setItem(STORAGE_KEY_TRADES, JSON.stringify(tradesData));
-            } catch (e) { console.warn('saveTrades failed', e); }
-        }
-
-        // ---------- CALC ----------
+        // ---------- HELPERS ----------
         function getTradePL(trade) {
-            const entry = Number(trade.entryPrice) || 0;
-            const current = Number(trade.currentPrice) || 0;
-            const lots = Number(trade.lots) || 0;
-            const dir = (trade.type === 'buy') ? 1 : -1;
-            const contractSize = CONTRACT_SIZES[trade.symbol] || 1;
-            return (current - entry) * dir * lots * contractSize / LEVERAGE;
+            return TX.tradePL(trade, trade.currentPrice);
         }
 
         function requiredMargin(trade) {
@@ -484,37 +630,28 @@
             return price * (Number(trade.lots) || 0) * (CONTRACT_SIZES[trade.symbol] || 1) / LEVERAGE;
         }
 
-        function openMarginUsed() {
-            return tradesData.filter(t => t.account === activeAccount && t.status === 'open')
+        function openMarginUsedFor(accType) {
+            return tradesData.filter(t => t.account === accType && t.status === 'open')
                 .reduce((sum, t) => sum + requiredMargin(t), 0);
         }
 
         function fmtMoney(n) {
-            return '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return '$' + (Number(n) || 0).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         function fmtPrice(sym, n) {
             return (Number(n) || 0).toFixed(SYMBOL_DECIMALS[sym] !== undefined ? SYMBOL_DECIMALS[sym] : 2);
         }
 
-        // ---------- TRADE LIFECYCLE ----------
         function closeTradeById(id, reason) {
-            const index = tradesData.findIndex(t => t.id === id);
-            if (index === -1) return null;
-            const trade = tradesData[index];
-            const pl = getTradePL(trade);
-
-            accountBalances[trade.account] = (accountBalances[trade.account] || 0) + pl;
-            trade.status = 'closed';
-            trade.closedPL = pl;
-            trade.closedReason = reason || 'Manual close';
-            trade.closedAt = new Date().toLocaleString();
-
-            saveTrades();
-            saveState();
+            const trade = TX.closeTrade(id, reason || 'Manual close');
+            if (!trade) return null;
+            loadState();
             if (openManagingId === id) openManagingId = null;
-
-            showToast(`${trade.symbol} closed ${reason || ''} (${pl >= 0 ? '+' : '-'}$${Math.abs(pl).toFixed(2)} ${pl >= 0 ? 'added to' : 'deducted from'} balance)`);
+            showToast(`${trade.symbol} closed ${reason || ''} (${trade.closedPL >= 0 ? '+' : '-'}$${Math.abs(trade.closedPL).toFixed(2)})`);
             return trade;
         }
 
@@ -529,7 +666,8 @@
         }
 
         function saveSLTP(id) {
-            const trade = tradesData.find(t => t.id === id);
+            const trades = TX.readTrades();
+            const trade = trades.find(t => t.id === id);
             const slEl = document.getElementById(`sl_input_${id}`);
             const tpEl = document.getElementById(`tp_input_${id}`);
             if (trade && slEl && tpEl) {
@@ -537,7 +675,8 @@
                 const tpVal = parseFloat(tpEl.value);
                 trade.sl = isNaN(slVal) ? null : slVal;
                 trade.tp = isNaN(tpVal) ? null : tpVal;
-                saveTrades();
+                TX.writeTrades(trades);
+                loadState();
                 openManagingId = null;
                 showToast(`SL/TP updated for ${trade.symbol}`);
                 renderTrades();
@@ -579,18 +718,18 @@
                 if (openTrades.length === 0) {
                     openView.innerHTML = `
                         <div class="bg-gray-50/70 border border-gray-100 rounded-2xl p-6 text-center text-xs text-gray-400 font-medium">
-                            No open trades. Open one via the TRADEXORA AI panel or the trading dashboard.
+                            No open trades. Open one via the TRADEXORA AI panel or TradesChart.
                         </div>`;
                 } else {
                     openView.innerHTML = openTrades.map(trade => {
-                        const pl = getTradePL(trade);
-                        const isManaging = openManagingId === trade.id;
-                        const lots = Number(trade.lots) || 0;
-                        const margin = requiredMargin(trade);
-                        const botTag = trade.source === 'bot'
-                            ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">AI BOT</span>'
-                            : '';
-                        return `
+                                const pl = getTradePL(trade);
+                                const isManaging = openManagingId === trade.id;
+                                const lots = Number(trade.lots) || 0;
+                                const margin = requiredMargin(trade);
+                                const botTag = trade.source === 'bot' ?
+                                    '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">AI BOT</span>' :
+                                    '';
+                                return `
                         <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-xs relative overflow-hidden">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                                 <div>
@@ -669,7 +808,7 @@
             }
         }
 
-        // ---------- AI BOT ----------
+        // ---------- AI BOT & SIGNALS ----------
         function computeSignal(sym) {
             const price = livePrices[sym];
             const series = [];
@@ -678,7 +817,6 @@
                 series.unshift(p);
                 p = p / (1 + (Math.random() * 2 - 1) * 0.0006);
             }
-
             const ema = (vals, period) => {
                 const k = 2 / (period + 1);
                 let e = vals[0];
@@ -691,28 +829,13 @@
             };
             const e9 = ema(series, 9), e21 = ema(series, 21);
             const lastE9 = e9[e9.length - 1], lastE21 = e21[e21.length - 1];
-            const prevE9 = e9[e9.length - 2], prevE21 = e21[e21.length - 2];
-
-            let gains = 0, losses = 0;
-            for (let i = series.length - 14; i < series.length; i++) {
-                const d = series[i] - series[i - 1];
-                if (d > 0) gains += d; else losses -= d;
-            }
-            const rsi = losses === 0 ? 100 : 100 - (100 / (1 + (gains / 14) / (losses / 14)));
-
-            const crossUp = prevE9 <= prevE21 && lastE9 > lastE21;
-            const crossDn = prevE9 >= prevE21 && lastE9 < lastE21;
-            const sep = Math.abs(lastE9 - lastE21) / price;
-
-            let type = null, confidence = 0;
-            if (lastE9 > lastE21 && rsi < 68) {
-                type = 'buy';
-                confidence = Math.round(Math.min(95, 60 + sep * 4000 + (crossUp ? 12 : 0)));
-            } else if (lastE9 < lastE21 && rsi > 32) {
-                type = 'sell';
-                confidence = Math.round(Math.min(95, 60 + sep * 4000 + (crossDn ? 12 : 0)));
-            }
+            const type = lastE9 >= lastE21 ? 'buy' : 'sell';
+            const confidence = Math.floor(Math.random() * 15) + 80;
             return { type, confidence };
+        }
+
+        function randomStartPL() {
+            return Math.random() * (AI_START_PL_MAX - AI_START_PL_MIN) + AI_START_PL_MIN;
         }
 
         function botScan() {
@@ -723,31 +846,28 @@
                 if (botLastTradeAt[sym] && now - botLastTradeAt[sym] < BOT.COOLDOWN_MS) continue;
 
                 const sig = computeSignal(sym);
-                if (!sig.type || sig.confidence < BOT.MIN_CONFIDENCE) continue;
+                if (sig.confidence < BOT.MIN_CONFIDENCE) continue;
 
                 const price = livePrices[sym];
                 const lot = BOT.RISK_LOT;
                 const margin = price * lot * (CONTRACT_SIZES[sym] || 1) / LEVERAGE;
-                const freeMargin = (accountBalances[activeAccount] || 0) - openMarginUsed();
+                const freeMargin = (accountBalances[activeAccount] || 0) - openMarginUsedFor(activeAccount);
                 if (margin > freeMargin) continue;
 
-                tradesData.unshift({
-                    id: Date.now(),
+                // AI trade opens at a random starting profit between $20 and $40
+                TX.openTrade({
                     symbol: sym,
                     type: sig.type,
                     lots: lot,
                     entryPrice: price,
-                    currentPrice: price,
-                    sl: null,
-                    tp: null,
-                    date: new Date().toLocaleString(),
-                    status: 'open',
                     account: activeAccount,
-                    source: 'bot'
+                    source: 'bot',
+                    startPL: randomStartPL()
                 });
+
                 botLastTradeAt[sym] = now;
-                showToast(`AI Bot opened ${sig.type.toUpperCase()} ${sym} @ ${fmtPrice(sym, price)} (confidence ${sig.confidence}%)`);
-                saveTrades();
+                showToast(`AI Bot opened high-profit ${sig.type.toUpperCase()} ${sym}`);
+                loadState();
                 renderTrades();
                 return;
             }
@@ -762,75 +882,107 @@
                 ? 'px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition shadow'
                 : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 hover:bg-blue-50 transition shadow';
             label.textContent = botEnabled
-                ? 'ON — scanning all assets for high-confidence setups'
-                : 'OFF — opens only high-confidence setups on all assets';
+                ? 'ON — scanning high-profit setups'
+                : 'OFF — opens high-profit setups on all assets';
             showToast(botEnabled ? 'AI Bot started' : 'AI Bot stopped');
         }
 
-        // ---------- MANUAL AI TRADE ----------
+        // ---------- AI MANUAL TRADE MODAL ----------
+        function setModalAccount(type) {
+            modalSelectedAccount = type;
+            const demoTab = document.getElementById('modalDemoTab');
+            const liveTab = document.getElementById('modalLiveTab');
+            const balEl = document.getElementById('modalAccountBalance');
+            const idEl = document.getElementById('modalAccountId');
+            const statusEl = document.getElementById('modalStatusText');
+
+            if (type === 'Demo') {
+                demoTab.className = "px-3 py-1 text-[11px] font-bold rounded-full transition-all bg-blue-600 text-white shadow-xs";
+                liveTab.className = "px-3 py-1 text-[11px] font-bold rounded-full transition-all text-gray-600 hover:text-gray-900";
+                balEl.innerText = fmtMoney(accountBalances.Demo);
+                idEl.innerText = 'DNP142887';
+                statusEl.innerText = 'Ready to run';
+            } else {
+                liveTab.className = "px-3 py-1 text-[11px] font-bold rounded-full transition-all bg-blue-600 text-white shadow-xs";
+                demoTab.className = "px-3 py-1 text-[11px] font-bold rounded-full transition-all text-gray-600 hover:text-gray-900";
+                balEl.innerText = fmtMoney(accountBalances.Real);
+                idEl.innerText = 'RNP982314';
+                statusEl.innerText = (accountBalances.Real || 0) <= 0 ? 'Zero balance - Deposit required' : 'Ready to run';
+            }
+        }
+
         function openAiModal() {
             document.getElementById('aiModal').classList.remove('hidden');
-            updateAiMarginEstimate();
+            setModalAccount(activeAccount);
         }
 
-        function closeAiModal() { document.getElementById('aiModal').classList.add('hidden'); }
-
-        function updateAiMarginEstimate() {
-            const pair = document.getElementById('aiPairSelect').value;
-            const lot = parseFloat(document.getElementById('aiLotInput').value) || 0;
-            const price = livePrices[pair] || BASE_PRICES[pair] || 100;
-            const el = document.getElementById('aiMarginEstimate');
-            if (el) el.innerText = fmtMoney(price * lot * (CONTRACT_SIZES[pair] || 1) / LEVERAGE);
+        function closeAiModal() {
+            document.getElementById('aiModal').classList.add('hidden');
         }
 
-        function executeAiTrade(type) {
+        function executeRunAiTrade() {
             const pair = document.getElementById('aiPairSelect').value;
-            const lot = parseFloat(document.getElementById('aiLotInput').value) || 0.10;
-            if (lot < 0.01) {
-                showToast('Rejected: minimum lot size is 0.01');
-                return;
-            }
-
+            const lot = 0.10;
             const price = livePrices[pair] || BASE_PRICES[pair] || 100;
+            const sig = computeSignal(pair);
+            const dir = sig.type || 'buy';
+
+            const currentAccBal = accountBalances[modalSelectedAccount] || 0;
             const margin = price * lot * (CONTRACT_SIZES[pair] || 1) / LEVERAGE;
-            const freeMargin = (accountBalances[activeAccount] || 0) - openMarginUsed();
-            if (margin > freeMargin) {
-                showToast(`Rejected: margin ${fmtMoney(margin)} exceeds free margin ${fmtMoney(Math.max(0, freeMargin))}. Please deposit.`);
+            const freeMargin = currentAccBal - openMarginUsedFor(modalSelectedAccount);
+
+            if (modalSelectedAccount === 'Real' && currentAccBal <= 0) {
+                showToast('Real account balance is $0.00. Redirecting to deposit...');
+                closeAiModal();
+                setTimeout(() => { window.location.href = '../deposit/index.html'; }, 1200);
                 return;
             }
 
-            tradesData.unshift({
-                id: Date.now(),
+            if (margin > freeMargin) {
+                showToast(`Rejected: margin exceeds free balance on ${modalSelectedAccount} account. Please deposit.`);
+                if (modalSelectedAccount === 'Real') {
+                    setTimeout(() => { window.location.href = '../deposit/index.html'; }, 1200);
+                }
+                return;
+            }
+
+            // Random starting profit between $20 and $40, oscillating fast
+            const startPL = randomStartPL();
+            TX.openTrade({
                 symbol: pair,
-                type: type,
+                type: dir,
                 lots: lot,
                 entryPrice: price,
-                currentPrice: price,
-                sl: null,
-                tp: null,
-                date: new Date().toLocaleString(),
-                status: 'open',
-                account: activeAccount,
-                source: 'manual'
+                account: modalSelectedAccount,
+                source: 'bot',
+                startPL: startPL
             });
-            saveTrades();
+
+            loadState();
             closeAiModal();
-            showToast(`TRADEXORA AI executed ${String(type).toUpperCase()} ${lot.toFixed(2)} ${pair} @ ${fmtPrice(pair, price)}`);
+            showToast(`TRADEXORA AI executed on ${modalSelectedAccount} · +$${startPL.toFixed(2)} start`);
             renderTrades();
         }
 
-        // ---------- PRICE TICK ----------
+        // ---------- FAST OSCILLATION ENGINE ----------
+        // Each open AI trade oscillates rapidly around its starting profit.
+        // currentPrice drifts up/down fast so the P/L number swings live.
         setInterval(() => {
-            ALL_SYMBOLS.forEach(sym => {
-                const base = livePrices[sym];
-                livePrices[sym] = +(base + (Math.random() - 0.5) * (base * 0.0005)).toFixed(SYMBOL_DECIMALS[sym]);
+            const trades = TX.readTrades();
+            let changed = false;
+
+            trades.forEach(t => {
+                if (t.status !== 'open') return;
+                const anchor = TX.priceForPL(t, AI_START_PL_MIN + (AI_START_PL_MAX - AI_START_PL_MIN) / 2);
+                const swing = anchor * OSCILLATION_STRENGTH;
+                const np = +(t.currentPrice + (Math.random() - 0.48) * swing).toFixed(TX_DECIMALS[t.symbol] ?? 2);
+                if (np !== t.currentPrice) { t.currentPrice = np; changed = true; }
             });
 
-            tradesData.forEach(trade => {
-                if (trade.status === 'open') {
-                    trade.currentPrice = livePrices[trade.symbol] || trade.currentPrice;
-                }
-            });
+            if (changed) {
+                TX.writeTrades(trades);
+            }
+            loadState();
 
             const totalPL = tradesData.filter(t => t.account === activeAccount && t.status === 'open')
                 .reduce((acc, t) => acc + getTradePL(t), 0);
@@ -843,12 +995,36 @@
             if (openManagingId === null && Date.now() >= renderLockUntil) {
                 renderTrades();
             }
-        }, 1500);
+        }, OSCILLATION_TICK_MS);
 
         setInterval(botScan, BOT.SCAN_INTERVAL_MS);
 
+        // ---------- CROSS-TAB / SAME-TAB SYNC ----------
+        window.addEventListener('storage', (e) => {
+            if (e.key === TX_TRADES_KEY || e.key === TX_ACCOUNT_KEY) {
+                loadState();
+                renderTrades();
+            }
+        });
+        window.addEventListener('tx:trades-updated', () => {
+            loadState();
+            if (Date.now() >= renderLockUntil) renderTrades();
+        });
+        window.addEventListener('tx:account-updated', () => { loadState(); renderTrades(); });
+
         // ---------- EVENT DELEGATION ----------
         document.addEventListener('click', function (e) {
+            // RESET DEMO — always returns balance to $10,000
+            if (e.target.closest('#resetDemoBtn')) {
+                TX.resetDemoBalance();
+                loadState();
+                openManagingId = null;
+                document.getElementById('accountDropdown').classList.add('hidden');
+                showToast('Demo account balance reset to $10,000.00');
+                renderTrades();
+                return;
+            }
+
             const btn = e.target.closest('[data-action]');
             if (btn) {
                 const action = btn.dataset.action;
@@ -861,16 +1037,15 @@
             }
             if (e.target.closest('#aiOpenBtn')) { openAiModal(); return; }
             if (e.target.closest('#aiModalClose')) { closeAiModal(); return; }
+            if (e.target.closest('#aiCancelBtn')) { closeAiModal(); return; }
+            if (e.target.closest('#aiRunBtn')) { executeRunAiTrade(); return; }
             if (e.target.closest('#botToggleBtn')) { toggleBot(); return; }
-
-            const aiBtn = e.target.closest('.ai-exec');
-            if (aiBtn) { executeAiTrade(aiBtn.dataset.aiDir); return; }
 
             const accBtn = e.target.closest('.acc-btn');
             if (accBtn) {
                 activeAccount = accBtn.dataset.accType;
                 activeAccountId = accBtn.dataset.accId;
-                saveState();
+                TX.writeAccount({ balances: accountBalances, activeType: activeAccount, activeId: activeAccountId });
                 document.getElementById('accountDropdown').classList.add('hidden');
                 openManagingId = null;
                 showToast(`Switched to ${activeAccount} Account`);
@@ -896,13 +1071,6 @@
             if (!dropdown.classList.contains('hidden') && !e.target.closest('#accountDropdown')) {
                 dropdown.classList.add('hidden');
             }
-        });
-
-        document.addEventListener('change', function (e) {
-            if (e.target.id === 'aiPairSelect' || e.target.id === 'aiLotInput') updateAiMarginEstimate();
-        });
-        document.addEventListener('input', function (e) {
-            if (e.target.id === 'aiLotInput') updateAiMarginEstimate();
         });
 
         // ---------- UI HELPERS ----------
@@ -970,4 +1138,5 @@
         })();
     </script>
 </body>
+
 </html>
