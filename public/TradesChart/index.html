@@ -22,18 +22,12 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif']
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         qora: {
-                            bg: '#f8fafc',
-                            card: '#ffffff',
-                            border: '#e2e8f0',
-                            demoRed: '#801336',
-                            sellRed: '#ff7b89',
-                            buyGreen: '#50e396',
-                            aiBlue: '#2d60f7'
+                            bg: '#f8fafc', card: '#ffffff', border: '#e2e8f0',
+                            demoRed: '#801336', sellRed: '#dc2626',
+                            buyGreen: '#059669', aiBlue: '#2d60f7'
                         }
                     }
                 }
@@ -47,78 +41,34 @@
             color: #1e293b;
             user-select: none;
             overflow-x: hidden;
-            /* FIX 2c: reserve space so nothing is obscured by the fixed
-               action bar (~90px) + bottom nav (~70px) */
             padding-bottom: 175px;
         }
 
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
         .ai-shadow {
             box-shadow: 0 10px 25px -5px rgba(45, 96, 247, .4), 0 8px 10px -6px rgba(45, 96, 247, .2);
         }
 
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .flash-up { animation: flashUp .5s ease-out; }
+        .flash-down { animation: flashDown .5s ease-out; }
 
-        .flash-up {
-            animation: flashUp .5s ease-out;
-        }
+        @keyframes flashUp { 0% { background: rgba(16, 185, 129, .3); } 100% { background: transparent; } }
+        @keyframes flashDown { 0% { background: rgba(220, 38, 38, .3); } 100% { background: transparent; } }
 
-        .flash-down {
-            animation: flashDown .5s ease-out;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .animate-fadeIn { animation: fadeIn .2s ease-out; }
 
-        @keyframes flashUp {
-            0% { background: rgba(80, 227, 150, .35); }
-            100% { background: transparent; }
-        }
+        #lwc_chart_container { width: 100%; height: 100%; min-height: 300px; }
 
-        @keyframes flashDown {
-            0% { background: rgba(255, 123, 137, .35); }
-            100% { background: transparent; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: none; }
-        }
-
-        .animate-fadeIn {
-            animation: fadeIn .2s ease-out;
-        }
-
-        #lwc_chart_container {
-            width: 100%;
-            height: 100%;
-            min-height: 300px;
-        }
-
-        /* ============================================================
-           FIX 2a: STICKY BOTTOM ACTION BAR (Sell / Lot / Buy)
-           Pinned above the bottom navigation across all devices.
-        ============================================================ */
         #stickyTradeBar {
             position: fixed;
-            bottom: 70px;               /* height of the bottom nav bar */
+            bottom: 70px;
             left: 0;
             width: 100%;
             z-index: 1000;
@@ -127,7 +77,6 @@
             border-top: 1px solid #e2e8f0;
         }
 
-        /* Bottom dock nav pinned to viewport bottom edge */
         #bottomDockNav {
             position: fixed;
             bottom: 0;
@@ -139,11 +88,7 @@
             padding-bottom: max(6px, env(safe-area-inset-bottom));
         }
 
-        /* FIX 1: clean, edge-to-edge chart area */
-        #chartStage {
-            border-radius: 0;
-            background: #ffffff;
-        }
+        #chartStage { border-radius: 0; background: #ffffff; }
     </style>
 </head>
 
@@ -152,31 +97,18 @@
     <div class="max-w-[1600px] w-full mx-auto space-y-2">
 
         <!-- 1. HEADER BAR -->
-        <header class="bg-white rounded-xl p-2 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+        <header class="bg-slate-900 rounded-xl p-2 border border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 md:gap-3">
-                <a href="../index.html" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 text-amber-400 font-bold text-sm tracking-wider shadow-inner">
-                    <div class="w-5 h-5 rounded-full border border-amber-400 flex items-center justify-center text-[10px] font-black bg-slate-800">Q</div>
+                <a href="../index.html" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-amber-400 font-bold text-sm tracking-wider shadow-inner">
+                    <div class="w-5 h-5 rounded-full border border-amber-400 flex items-center justify-center text-[10px] font-black bg-slate-900">Q</div>
                     <span class="text-white text-xs font-bold tracking-wider">TRADEXORA</span>
-                </a>
-                <a href="../deposit/index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-semibold transition">
-                    <i class="fa-regular fa-credit-card text-amber-600"></i>
-                    <span>Deposit Funds</span>
                 </a>
             </div>
 
-            <div class="flex-1 max-w-xl min-w-[220px]">
+            <div class="flex-1 max-w-md min-w-[200px]">
                 <div class="relative flex items-center">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="symbolSearch" onkeyup="handleSearch(event)" placeholder="Search All Symbols (e.g. AAPL, BTC, US30)" class="w-full pl-9 pr-28 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                    <div class="absolute right-1 flex items-center gap-1">
-                        <button id="toggleAccountBtn" onclick="toggleAccountType()" class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-md shadow-2xs transition">
-                            <i class="fa-solid fa-sliders text-slate-400 text-[10px]"></i>
-                            <span id="toggleAccountBtnText">Switch to Live</span>
-                        </button>
-                        <button class="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100 transition" title="User Profile" onclick="window.location.href='../More/index.html'">
-                            <i class="fa-regular fa-user text-xs"></i>
-                        </button>
-                    </div>
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-xs"></i>
+                    <input type="text" id="symbolSearch" onkeyup="handleSearch(event)" placeholder="Search symbols (AAPL, BTC, US30)…" class="w-full pl-9 pr-3 py-1.5 text-xs md:text-sm bg-slate-800 hover:bg-slate-700 focus:bg-slate-700 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400/40 transition">
                 </div>
             </div>
 
@@ -188,24 +120,14 @@
                     </div>
                     <span id="accountIdDisplay" class="text-[9px] text-rose-200/80 tracking-wider">DNP142887</span>
                 </div>
-                <button onclick="resetAccountBalance()" title="Reset Demo Balance" class="w-8 h-8 flex items-center justify-center border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
-                    <i class="fa-solid fa-rotate-right text-xs"></i>
-                </button>
-                <button onclick="showToast('Notifications', 'Real-time price feed synchronized', 'info')" class="relative w-8 h-8 flex items-center justify-center border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 rounded-lg transition">
-                    <i class="fa-regular fa-bell text-xs"></i>
-                    <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                <button onclick="toggleAccountType()" id="toggleAccountBtn" class="h-8 px-2.5 flex items-center gap-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition">
+                    <span id="toggleAccountBtnText">Switch to Live</span>
                 </button>
             </div>
         </header>
 
-        <!-- ============================================================
-             2. CHART CONTROL BAR (QoraTrading-style structure)
-             Row 1: Category tabs | Row 2: quick-symbol chips
-             Row 3: toolbar (TF, chart style, indicators, drawing)
-             The chart canvas sits directly below, edge-to-edge.
-        ============================================================ -->
+        <!-- 2. CHART CONTROL BAR -->
         <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <!-- Row 1: Category filter tabs -->
             <div class="px-3 pt-2.5">
                 <div id="categoryContainer" class="flex items-center gap-5 overflow-x-auto border-b border-slate-100 text-xs font-medium text-slate-500 no-scrollbar">
                     <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Forex')">Forex</button>
@@ -217,15 +139,12 @@
                 </div>
             </div>
 
-            <!-- Row 2: quick-symbol selector chips -->
             <div class="px-3 py-2 border-b border-slate-100 bg-slate-50/50">
                 <div id="subSymbolsList" class="flex items-center gap-2 overflow-x-auto no-scrollbar"></div>
             </div>
 
-            <!-- Row 3: toolbar controls directly above the chart canvas -->
             <div class="px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs border-b border-slate-100">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <!-- TF Two-Column Dropdown -->
                     <div class="relative" id="tfDropdownRoot">
                         <button id="tfTriggerBtn" onclick="event.stopPropagation(); toggleTfDropdown();" class="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-md shadow-2xs text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
                             <span class="text-slate-500 font-medium">TF</span>
@@ -233,7 +152,6 @@
                             <i id="tfChevron" class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition-transform"></i>
                         </button>
                     </div>
-                    <!-- Chart style dropdown -->
                     <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs">
                         <i class="fa-solid fa-chart-candlestick text-slate-500 text-xs"></i>
                         <select id="chartTypeSelect" onchange="changeChartType(this.value)" class="bg-transparent font-semibold text-slate-800 text-xs focus:outline-none cursor-pointer">
@@ -245,11 +163,9 @@
                             <option value="bars">Bars</option>
                         </select>
                     </div>
-                    <!-- Indicators -->
                     <button onclick="showToast('Indicators', 'Technical Indicators panel loaded', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Indicators">
                         <i class="fa-solid fa-chart-line text-xs"></i>
                     </button>
-                    <!-- Drawing tools dropdown -->
                     <div class="relative" id="drawDropdownRoot">
                         <button onclick="event.stopPropagation(); toggleDrawDropdown();" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
                             <i class="fa-solid fa-pencil text-xs"></i>
@@ -261,21 +177,26 @@
                             <button class="block w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" onclick="pickDrawTool('Rectangle')"><i class="fa-regular fa-square w-4 mr-1.5 text-slate-400"></i>Rectangle</button>
                         </div>
                     </div>
-                    <!-- Live symbol + price readout -->
                     <div class="flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-md shadow-2xs">
                         <span id="chartSymbolLabel" class="font-bold text-slate-900">USOIL</span>
                         <span id="chartLastPrice" class="font-bold text-slate-600">—</span>
                         <span id="candleCountdown" class="font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">—</span>
                     </div>
                 </div>
-                <!-- FIX 1: feed status moved here (outside the chart canvas) -->
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="feedStatusText">Connecting Twelve Data feed…</span>
-                </span>
+                <div class="flex items-center gap-2">
+                    <!-- Auto-trade toggle -->
+                    <button id="autoTradeBtn" onclick="toggleAutoTrade()" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 transition">
+                        <i class="fa-solid fa-robot text-[10px]"></i>
+                        <span id="autoTradeLabel">AI Auto: OFF</span>
+                    </button>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="feedStatusText">Connecting Twelve Data feed…</span>
+                    </span>
+                </div>
             </div>
 
-            <!-- 5. CHART AREA — clean, edge-to-edge, no banners inside -->
+            <!-- 3. CHART AREA -->
             <div id="chartStage" class="relative w-full h-[340px] md:h-[440px] bg-white overflow-hidden">
                 <div id="lwc_chart_container"></div>
 
@@ -298,13 +219,12 @@
                         <span id="aiConfidenceText" class="font-bold text-slate-400">—</span>
                     </div>
                     <div id="aiSuggestionMeta" class="text-[11px] text-slate-500 space-y-0.5"></div>
-                    <button onclick="applyAISuggestion()" class="w-full py-2 bg-[#2d60f7] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Execute Suggested Trade</button>
+                    <button id="aiExecuteBtn" onclick="applyAISuggestion()" class="w-full py-2 bg-[#2d60f7] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Execute Suggested Trade</button>
                 </div>
             </div>
         </section>
 
-        <!-- 6. MARKET STATUS — slim strip BELOW the chart panel (no longer
-             inside the chart viewing area, keeping the canvas clean) -->
+        <!-- 4. MARKET STATUS -->
         <div id="marketAlert" class="bg-white rounded-xl px-3 py-2 border border-slate-200 shadow-sm flex items-center justify-between text-xs text-amber-900 font-medium">
             <div class="flex items-center gap-2">
                 <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
@@ -313,14 +233,11 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         FIX 2b: STICKY TRADE EXECUTION BAR (Sell / Lot / Buy)
-         Fixed above the bottom navigation, full width, always visible.
-    ============================================================ -->
+    <!-- 5. STICKY TRADE EXECUTION BAR -->
     <div id="stickyTradeBar" class="grid grid-cols-12 gap-2 md:gap-3 items-center px-3 py-2.5">
-        <button onclick="executeTrade('SELL')" class="col-span-5 py-2.5 px-4 bg-[#ff7b89] hover:bg-rose-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-rose-300">
+        <button onclick="executeTrade('SELL')" class="col-span-5 py-2.5 px-4 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-red-700">
             <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
-            <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+            <span id="sellPriceVal" class="text-base md:text-xl font-black text-white mt-0.5">—</span>
         </button>
         <div class="col-span-2 flex flex-col items-center justify-center border border-slate-200 rounded-xl py-1.5 px-2 bg-slate-50 shadow-2xs">
             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LOT</span>
@@ -331,13 +248,13 @@
             </div>
             <span class="text-[9px] text-slate-400">Margin <span id="marginEstimate" class="font-bold text-slate-600">$—</span></span>
         </div>
-        <button onclick="executeTrade('BUY')" class="col-span-5 py-2.5 px-4 bg-[#50e396] hover:bg-emerald-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-300">
+        <button onclick="executeTrade('BUY')" class="col-span-5 py-2.5 px-4 bg-[#059669] hover:bg-[#047857] text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-700">
             <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
-            <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+            <span id="buyPriceVal" class="text-base md:text-xl font-black text-white mt-0.5">—</span>
         </button>
     </div>
 
-    <!-- 7. BOTTOM DOCK NAVIGATION — pinned to viewport bottom -->
+    <!-- 6. BOTTOM DOCK NAVIGATION -->
     <div id="bottomDockNav">
         <nav class="bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-full px-5 py-2 flex items-center justify-between text-slate-500">
             <a href="../menu/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
@@ -386,7 +303,7 @@
         </div>
     </div>
 
-    <!-- 8. APPLICATION SCRIPT -->
+    <!-- 7. APPLICATION SCRIPT -->
     <script>
         /* ============================================================
            CONFIG
@@ -400,6 +317,16 @@
         const AI_REFRESH_MS = 5000;
         const TICK_HISTORY_MAX = 600;
         const HISTORY_BARS = 300;
+
+        /* ---------- TRADEXORA AI ENGINE CONFIG ---------- */
+        const AI_AUTO_TRADE_DEFAULT = false;      // auto-execution starts OFF; toggle in toolbar
+        const AI_MIN_CONFIDENCE = 70;             // auto-trade fires only above this score
+        const AI_COOLDOWN_MS = 60000;             // min gap between executions per symbol
+        const AI_RISK_PCT = 0.01;                 // 1% of balance risked per trade
+        const AI_SL_ATR_MULT = 1.5;               // SL distance = 1.5 × ATR(14)
+        const AI_TP_ATR_MULT = 3.0;               // TP distance = 3.0 × ATR(14) → 1:2 R/R
+        const AI_SUGGESTION_TTL_MS = 30000;       // last valid signal stays executable for 30s
+        const ALLOW_CLOSED_MARKET_TRADING = true; // demo-testing: bypass market-hours gate (demo only)
 
         /* ============================================================
            TIMEFRAME DATA
@@ -430,20 +357,23 @@
         let tfSelectedTf = '15m';
         let tfSeconds = 900;
 
+        /* ============================================================
+           SYMBOLS DATABASE
+        ============================================================ */
         const symbolsDatabase = {
-            'USOIL': { tdSymbol: 'WTI/USD', category: 'Commodities', base: 103.27, pipSize: 0.01, contractSize: 1000 },
-            'NATGAS': { tdSymbol: 'NG/USD', category: 'Commodities', base: 3.05, pipSize: 0.001, contractSize: 10000 },
-            'EURUSD': { tdSymbol: 'EUR/USD', category: 'Forex', base: 1.0845, pipSize: 0.0001, contractSize: 100000 },
-            'GBPUSD': { tdSymbol: 'GBP/USD', category: 'Forex', base: 1.2910, pipSize: 0.0001, contractSize: 100000 },
-            'USDJPY': { tdSymbol: 'USD/JPY', category: 'Forex', base: 154.20, pipSize: 0.01, contractSize: 100000 },
-            'AAPL': { tdSymbol: 'AAPL', category: 'Stocks', base: 232.50, pipSize: 0.01, contractSize: 1 },
-            'NVDA': { tdSymbol: 'NVDA', category: 'Stocks', base: 138.25, pipSize: 0.01, contractSize: 1 },
-            'BTCUSD': { tdSymbol: 'BTC/USD', category: 'Crypto', base: 68450, pipSize: 0.01, contractSize: 1, binance: 'btcusdt', feed: 'live' },
-            'ETHUSD': { tdSymbol: 'ETH/USD', category: 'Crypto', base: 2640, pipSize: 0.01, contractSize: 1, binance: 'ethusdt', feed: 'live' },
-            'XAUUSD': { tdSymbol: 'XAU/USD', category: 'Metals', base: 2735.80, pipSize: 0.01, contractSize: 100 },
-            'XAGUSD': { tdSymbol: 'XAG/USD', category: 'Metals', base: 33.70, pipSize: 0.001, contractSize: 5000 },
-            'US30': { tdSymbol: 'DJI', category: 'Indices', base: 42110, pipSize: 0.1, contractSize: 1 },
-            'NAS100': { tdSymbol: 'IXIC', category: 'Indices', base: 20250, pipSize: 0.1, contractSize: 1 }
+            'USOIL':   { tdSymbol: 'WTI/USD',  category: 'Commodities', base: 103.27,  pipSize: 0.01,   contractSize: 1000 },
+            'NATGAS':  { tdSymbol: 'NG/USD',   category: 'Commodities', base: 3.05,    pipSize: 0.001,  contractSize: 10000 },
+            'EURUSD':  { tdSymbol: 'EUR/USD',  category: 'Forex',       base: 1.0845,  pipSize: 0.0001, contractSize: 100000 },
+            'GBPUSD':  { tdSymbol: 'GBP/USD',  category: 'Forex',       base: 1.2910,  pipSize: 0.0001, contractSize: 100000 },
+            'USDJPY':  { tdSymbol: 'USD/JPY',  category: 'Forex',       base: 154.20,  pipSize: 0.01,   contractSize: 100000 },
+            'AAPL':    { tdSymbol: 'AAPL',     category: 'Stocks',      base: 232.50,  pipSize: 0.01,   contractSize: 1 },
+            'NVDA':    { tdSymbol: 'NVDA',     category: 'Stocks',      base: 138.25,  pipSize: 0.01,   contractSize: 1 },
+            'BTCUSD':  { tdSymbol: 'BTC/USD',  category: 'Crypto',      base: 68450,   pipSize: 0.01,   contractSize: 1, binance: 'btcusdt', feed: 'live' },
+            'ETHUSD':  { tdSymbol: 'ETH/USD',  category: 'Crypto',      base: 2640,    pipSize: 0.01,   contractSize: 1, binance: 'ethusdt', feed: 'live' },
+            'XAUUSD':  { tdSymbol: 'XAU/USD',  category: 'Metals',      base: 2735.80, pipSize: 0.01,   contractSize: 100 },
+            'XAGUSD':  { tdSymbol: 'XAG/USD',  category: 'Metals',      base: 33.70,   pipSize: 0.001,  contractSize: 5000 },
+            'US30':    { tdSymbol: 'DJI',      category: 'Indices',     base: 42110,   pipSize: 0.1,    contractSize: 1 },
+            'NAS100':  { tdSymbol: 'IXIC',     category: 'Indices',     base: 20250,   pipSize: 0.1,    contractSize: 1 }
         };
 
         const categorySymbols = {
@@ -468,6 +398,7 @@
         let currentCategory = 'Commodities';
         let currentChartType = 'candles';
         let isLiveAccount = false;
+        let aiAutoTrade = AI_AUTO_TRADE_DEFAULT;
 
         /* ============================================================
            PERSISTENCE
@@ -477,9 +408,7 @@
                 try {
                     const v = localStorage.getItem(key);
                     return v === null ? fallback : JSON.parse(v);
-                } catch {
-                    return fallback;
-                }
+                } catch { return fallback; }
             },
             set(key, val) {
                 try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
@@ -548,7 +477,7 @@
         }
 
         /* ============================================================
-           BAR ENGINE — synthetic history + live tick merging
+           BAR ENGINE — synthetic history + real seeded bars + live ticks
         ============================================================ */
         const barsCache = {};
 
@@ -640,7 +569,7 @@
         }
 
         /* ============================================================
-           TWELVE DATA — PRIMARY MARKET DATA PROVIDER
+           TWELVE DATA — REAL MARKET DATA PROVIDER
         ============================================================ */
         let tdHealthy = false;
         let tdFailures = 0;
@@ -659,6 +588,59 @@
             const j = await res.json();
             if (j.status === 'error' || !j.close) throw new Error('Twelve Data: ' + (j.message || 'no data'));
             return j;
+        }
+
+        /* Seed real OHLC history from Twelve Data so AI signals and
+           the chart run on actual market candles, not synthetic ones. */
+        async function seedRealHistory(sym, barSec) {
+            const d = symbolsDatabase[sym];
+            if (!d.tdSymbol || !TWELVE_DATA_API_KEY || TWELVE_DATA_API_KEY === 'YOUR_TWELVEDATA_API_KEY') return false;
+
+            const tdIntervalMap = { 60: '1min', 300: '5min', 900: '15min', 1800: '30min', 3600: '1h', 14400: '4h', 86400: '1day', 604800: '1week' };
+            const interval = tdIntervalMap[barSec];
+            if (!interval) return false;
+
+            try {
+                const url = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(d.tdSymbol)}&interval=${interval}&outputsize=${HISTORY_BARS}&order=ASC&apikey=${TWELVE_DATA_API_KEY}`;
+                const res = await fetch(url);
+                if (!res.ok) return false;
+                const j = await res.json();
+                if (j.status === 'error' || !Array.isArray(j.values) || j.values.length < 30) return false;
+
+                const dec = decimals(sym);
+                // Twelve Data datetime format: "2024-01-01 15:00:00" (space, not T)
+                const bars = j.values.map(v => {
+                    const iso = v.datetime.includes('T')
+                        ? v.datetime
+                        : v.datetime.replace(' ', 'T') + (v.datetime.endsWith('Z') ? '' : 'Z');
+                    return {
+                        time: Math.floor(new Date(iso).getTime() / 1000),
+                        open: +(+v.open).toFixed(dec),
+                        high: +(+v.high).toFixed(dec),
+                        low: +(+v.low).toFixed(dec),
+                        close: +(+v.close).toFixed(dec)
+                    };
+                }).filter(b => b.time > 0 && !isNaN(b.time));
+
+                if (bars.length < 30) {
+                    console.warn('[TD Seed]', sym, 'insufficient parsed bars:', bars.length);
+                    return false;
+                }
+
+                if (!barsCache[sym]) barsCache[sym] = {};
+                barsCache[sym][barSec] = bars;
+
+                // Sync spot price to the most recent real close
+                const lastClose = bars[bars.length - 1].close;
+                if (d.price === undefined || Math.abs(lastClose - priceOf(sym)) / priceOf(sym) < 0.02) {
+                    d.price = lastClose;
+                }
+                console.log('[TD Seed]', sym, interval, '→', bars.length, 'real bars loaded');
+                return true;
+            } catch (e) {
+                console.warn('[TD Seed]', sym, 'failed:', e.message);
+                return false;
+            }
         }
 
         async function refreshSymbolFromTd(sym) {
@@ -688,7 +670,9 @@
             }
         }
 
-        async function refreshActiveFromTd() { await refreshSymbolFromTd(currentSymbol); }
+        async function refreshActiveFromTd() {
+            await refreshSymbolFromTd(currentSymbol);
+        }
 
         async function refreshWatchlistFromTd() {
             const list = categorySymbols[currentCategory] || [];
@@ -815,9 +799,9 @@
             if (ms <= 0) return '0s';
             const d = Math.floor(ms / 86400000);
             const h = Math.floor((ms % 86400000) / 3600000);
-            const m = Math.floor((ms % 3600000) / 60000);
+            const m2 = Math.floor((ms % 3600000) / 60000);
             const s = Math.floor((ms % 60000) / 1000);
-            return (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm ' + s + 's';
+            return (d > 0 ? d + 'd ' : '') + h + 'h ' + m2 + 'm ' + s + 's';
         }
 
         function updateMarketCountdown() {
@@ -846,13 +830,13 @@
         let lwcSeries = null;
 
         function chartSeriesOptions() {
-            const green = '#10b981';
-            const red = '#f43f5e';
+            const green = '#059669';
+            const red = '#dc2626';
             switch (currentChartType) {
                 case 'line':
                     return { type: 'line', color: '#2d60f7', lineWidth: 2 };
                 case 'area':
-                    return { type: 'area', lineColor: '#10b981', topColor: 'rgba(16,185,129,0.25)', bottomColor: 'rgba(16,185,129,0.02)', lineWidth: 2 };
+                    return { type: 'area', lineColor: '#059669', topColor: 'rgba(5,150,105,0.25)', bottomColor: 'rgba(5,150,105,0.02)', lineWidth: 2 };
                 case 'bars':
                     return { type: 'bar', upColor: green, downColor: red };
                 case 'hollow-candles':
@@ -905,7 +889,7 @@
                     timeVisible: true,
                     secondsVisible: false,
                     rightOffset: 6,
-                    barSpacing: 8
+                    barSpacing: 14
                 },
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
@@ -939,7 +923,7 @@
             delete opts.type;
             if (type === 'line') lwcSeries = lwcChart.addLineSeries(opts);
             else if (type === 'area') lwcSeries = lwcChart.addAreaSeries(opts);
-            else if (type === 'bars') lwcSeries = lwcChart.addBarSeries(opts);
+            else if (type === 'bar') lwcSeries = lwcChart.addBarSeries(opts);
             else lwcSeries = lwcChart.addCandlestickSeries(opts);
             lwcSeries.applyOptions({ priceLineVisible: true, lastValueVisible: true });
             reloadChartData();
@@ -1042,25 +1026,27 @@
             const container = document.getElementById('subSymbolsList');
             container.innerHTML = '';
             (categorySymbols[currentCategory] || []).forEach(sym => {
-                const q = quoteSymbol(sym);
                 const isSelected = sym === currentSymbol;
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 border ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'}`;
-                btn.innerHTML = `<span>${sym}</span><span class="text-[10px] opacity-80">${q.mid}</span>`;
+                btn.className = `px-3.5 py-1 rounded-lg text-xs font-semibold transition border ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'}`;
+                btn.textContent = sym;
                 btn.onclick = () => switchSymbol(sym);
                 container.appendChild(btn);
             });
         }
 
-        function switchSymbol(sym) {
+        async function switchSymbol(sym) {
             currentSymbol = sym;
             document.getElementById('chartSymbolLabel').textContent = sym;
             renderSubSymbols();
             renderPrices(sym);
             updateMarketCountdown();
-            runAIAnalysis();
             reloadChartData();
-            if (tdHealthy || TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
+            runAIAnalysis();
+            // Fetch real history + live quote for the new symbol
+            const seeded = await seedRealHistory(sym, tfSeconds);
+            if (seeded) reloadChartData();
+            if (TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
         }
 
         function renderPrices(sym) {
@@ -1160,7 +1146,10 @@
                     document.getElementById('tfSelectedLabel').textContent = item.label;
                     closeTfDropdown();
                     changeTimeframe(item.tv);
-                    runAIAnalysis();
+                    seedRealHistory(currentSymbol, tfSeconds).then(ok => {
+                        if (ok) reloadChartData();
+                        runAIAnalysis();
+                    });
                 };
                 col.appendChild(btn);
             });
@@ -1229,17 +1218,22 @@
         }
 
         function executeTrade(type, opts = {}) {
+            console.log('[Trade] Attempt:', type, opts.symbol || currentSymbol, opts);
+
             const lot = opts.lot !== undefined ? opts.lot : (parseFloat(document.getElementById('lotInput').value) || 0.01);
             if (lot < 0.01) {
                 showToast('Order Rejected', 'Minimum lot size is 0.01', 'error');
-                return;
+                return null;
             }
 
             const sym = opts.symbol || currentSymbol;
+
+            // Market-hours gate — bypassed for demo testing when flagged
             const st = getSessionStatus(sym);
-            if (!st.open) {
+            if (!st.open && !(opts.bypassMarketHours && !isLiveAccount)) {
                 showToast('Order Rejected', `${sym} is closed — opens in ${fmtCountdown(st.next || 0)}`, 'error');
-                return;
+                console.warn('[Trade] Rejected: market closed for', sym);
+                return null;
             }
 
             const margin = requiredMargin(sym, lot);
@@ -1248,7 +1242,8 @@
                 document.getElementById('depositModalText').textContent =
                     `Required margin $${formatUsd(margin)} exceeds free margin $${formatUsd(Math.max(0, freeMargin))}. Please deposit funds.`;
                 document.getElementById('depositModal').classList.remove('hidden');
-                return;
+                console.warn('[Trade] Rejected: insufficient margin for', sym);
+                return null;
             }
 
             const q = quoteSymbol(sym);
@@ -1267,10 +1262,12 @@
             positions.push(pos);
             savePositions();
             updateTradesBadge();
+            console.log('[Trade] EXECUTED:', type, lot, sym, '@', entry, 'SL:', pos.sl, 'TP:', pos.tp);
             showToast('Trade Executed',
                 `${type} ${lot.toFixed(2)} ${sym} @ ${entry.toFixed(decimals(sym))}` +
                 (pos.sl !== null ? ` · SL ${pos.sl} · TP ${pos.tp}` : ''),
                 'success');
+            return pos;
         }
 
         function checkAutoClose() {
@@ -1345,7 +1342,7 @@
             const btnText = document.getElementById('toggleAccountBtnText');
             if (isLiveAccount) {
                 btnText.textContent = 'Switch to Demo';
-                badge.className = 'flex flex-col items-end px-3 py-1 bg-slate-900 text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
+                badge.className = 'flex flex-col items-end px-3 py-1 bg-slate-800 text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm';
                 balDisp.textContent = `Live $${formatUsd(account.liveBalance)}`;
                 idDisp.textContent = account.accountIdLive;
             } else {
@@ -1382,62 +1379,175 @@
         }
 
         /* ============================================================
-           QORA AI — momentum signals with SL/TP
+           TRADEXORA AI — REAL SIGNAL ENGINE
+           EMA(9/21) crossover + RSI(14) on real seeded bars,
+           ATR-based SL/TP, suggestion TTL, cooldown protection,
+           optional auto-execution. Executes through the real
+           trade engine with full diagnostics.
         ============================================================ */
         let aiSuggestion = null;
+        let aiBusy = false;
+        let lastValidSuggestion = null;
+        let lastValidAt = 0;
+        const aiLastSignal = {};   // sym -> timestamp of last AI execution
+
+        function renderAutoTradeBtn() {
+            const btn = document.getElementById('autoTradeBtn');
+            const label = document.getElementById('autoTradeLabel');
+            if (!btn || !label) return;
+            label.textContent = 'AI Auto: ' + (aiAutoTrade ? 'ON' : 'OFF');
+            btn.className = `inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition ${aiAutoTrade
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'}`;
+        }
+
+        function toggleAutoTrade() {
+            aiAutoTrade = !aiAutoTrade;
+            renderAutoTradeBtn();
+            showToast('TRADEXORA AI',
+                aiAutoTrade
+                    ? `Auto-execution ON — trades fire automatically when confidence ≥ ${AI_MIN_CONFIDENCE}% (60s cooldown per symbol)`
+                    : 'Auto-execution OFF — trades fire only when you press Execute',
+                aiAutoTrade ? 'success' : 'info');
+        }
+
+        /* ---------- indicator helpers ---------- */
+        function ema(values, period) {
+            const k = 2 / (period + 1);
+            let e = values[0];
+            const out = [e];
+            for (let i = 1; i < values.length; i++) {
+                e = values[i] * k + e * (1 - k);
+                out.push(e);
+            }
+            return out;
+        }
+
+        function rsi(closes, period = 14) {
+            if (closes.length < period + 1) return 50;
+            let gains = 0, losses = 0;
+            for (let i = closes.length - period; i < closes.length; i++) {
+                const diff = closes[i] - closes[i - 1];
+                if (diff > 0) gains += diff; else losses -= diff;
+            }
+            if (losses === 0) return 100;
+            const rs = (gains / period) / (losses / period);
+            return 100 - (100 / (1 + rs));
+        }
+
+        function atr(bars, period = 14) {
+            if (bars.length < 2) return 0;
+            let sum = 0, n = 0;
+            for (let i = Math.max(1, bars.length - period); i < bars.length; i++) {
+                sum += Math.max(
+                    bars[i].high - bars[i].low,
+                    Math.abs(bars[i].high - bars[i - 1].close),
+                    Math.abs(bars[i].low - bars[i - 1].close)
+                );
+                n++;
+            }
+            return n ? sum / n : 0;
+        }
+
+        /* ---------- core signal computation ---------- */
+        function computeAISignal(sym) {
+            const bars = getBars(sym, tfSeconds, HISTORY_BARS);
+            if (bars.length < 30) return null;
+
+            const closes = bars.map(b => b.close);
+            const e9 = ema(closes, 9), e21 = ema(closes, 21);
+            const lastE9 = e9[e9.length - 1], lastE21 = e21[e21.length - 1];
+            const prevE9 = e9[e9.length - 2], prevE21 = e21[e21.length - 2];
+            const r = rsi(closes);
+            const a = atr(bars) || symbolsDatabase[sym].base * 0.001;
+            const price = closes[closes.length - 1];
+
+            let bias = 'neutral', strength = 0;
+
+            const crossUp = prevE9 <= prevE21 && lastE9 > lastE21;
+            const crossDn = prevE9 >= prevE21 && lastE9 < lastE21;
+            const sep = (lastE9 - lastE21) / price;
+
+            if (lastE9 > lastE21) { bias = 'bullish'; strength = sep; }
+            else if (lastE9 < lastE21) { bias = 'bearish'; strength = -sep; }
+
+            // RSI confirmation / veto
+            if (bias === 'bullish' && r > 70) bias = 'neutral';
+            if (bias === 'bearish' && r < 30) bias = 'neutral';
+            if (r > 55 && bias === 'bullish') strength *= 1.2;
+            if (r < 45 && bias === 'bearish') strength *= 1.2;
+
+            const confidence = Math.round(Math.min(96, 55 + Math.abs(strength) * 4000 + (crossUp || crossDn ? 10 : 0)));
+
+            const type = bias === 'bullish' ? 'BUY' : bias === 'bearish' ? 'SELL' : null;
+            const entry = price;
+            const slDist = a * AI_SL_ATR_MULT, tpDist = a * AI_TP_ATR_MULT;
+            const sl = +(type === 'SELL' ? entry + slDist : entry - slDist).toFixed(decimals(sym));
+            const tp = +(type === 'SELL' ? entry - tpDist : entry + tpDist).toFixed(decimals(sym));
+
+            return { type, bias, confidence, rsi: Math.round(r), entry, sl, tp, crossUp, crossDn };
+        }
 
         function runAIAnalysis() {
             const sym = currentSymbol;
-            const hist = tickHistory[sym] || [];
             const textEl = document.getElementById('aiModalText');
             const confEl = document.getElementById('aiConfidenceText');
             const metaEl = document.getElementById('aiSuggestionMeta');
+            if (!textEl) return;
 
-            if (hist.length < 10) {
-                textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym}:</strong> Collecting market data…`;
-                confEl.textContent = '—';
-                confEl.className = 'font-bold text-slate-400';
-                metaEl.innerHTML = '';
-                aiSuggestion = null;
+            const sig = computeAISignal(sym);
+
+            if (sig && sig.type) {
+                const dirLabel = sig.bias === 'bullish' ? 'Bullish' : 'Bearish';
+                const cross = sig.crossUp ? 'Fresh EMA(9>21) bullish crossover detected'
+                    : sig.crossDn ? 'Fresh EMA(9<21) bearish crossover detected'
+                    : `${dirLabel} trend continuation (EMA separation active)`;
+
+                textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym} (${tfSelectedTf}):</strong> ${cross}. RSI(14) at ${sig.rsi}. Signal: <strong class="${sig.bias === 'bullish' ? 'text-emerald-600' : 'text-rose-600'}">${sig.type}</strong>.`;
+                confEl.textContent = `${sig.confidence}% ${dirLabel}`;
+                confEl.className = `font-bold ${sig.bias === 'bullish' ? 'text-emerald-600' : 'text-rose-600'}`;
+
+                // Auto lot sizing: risk 1% of active balance against SL distance
+                const bal = activeBalance();
+                const d = symbolsDatabase[sym];
+                const slDist = Math.abs(sig.entry - sig.sl);
+                let autoLot = slDist > 0 ? (bal * AI_RISK_PCT) / (slDist * d.contractSize) : 0.10;
+                autoLot = Math.max(0.01, Math.min(autoLot, 5)).toFixed(2);
+
+                metaEl.innerHTML = `
+                    <div><span class="font-semibold">Suggested:</span> ${sig.type} ${sym}</div>
+                    <div><span class="font-semibold">Entry:</span> ${sig.entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sig.sl} · <span class="font-semibold">TP:</span> ${sig.tp}</div>
+                    <div><span class="font-semibold">Risk lot:</span> ${autoLot} (1% balance risk)</div>
+                    <div class="text-[10px] text-slate-400">ATR-based stops · R/R 1:2 · Heuristic signal — not financial advice.</div>`;
+
+                aiSuggestion = { type: sig.type, symbol: sym, lot: parseFloat(autoLot), sl: sig.sl, tp: sig.tp, confidence: sig.confidence };
+                lastValidSuggestion = aiSuggestion;
+                lastValidAt = Date.now();
+
+                // Auto-execution mode
+                if (aiAutoTrade && sig.confidence >= AI_MIN_CONFIDENCE) {
+                    const now = Date.now();
+                    if (!aiLastSignal[sym] || now - aiLastSignal[sym] > AI_COOLDOWN_MS) {
+                        aiLastSignal[sym] = now;
+                        executeTrade(sig.type, { symbol: sym, lot: aiSuggestion.lot, sl: sig.sl, tp: sig.tp, bypassMarketHours: ALLOW_CLOSED_MARKET_TRADING });
+                    }
+                }
                 return;
             }
 
-            const recent = hist.slice(-10).reduce((a, b) => a + b.p, 0) / 10;
-            const olderSlice = hist.slice(-30, -10);
-            const older = olderSlice.length ? olderSlice.reduce((a, b) => a + b.p, 0) / olderSlice.length : recent;
-            const momentum = older !== 0 ? (recent - older) / older : 0;
+            // No fresh signal — fall back to the last valid one within TTL
+            if (lastValidSuggestion && Date.now() - lastValidAt <= AI_SUGGESTION_TTL_MS) {
+                aiSuggestion = lastValidSuggestion;
+                textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym}:</strong> Signal temporarily flat — holding the last valid <strong>${aiSuggestion.type}</strong> suggestion.`;
+                confEl.textContent = `${aiSuggestion.confidence}% (held)`;
+                confEl.className = 'font-bold text-slate-600';
+                return;
+            }
 
-            const bullish = momentum > 0;
-            const strength = Math.min(0.02, Math.abs(momentum));
-            const confidence = Math.round(50 + (strength / 0.02) * 45);
-            const dirLabel = bullish ? 'Bullish' : 'Bearish';
-            const label = confidence >= 75 ? dirLabel : confidence >= 60 ? `Cautiously ${dirLabel}` : 'Neutral / Range-bound';
-
-            confEl.textContent = `${confidence}% ${label}`;
-            confEl.className = `font-bold ${bullish ? 'text-emerald-600' : 'text-rose-600'}`;
-            textEl.innerHTML = `<strong class="text-slate-800">Analysis for ${sym} (${tfSelectedTf}):</strong> ` +
-                (Math.abs(momentum) < 0.0005 ?
-                    'Price is consolidating in a tight range — no directional edge detected.' :
-                    `${bullish ? 'Steady upward bullish momentum' : 'Downward bearish momentum'} detected across the recent price sample.`);
-
-            const q = quoteSymbol(sym);
-            const type = bullish ? 'BUY' : 'SELL';
-            const entry = type === 'BUY' ? q.buy : q.sell;
-            const sl = +(type === 'BUY' ? entry * 0.995 : entry * 1.005).toFixed(decimals(sym));
-            const tp = +(type === 'BUY' ? entry * 1.010 : entry * 0.990).toFixed(decimals(sym));
-
-            metaEl.innerHTML = `
-                <div><span class="font-semibold">Suggested:</span> ${type} ${sym}</div>
-                <div><span class="font-semibold">Entry:</span> ${entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sl} · <span class="font-semibold">TP:</span> ${tp}</div>
-                <div class="text-[10px] text-slate-400">Risk/reward 1:2 · SL/TP enforced automatically. Heuristic signal — not financial advice.</div>`;
-
-            aiSuggestion = {
-                type,
-                symbol: sym,
-                lot: parseFloat(document.getElementById('lotInput').value) || 0.10,
-                sl,
-                tp
-            };
+            textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym} (${tfSelectedTf}):</strong> No directional edge. EMA(9/21) flat and RSI neutral — standing aside.`;
+            confEl.textContent = sig ? `${sig.confidence}% Neutral` : '—';
+            confEl.className = 'font-bold text-slate-400';
+            aiSuggestion = null;
         }
 
         function toggleAIPanel() {
@@ -1445,18 +1555,48 @@
             runAIAnalysis();
         }
 
+        /* One-shot execution through the REAL trade engine:
+           margin check, market-hours check, spread entry price,
+           SL/TP registration, and balance settlement.
+           Rejections keep the suggestion alive so the user can retry. */
         function applyAISuggestion() {
+            if (aiBusy) return;
+
+            // Re-arm from last valid signal if the interval nulled it mid-click
+            if (!aiSuggestion && lastValidSuggestion && Date.now() - lastValidAt <= AI_SUGGESTION_TTL_MS) {
+                aiSuggestion = lastValidSuggestion;
+            }
             if (!aiSuggestion) {
-                showToast('Qora AI', 'Not enough market data yet — wait a few seconds.', 'error');
+                showToast('TRADEXORA AI', 'No active signal — wait for a directional edge.', 'error');
                 return;
             }
-            document.getElementById('aiModal').classList.add('hidden');
-            executeTrade(aiSuggestion.type, {
-                symbol: aiSuggestion.symbol,
-                lot: aiSuggestion.lot,
-                sl: aiSuggestion.sl,
-                tp: aiSuggestion.tp
-            });
+
+            aiBusy = true;
+            const s = aiSuggestion;
+            aiSuggestion = null;                 // one-shot: prevent duplicate executions
+            aiLastSignal[s.symbol] = Date.now();
+            const btn = document.getElementById('aiExecuteBtn');
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-60'); }
+
+            try {
+                const result = executeTrade(s.type, {
+                    symbol: s.symbol,
+                    lot: s.lot,
+                    sl: s.sl,
+                    tp: s.tp,
+                    bypassMarketHours: ALLOW_CLOSED_MARKET_TRADING
+                });
+                if (result) {
+                    document.getElementById('aiModal').classList.add('hidden');
+                } else {
+                    // Trade was rejected — keep the suggestion alive so user can retry
+                    aiSuggestion = s;
+                    console.warn('[TRADEXORA AI] Execution rejected — suggestion retained for retry:', s);
+                }
+            } finally {
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
+                setTimeout(() => { aiBusy = false; }, 500);
+            }
         }
 
         /* ============================================================
@@ -1467,7 +1607,6 @@
             const q = event.target.value.trim().toUpperCase();
             if (symbolsDatabase[q]) {
                 selectCategory(symbolsDatabase[q].category);
-                switchSymbol(q);
                 event.target.value = '';
                 showToast('Symbol', `Loaded ${q}`, 'info');
             } else {
@@ -1500,9 +1639,10 @@
         /* ============================================================
            BOOT
         ============================================================ */
-        window.onload = function() {
+        window.onload = async function() {
             isLiveAccount = !!account.isLive;
             renderAccountBadge();
+            renderAutoTradeBtn();
 
             createChart();
             buildTfMenu();
@@ -1511,20 +1651,25 @@
             connectCryptoFeed();
             startTdPolling();
 
+            // Seed real history for the default symbol
+            seedRealHistory(currentSymbol, tfSeconds).then(ok => {
+                if (ok) reloadChartData();
+                runAIAnalysis();
+            });
+
+            // Simulated ticks fill gaps only while Twelve Data is NOT healthy
             setInterval(() => {
                 if (tdHealthy) return;
                 Object.keys(symbolsDatabase).forEach(sym => {
                     const d = symbolsDatabase[sym];
-                    if (d.feed) return;
+                    if (d.feed) return; // crypto keeps its Binance feed
                     simTick(sym);
                 });
-                if (Math.random() < 0.25) renderSubSymbols();
             }, SIM_TICK_MS);
 
             setInterval(updateMarketCountdown, 1000);
             setInterval(updateCandleCountdown, 250);
             setInterval(runAIAnalysis, AI_REFRESH_MS);
-            setInterval(renderSubSymbols, TD_POLL_MS);
             updateMarketCountdown();
             updateCandleCountdown();
         };
