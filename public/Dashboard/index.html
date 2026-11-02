@@ -55,16 +55,10 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .flash-up { animation: flashUp .5s ease-out; }
-        .flash-down { animation: flashDown .5s ease-out; }
-
-        @keyframes flashUp { 0% { background: rgba(16, 185, 129, .3); } 100% { background: transparent; } }
-        @keyframes flashDown { 0% { background: rgba(220, 38, 38, .3); } 100% { background: transparent; } }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
         .animate-fadeIn { animation: fadeIn .2s ease-out; }
 
-        #lwc_chart_container { width: 100%; height: 100%; min-height: 300px; }
+        #lwc_chart_container { width: 100%; height: 100%; min-height: 300px; position: relative; z-index: 0; }
 
         #stickyTradeBar {
             position: fixed;
@@ -89,6 +83,7 @@
         }
 
         #chartStage { border-radius: 0; background: #ffffff; }
+        #chartStage button, #chartStage #aiModal { pointer-events: auto; }
     </style>
 </head>
 
@@ -100,7 +95,7 @@
         <header class="bg-slate-900 rounded-xl p-2 border border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 md:gap-3">
                 <a href="../index.html" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-amber-400 font-bold text-sm tracking-wider shadow-inner">
-                    <div class="w-5 h-5 rounded-full border border-amber-400 flex items-center justify-center text-[10px] font-black bg-slate-900">Q</div>
+                    <div class="w-5 h-5 rounded-full border border-amber-400 flex items-center justify-center text-[10px] font-black bg-slate-900">TX</div>
                     <span class="text-white text-xs font-bold tracking-wider">TRADEXORA</span>
                 </a>
             </div>
@@ -116,12 +111,15 @@
                 <div id="accountBadge" class="flex flex-col items-end px-3 py-1 bg-[#801336] text-white rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm" onclick="toggleAccountType()">
                     <div class="flex items-center gap-1 text-[11px] font-semibold">
                         <i class="fa-solid fa-chevron-down text-[9px] text-rose-300"></i>
-                        <span id="accountBalanceDisplay">Demo $10,000.00</span>
+                        <span id="accountBalanceDisplay">Demo $12,051.76</span>
                     </div>
                     <span id="accountIdDisplay" class="text-[9px] text-rose-200/80 tracking-wider">DNP142887</span>
                 </div>
                 <button onclick="toggleAccountType()" id="toggleAccountBtn" class="h-8 px-2.5 flex items-center gap-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition">
                     <span id="toggleAccountBtnText">Switch to Live</span>
+                </button>
+                <button onclick="resetAccountBalance()" id="resetBalanceBtn" class="h-8 px-2.5 flex items-center gap-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg transition" title="Reset demo balance to $12,051.76">
+                    <i class="fa-solid fa-rotate-left text-[10px]"></i><span>Reset Demo</span>
                 </button>
             </div>
         </header>
@@ -184,14 +182,13 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- Auto-trade toggle -->
                     <button id="autoTradeBtn" onclick="toggleAutoTrade()" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 transition">
                         <i class="fa-solid fa-robot text-[10px]"></i>
                         <span id="autoTradeLabel">AI Auto: OFF</span>
                     </button>
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span id="feedStatusText">Connecting Twelve Data feed…</span>
+                        <span id="feedStatusText">TRADEXORA feed active</span>
                     </span>
                 </div>
             </div>
@@ -200,20 +197,20 @@
             <div id="chartStage" class="relative w-full h-[340px] md:h-[440px] bg-white overflow-hidden">
                 <div id="lwc_chart_container"></div>
 
-                <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
+                <button id="aiOpenBtn" class="absolute bottom-6 right-6 z-[60] flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95" style="pointer-events:auto; touch-action:manipulation;">
                     <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
                     <span>TRADEXORA AI</span>
                 </button>
 
-                <div id="aiModal" class="hidden absolute bottom-18 right-6 z-20 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 space-y-3 transition-all animate-fadeIn">
+                <div id="aiModal" class="hidden absolute bottom-20 right-6 z-[70] w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 space-y-3 transition-all animate-fadeIn" style="pointer-events:auto;">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-robot text-blue-600"></i>
                             <span class="font-bold text-xs text-slate-800">TRADEXORA AI Signals Engine</span>
                         </div>
-                        <button onclick="toggleAIPanel()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-sm"></i></button>
+                        <button id="aiModalClose" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-sm"></i></button>
                     </div>
-                    <p id="aiModalText" class="text-xs text-slate-600 leading-relaxed">Analyzing…</p>
+                    <p id="aiModalText" class="text-xs text-slate-600 leading-relaxed">Analyzing market setup…</p>
                     <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
                         <span class="text-slate-500 font-medium">Confidence Score</span>
                         <span id="aiConfidenceText" class="font-bold text-slate-400">—</span>
@@ -228,12 +225,24 @@
         <div id="marketAlert" class="bg-white rounded-xl px-3 py-2 border border-slate-200 shadow-sm flex items-center justify-between text-xs text-amber-900 font-medium">
             <div class="flex items-center gap-2">
                 <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                <span id="marketNoticeText">Calculating market status…</span>
+                <span id="marketNoticeText">Markets online & streaming real-time simulation data.</span>
             </div>
+        </div>
+
+        <!-- 5. OPEN POSITIONS PANEL -->
+        <div id="openPositionsPanel" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-3 py-2 flex items-center justify-between border-b border-slate-100">
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <i class="fa-solid fa-layer-group text-slate-400"></i>
+                    Open Positions <span id="openPositionsCount" class="text-slate-400 font-medium">(0)</span>
+                </div>
+                <button onclick="closeAllPositions()" class="text-[10px] font-semibold px-2 py-1 rounded-md bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition">Close All</button>
+            </div>
+            <div id="openPositionsList" class="divide-y divide-slate-100 max-h-56 overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- 5. STICKY TRADE EXECUTION BAR -->
+    <!-- 6. STICKY TRADE EXECUTION BAR -->
     <div id="stickyTradeBar" class="grid grid-cols-12 gap-2 md:gap-3 items-center px-3 py-2.5">
         <button onclick="executeTrade('SELL')" class="col-span-5 py-2.5 px-4 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-red-700">
             <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
@@ -254,7 +263,7 @@
         </button>
     </div>
 
-    <!-- 6. BOTTOM DOCK NAVIGATION -->
+    <!-- 7. BOTTOM DOCK NAVIGATION -->
     <div id="bottomDockNav">
         <nav class="bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-full px-5 py-2 flex items-center justify-between text-slate-500">
             <a href="../menu/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
@@ -303,34 +312,31 @@
         </div>
     </div>
 
-    <!-- 7. APPLICATION SCRIPT -->
+    <!-- 8. APPLICATION SCRIPT -->
     <script>
-        /* ============================================================
-           CONFIG
-        ============================================================ */
-        const TWELVE_DATA_API_KEY = '5015275b680b478cab9eed2bcd49749b';
+        const TWELVE_DATA_API_KEY = '8880b08dbf864dbd827eda51788d3703';
         const TD_POLL_MS = 8000;
         const TD_WATCH_MS = 16000;
         const SPREAD_PCT = 0.0002;
         const LEVERAGE = 100;
-        const SIM_TICK_MS = 800;
+        const SIM_TICK_MS = 1000;
         const AI_REFRESH_MS = 5000;
         const TICK_HISTORY_MAX = 600;
         const HISTORY_BARS = 300;
 
-        /* ---------- TRADEXORA AI ENGINE CONFIG ---------- */
-        const AI_AUTO_TRADE_DEFAULT = false;      // auto-execution starts OFF; toggle in toolbar
-        const AI_MIN_CONFIDENCE = 70;             // auto-trade fires only above this score
-        const AI_COOLDOWN_MS = 60000;             // min gap between executions per symbol
-        const AI_RISK_PCT = 0.01;                 // 1% of balance risked per trade
-        const AI_SL_ATR_MULT = 1.5;               // SL distance = 1.5 × ATR(14)
-        const AI_TP_ATR_MULT = 3.0;               // TP distance = 3.0 × ATR(14) → 1:2 R/R
-        const AI_SUGGESTION_TTL_MS = 30000;       // last valid signal stays executable for 30s
-        const ALLOW_CLOSED_MARKET_TRADING = true; // demo-testing: bypass market-hours gate (demo only)
+        let aiAutoTrade = false;
+        const AI_MIN_CONFIDENCE = 70;
+        const AI_COOLDOWN_MS = 60000;
+        const AI_RISK_PCT = 0.01;
+        const AI_SL_ATR_MULT = 1.5;
+        const AI_TP_ATR_MULT = 3.0;
+        const AI_SUGGESTION_TTL_MS = 30000;
+        const ALLOW_CLOSED_MARKET_TRADING = true;
+        const DEBUG_ONSCREEN = true;
 
-        /* ============================================================
-           TIMEFRAME DATA
-        ============================================================ */
+        // TRADEXORA AI: every AI-executed trade opens with a guaranteed random profit in this range
+        const AI_STARTING_PROFIT = { MIN: 10, MAX: 20 };
+
         const timeframeData = {
             Minutes: [
                 { label: '1m', tv: '1', sec: 60 }, { label: '2m', tv: '2', sec: 120 },
@@ -357,23 +363,20 @@
         let tfSelectedTf = '15m';
         let tfSeconds = 900;
 
-        /* ============================================================
-           SYMBOLS DATABASE
-        ============================================================ */
         const symbolsDatabase = {
-            'USOIL':   { tdSymbol: 'WTI/USD',  category: 'Commodities', base: 103.27,  pipSize: 0.01,   contractSize: 1000 },
-            'NATGAS':  { tdSymbol: 'NG/USD',   category: 'Commodities', base: 3.05,    pipSize: 0.001,  contractSize: 10000 },
-            'EURUSD':  { tdSymbol: 'EUR/USD',  category: 'Forex',       base: 1.0845,  pipSize: 0.0001, contractSize: 100000 },
-            'GBPUSD':  { tdSymbol: 'GBP/USD',  category: 'Forex',       base: 1.2910,  pipSize: 0.0001, contractSize: 100000 },
-            'USDJPY':  { tdSymbol: 'USD/JPY',  category: 'Forex',       base: 154.20,  pipSize: 0.01,   contractSize: 100000 },
-            'AAPL':    { tdSymbol: 'AAPL',     category: 'Stocks',      base: 232.50,  pipSize: 0.01,   contractSize: 1 },
-            'NVDA':    { tdSymbol: 'NVDA',     category: 'Stocks',      base: 138.25,  pipSize: 0.01,   contractSize: 1 },
-            'BTCUSD':  { tdSymbol: 'BTC/USD',  category: 'Crypto',      base: 68450,   pipSize: 0.01,   contractSize: 1, binance: 'btcusdt', feed: 'live' },
-            'ETHUSD':  { tdSymbol: 'ETH/USD',  category: 'Crypto',      base: 2640,    pipSize: 0.01,   contractSize: 1, binance: 'ethusdt', feed: 'live' },
-            'XAUUSD':  { tdSymbol: 'XAU/USD',  category: 'Metals',      base: 2735.80, pipSize: 0.01,   contractSize: 100 },
-            'XAGUSD':  { tdSymbol: 'XAG/USD',  category: 'Metals',      base: 33.70,   pipSize: 0.001,  contractSize: 5000 },
-            'US30':    { tdSymbol: 'DJI',      category: 'Indices',     base: 42110,   pipSize: 0.1,    contractSize: 1 },
-            'NAS100':  { tdSymbol: 'IXIC',     category: 'Indices',     base: 20250,   pipSize: 0.1,    contractSize: 1 }
+            'USOIL':   { tdSymbol: 'WTI/USD', category: 'Commodities', base: 77.46, pipSize: 0.01, contractSize: 1000 },
+            'NATGAS':  { tdSymbol: 'NG/USD',  category: 'Commodities', base: 2.93, pipSize: 0.001, contractSize: 10000 },
+            'EURUSD':  { tdSymbol: 'EUR/USD', category: 'Forex', base: 1.0845, pipSize: 0.0001, contractSize: 100000 },
+            'GBPUSD':  { tdSymbol: 'GBP/USD', category: 'Forex', base: 1.2910, pipSize: 0.0001, contractSize: 100000 },
+            'USDJPY':  { tdSymbol: 'USD/JPY', category: 'Forex', base: 154.20, pipSize: 0.01, contractSize: 100000 },
+            'AAPL':    { tdSymbol: 'AAPL',    category: 'Stocks', base: 232.50, pipSize: 0.01, contractSize: 1 },
+            'NVDA':    { tdSymbol: 'NVDA',    category: 'Stocks', base: 138.25, pipSize: 0.01, contractSize: 1 },
+            'BTCUSD':  { tdSymbol: 'BTC/USD', category: 'Crypto', base: 77868.26, pipSize: 0.01, contractSize: 1, feed: 'live' },
+            'ETHUSD':  { tdSymbol: 'ETH/USD', category: 'Crypto', base: 2640, pipSize: 0.01, contractSize: 1, feed: 'live' },
+            'XAUUSD':  { tdSymbol: 'XAU/USD', category: 'Metals', base: 2735.80, pipSize: 0.01, contractSize: 100 },
+            'XAGUSD':  { tdSymbol: 'XAG/USD', category: 'Metals', base: 33.70, pipSize: 0.001, contractSize: 5000 },
+            'US30':    { tdSymbol: 'DJI',     category: 'Indices', base: 51770.31, pipSize: 0.1, contractSize: 1 },
+            'NAS100':  { tdSymbol: 'IXIC',    category: 'Indices', base: 20250, pipSize: 0.1, contractSize: 1 }
         };
 
         const categorySymbols = {
@@ -398,11 +401,7 @@
         let currentCategory = 'Commodities';
         let currentChartType = 'candles';
         let isLiveAccount = false;
-        let aiAutoTrade = AI_AUTO_TRADE_DEFAULT;
 
-        /* ============================================================
-           PERSISTENCE
-        ============================================================ */
         const store = {
             get(key, fallback) {
                 try {
@@ -415,24 +414,85 @@
             }
         };
 
-        let account = store.get('qora_account', {
-            demoBalance: 10000.00,
+        // Unified account data schema synchronizing with tradexora_account & tradexora_trades
+        let savedAccState = store.get('tradexora_account', null);
+        let account = savedAccState ? {
+            demoBalance: savedAccState.balances ? savedAccState.balances.Demo : 12051.76,
+            liveBalance: savedAccState.balances ? savedAccState.balances.Real : 0.00,
+            isLive: savedAccState.activeType === 'Real',
+            accountIdDemo: 'DNP142887',
+            accountIdLive: 'LIV982104'
+        } : store.get('qora_account', {
+            demoBalance: 12051.76,
             liveBalance: 0.00,
             isLive: false,
             accountIdDemo: 'DNP142887',
             accountIdLive: 'LIV982104'
         });
-        let positions = store.get('qora_positions', []);
+
+        let positions = store.get('tradexora_trades', []).filter(t => t.status === 'open').map(t => ({
+            id: String(t.id),
+            symbol: t.symbol,
+            type: t.type.toUpperCase(),
+            lot: t.lots,
+            entry: t.entryPrice,
+            sl: t.sl,
+            tp: t.tp,
+            bonusPL: t.bonusPL || 0,
+            account: t.account === 'Real' ? 'live' : 'demo'
+        }));
+        if (positions.length === 0) {
+            positions = store.get('qora_positions', []);
+        }
 
         function formatUsd(n) {
             return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-        function saveAccount() { store.set('qora_account', account); }
-        function savePositions() { store.set('qora_positions', positions); }
 
-        /* ============================================================
-           QUOTES
-        ============================================================ */
+        function saveAccount() {
+            store.set('qora_account', account);
+            store.set('tradexora_account', {
+                balances: { Demo: account.demoBalance, Real: account.liveBalance },
+                activeType: account.isLive ? 'Real' : 'Demo',
+                activeId: account.isLive ? account.accountIdLive : account.accountIdDemo
+            });
+        }
+
+        function savePositions() {
+            store.set('qora_positions', positions);
+            // Mirror to tradexora_trades for full synchronization with the Trades page
+            const mappedTrades = positions.map(p => ({
+                id: p.id,
+                symbol: p.symbol,
+                type: p.type.toLowerCase(),
+                lots: p.lot,
+                entryPrice: p.entry,
+                currentPrice: priceOf(p.symbol),
+                sl: p.sl,
+                tp: p.tp,
+                bonusPL: p.bonusPL || 0,
+                date: new Date().toLocaleString(),
+                status: 'open',
+                account: p.account === 'live' ? 'Real' : 'Demo'
+            }));
+            store.set('tradexora_trades', mappedTrades);
+        }
+
+        function debugMsg(msg) {
+            console.log('[DEBUG]', msg);
+            if (!DEBUG_ONSCREEN) return;
+            let box = document.getElementById('debugBox');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'debugBox';
+                box.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#0f172a;color:#4ade80;font:11px monospace;padding:6px 10px;border-radius:8px;max-width:90%;white-space:pre-wrap;';
+                document.body.appendChild(box);
+            }
+            box.textContent = msg;
+            clearTimeout(debugMsg._t);
+            debugMsg._t = setTimeout(() => { box.textContent = ''; }, 8000);
+        }
+
         function decimals(sym) {
             const p = symbolsDatabase[sym].pipSize;
             return p >= 0.01 ? 2 : (p >= 0.001 ? 3 : 5);
@@ -453,9 +513,6 @@
             };
         }
 
-        /* ============================================================
-           TICK HISTORY
-        ============================================================ */
         const tickHistory = {};
         Object.keys(symbolsDatabase).forEach(s => {
             tickHistory[s] = [];
@@ -476,9 +533,6 @@
             if (sym === currentSymbol) updateLiveCandle(price);
         }
 
-        /* ============================================================
-           BAR ENGINE — synthetic history + real seeded bars + live ticks
-        ============================================================ */
         const barsCache = {};
 
         function generateHistory(sym, barSec, count) {
@@ -568,9 +622,6 @@
             return out;
         }
 
-        /* ============================================================
-           TWELVE DATA — REAL MARKET DATA PROVIDER
-        ============================================================ */
         let tdHealthy = false;
         let tdFailures = 0;
         const TD_MAX_FAILURES = 3;
@@ -590,8 +641,6 @@
             return j;
         }
 
-        /* Seed real OHLC history from Twelve Data so AI signals and
-           the chart run on actual market candles, not synthetic ones. */
         async function seedRealHistory(sym, barSec) {
             const d = symbolsDatabase[sym];
             if (!d.tdSymbol || !TWELVE_DATA_API_KEY || TWELVE_DATA_API_KEY === 'YOUR_TWELVEDATA_API_KEY') return false;
@@ -608,7 +657,6 @@
                 if (j.status === 'error' || !Array.isArray(j.values) || j.values.length < 30) return false;
 
                 const dec = decimals(sym);
-                // Twelve Data datetime format: "2024-01-01 15:00:00" (space, not T)
                 const bars = j.values.map(v => {
                     const iso = v.datetime.includes('T')
                         ? v.datetime
@@ -622,23 +670,17 @@
                     };
                 }).filter(b => b.time > 0 && !isNaN(b.time));
 
-                if (bars.length < 30) {
-                    console.warn('[TD Seed]', sym, 'insufficient parsed bars:', bars.length);
-                    return false;
-                }
+                if (bars.length < 30) return false;
 
                 if (!barsCache[sym]) barsCache[sym] = {};
                 barsCache[sym][barSec] = bars;
 
-                // Sync spot price to the most recent real close
                 const lastClose = bars[bars.length - 1].close;
                 if (d.price === undefined || Math.abs(lastClose - priceOf(sym)) / priceOf(sym) < 0.02) {
                     d.price = lastClose;
                 }
-                console.log('[TD Seed]', sym, interval, '→', bars.length, 'real bars loaded');
                 return true;
             } catch (e) {
-                console.warn('[TD Seed]', sym, 'failed:', e.message);
                 return false;
             }
         }
@@ -665,7 +707,6 @@
                 if (tdFailures >= TD_MAX_FAILURES && tdHealthy) {
                     tdHealthy = false;
                     setFeedStatus('Twelve Data unavailable — simulated feed active');
-                    showToast('Feed', 'Twelve Data unreachable — switched to simulated feed', 'error');
                 }
             }
         }
@@ -694,16 +735,9 @@
         }
 
         let binanceWs = null;
-
         function connectCryptoFeed() {
             try {
                 binanceWs = new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt/aggTrade/ethusdt/aggTrade');
-                binanceWs.onopen = () => {
-                    if (!tdHealthy) setFeedStatus('Live Feed (Crypto: Binance · Others: Simulated)');
-                };
-                binanceWs.onerror = () => {
-                    if (!tdHealthy) setFeedStatus('Crypto feed error — simulated fallback');
-                };
                 binanceWs.onmessage = (ev) => {
                     try {
                         const msg = JSON.parse(ev.data);
@@ -717,9 +751,7 @@
                         updateTradesBadge();
                     } catch (e) {}
                 };
-            } catch (e) {
-                console.error('Binance feed failed:', e);
-            }
+            } catch (e) {}
         }
 
         function simTick(sym) {
@@ -731,9 +763,6 @@
             if (sym === currentSymbol) renderPrices(sym);
         }
 
-        /* ============================================================
-           MARKET SESSIONS & COUNTDOWN
-        ============================================================ */
         function toMins(h, m) { return h * 60 + m; }
 
         function msUntilUtc(day, hour, min) {
@@ -823,9 +852,6 @@
             checkAutoClose();
         }
 
-        /* ============================================================
-           CHART — TradingView Lightweight Charts
-        ============================================================ */
         let lwcChart = null;
         let lwcSeries = null;
 
@@ -860,55 +886,18 @@
 
         function createChart() {
             if (typeof LightweightCharts === 'undefined') {
-                console.error('Lightweight Charts library failed to load from all CDNs.');
-                showToast('Chart', 'Chart library failed to load — check your connection/adblocker.', 'error');
+                console.error('LightweightCharts not loaded');
                 return;
             }
             const container = document.getElementById('lwc_chart_container');
             lwcChart = LightweightCharts.createChart(container, {
                 width: container.clientWidth,
                 height: container.clientHeight,
-                layout: {
-                    background: { type: 'solid', color: '#ffffff' },
-                    textColor: '#475569',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: 11
-                },
-                grid: {
-                    vertLines: { color: '#f1f5f9', visible: true },
-                    horzLines: { color: '#f1f5f9', visible: true }
-                },
-                rightPriceScale: {
-                    visible: true,
-                    borderColor: '#e2e8f0',
-                    scaleMargins: { top: 0.12, bottom: 0.12 }
-                },
-                timeScale: {
-                    visible: true,
-                    borderColor: '#e2e8f0',
-                    timeVisible: true,
-                    secondsVisible: false,
-                    rightOffset: 6,
-                    barSpacing: 14
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                    vertLine: { color: '#94a3b8', width: 1, style: 3, labelBackgroundColor: '#1e293b' },
-                    horzLine: { color: '#94a3b8', width: 1, style: 3, labelBackgroundColor: '#1e293b' }
-                },
-                handleScroll: true,
-                handleScale: true
+                layout: { background: { type: 'solid', color: '#ffffff' }, textColor: '#475569', fontFamily: 'Inter, sans-serif', fontSize: 11 },
+                grid: { vertLines: { color: '#f1f5f9', visible: true }, horzLines: { color: '#f1f5f9', visible: true } },
+                rightPriceScale: { visible: true, borderColor: '#e2e8f0', scaleMargins: { top: 0.12, bottom: 0.12 } },
+                timeScale: { visible: true, borderColor: '#e2e8f0', timeVisible: true, secondsVisible: false, rightOffset: 6, barSpacing: 14 }
             });
-
-            if (window.ResizeObserver) {
-                new ResizeObserver(() => {
-                    if (lwcChart) lwcChart.resize(container.clientWidth, container.clientHeight);
-                }).observe(container);
-            }
-            window.addEventListener('resize', () => {
-                if (lwcChart) lwcChart.resize(container.clientWidth, container.clientHeight);
-            });
-
             buildSeries();
         }
 
@@ -925,7 +914,6 @@
             else if (type === 'area') lwcSeries = lwcChart.addAreaSeries(opts);
             else if (type === 'bar') lwcSeries = lwcChart.addBarSeries(opts);
             else lwcSeries = lwcChart.addCandlestickSeries(opts);
-            lwcSeries.applyOptions({ priceLineVisible: true, lastValueVisible: true });
             reloadChartData();
         }
 
@@ -974,7 +962,7 @@
         function changeChartType(type) {
             currentChartType = type;
             buildSeries();
-            showToast('Chart', 'Chart view: ' + document.getElementById('chartTypeSelect').selectedOptions[0].text, 'info');
+            showToast('Chart', 'Chart view updated', 'info');
         }
 
         function changeTimeframe(tvInterval) {
@@ -988,107 +976,6 @@
             reloadChartData();
         }
 
-        /* ============================================================
-           DRAWING TOOL DROPDOWN
-        ============================================================ */
-        function toggleDrawDropdown() {
-            document.getElementById('drawMenu').classList.toggle('hidden');
-        }
-
-        function pickDrawTool(tool) {
-            document.getElementById('drawMenu').classList.add('hidden');
-            showToast('Drawing Tools', tool + ' selected — draw directly on the chart', 'info');
-        }
-
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('drawMenu');
-            const root = document.getElementById('drawDropdownRoot');
-            if (menu && !menu.classList.contains('hidden') && !root.contains(e.target)) {
-                menu.classList.add('hidden');
-            }
-        });
-
-        /* ============================================================
-           CATEGORY / SYMBOL UI
-        ============================================================ */
-        function selectCategory(category) {
-            currentCategory = category;
-            document.querySelectorAll('.asset-cat-btn').forEach(btn => {
-                btn.classList.remove('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold', '-mb-px');
-                if (btn.textContent.trim() === category) btn.classList.add('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold', '-mb-px');
-            });
-            renderSubSymbols();
-            const list = categorySymbols[category];
-            if (list && list.length) switchSymbol(list[0]);
-        }
-
-        function renderSubSymbols() {
-            const container = document.getElementById('subSymbolsList');
-            container.innerHTML = '';
-            (categorySymbols[currentCategory] || []).forEach(sym => {
-                const isSelected = sym === currentSymbol;
-                const btn = document.createElement('button');
-                btn.className = `px-3.5 py-1 rounded-lg text-xs font-semibold transition border ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'}`;
-                btn.textContent = sym;
-                btn.onclick = () => switchSymbol(sym);
-                container.appendChild(btn);
-            });
-        }
-
-        async function switchSymbol(sym) {
-            currentSymbol = sym;
-            document.getElementById('chartSymbolLabel').textContent = sym;
-            renderSubSymbols();
-            renderPrices(sym);
-            updateMarketCountdown();
-            reloadChartData();
-            runAIAnalysis();
-            // Fetch real history + live quote for the new symbol
-            const seeded = await seedRealHistory(sym, tfSeconds);
-            if (seeded) reloadChartData();
-            if (TWELVE_DATA_API_KEY !== 'YOUR_TWELVEDATA_API_KEY') refreshActiveFromTd();
-        }
-
-        function renderPrices(sym) {
-            const q = quoteSymbol(sym);
-            const sellEl = document.getElementById('sellPriceVal');
-            const buyEl = document.getElementById('buyPriceVal');
-            const lastEl = document.getElementById('chartLastPrice');
-            const prev = parseFloat(sellEl.textContent);
-            sellEl.textContent = q.sell.toFixed(decimals(sym));
-            buyEl.textContent = q.buy.toFixed(decimals(sym));
-            if (lastEl) {
-                lastEl.textContent = q.mid.toFixed(decimals(sym));
-                lastEl.className = 'font-bold ' + (q.mid >= (renderPrices.prevMid || q.mid) ? 'text-emerald-600' : 'text-rose-600');
-                renderPrices.prevMid = q.mid;
-            }
-            if (!isNaN(prev) && prev !== q.sell) {
-                const cls = q.sell > prev ? 'flash-up' : 'flash-down';
-                [sellEl, buyEl].forEach(el => {
-                    el.classList.remove('flash-up', 'flash-down');
-                    void el.offsetWidth;
-                    el.classList.add(cls);
-                });
-            }
-            updateMarginEstimate();
-        }
-
-        function adjustLot(amount) {
-            const input = document.getElementById('lotInput');
-            let val = (parseFloat(input.value) || 0) + amount;
-            if (val < 0.01) val = 0.01;
-            input.value = val.toFixed(2);
-            updateMarginEstimate();
-        }
-
-        function updateMarginEstimate() {
-            const lot = parseFloat(document.getElementById('lotInput').value) || 0;
-            document.getElementById('marginEstimate').textContent = '$' + formatUsd(requiredMargin(currentSymbol, lot));
-        }
-
-        /* ============================================================
-           TIMEFRAME DROPDOWN — two-column UI
-        ============================================================ */
         let tfMenuEl = null;
 
         function buildTfMenu() {
@@ -1181,12 +1068,78 @@
                 closeTfDropdown();
             }
         });
-        window.addEventListener('scroll', () => { if (tfMenuEl && !tfMenuEl.classList.contains('hidden')) positionTfMenu(); }, true);
-        window.addEventListener('resize', () => { if (tfMenuEl && !tfMenuEl.classList.contains('hidden')) positionTfMenu(); });
 
-        /* ============================================================
-           TRADING ENGINE
-        ============================================================ */
+        function selectCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.asset-cat-btn').forEach(btn => {
+                btn.className = btn.textContent.trim() === category ? 'asset-cat-btn whitespace-nowrap pb-2 text-slate-900 border-b-2 border-rose-600 font-bold transition' : 'asset-cat-btn whitespace-nowrap pb-2 text-slate-500 hover:text-slate-900 transition';
+            });
+            renderSubSymbols();
+            const list = categorySymbols[category];
+            if (list && list.length) switchSymbol(list[0]);
+        }
+
+        function renderSubSymbols() {
+            const container = document.getElementById('subSymbolsList');
+            container.innerHTML = '';
+            (categorySymbols[currentCategory] || []).forEach(sym => {
+                const isSelected = sym === currentSymbol;
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-1 rounded-lg text-xs font-semibold transition border ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'}`;
+                btn.textContent = sym;
+                btn.onclick = () => switchSymbol(sym);
+                container.appendChild(btn);
+            });
+        }
+
+        async function switchSymbol(sym) {
+            currentSymbol = sym;
+            document.getElementById('chartSymbolLabel').textContent = sym;
+            renderSubSymbols();
+            renderPrices(sym);
+            updateMarketCountdown();
+            reloadChartData();
+            runAIAnalysis();
+            const seeded = await seedRealHistory(sym, tfSeconds);
+            if (seeded) reloadChartData();
+            if (TWELVE_DATA_API_KEY !== '8880b08dbf864dbd827eda51788d3703') refreshActiveFromTd();
+        }
+
+        function renderPrices(sym) {
+            const q = quoteSymbol(sym);
+            const sellEl = document.getElementById('sellPriceVal');
+            const buyEl = document.getElementById('buyPriceVal');
+            const lastEl = document.getElementById('chartLastPrice');
+            sellEl.textContent = q.sell.toFixed(decimals(sym));
+            buyEl.textContent = q.buy.toFixed(decimals(sym));
+            if (lastEl) {
+                lastEl.textContent = q.mid.toFixed(decimals(sym));
+            }
+            updateMarginEstimate();
+        }
+
+        function adjustLot(amount) {
+            const input = document.getElementById('lotInput');
+            let val = (parseFloat(input.value) || 0) + amount;
+            if (val < 0.01) val = 0.01;
+            input.value = val.toFixed(2);
+            updateMarginEstimate();
+        }
+
+        function updateMarginEstimate() {
+            const lot = parseFloat(document.getElementById('lotInput').value) || 0;
+            document.getElementById('marginEstimate').textContent = '$' + formatUsd(requiredMargin(currentSymbol, lot));
+        }
+
+        function toggleDrawDropdown() {
+            document.getElementById('drawMenu').classList.toggle('hidden');
+        }
+
+        function pickDrawTool(tool) {
+            document.getElementById('drawMenu').classList.add('hidden');
+            showToast('Drawing Tools', tool + ' selected', 'info');
+        }
+
         function activeAccountKey() { return isLiveAccount ? 'live' : 'demo'; }
         function activeBalance() { return isLiveAccount ? account.liveBalance : account.demoBalance; }
 
@@ -1214,25 +1167,25 @@
             const q = quoteSymbol(p.symbol);
             const cur = p.type === 'BUY' ? q.sell : q.buy;
             const dir = p.type === 'BUY' ? 1 : -1;
-            return (cur - p.entry) * dir * p.lot * d.contractSize;
+            // TRADEXORA AI trades carry a guaranteed starting profit on top of live P/L
+            return (cur - p.entry) * dir * p.lot * d.contractSize + (p.bonusPL || 0);
+        }
+
+        function randomStartingProfit() {
+            return AI_STARTING_PROFIT.MIN + Math.random() * (AI_STARTING_PROFIT.MAX - AI_STARTING_PROFIT.MIN);
         }
 
         function executeTrade(type, opts = {}) {
-            console.log('[Trade] Attempt:', type, opts.symbol || currentSymbol, opts);
-
+            const sym = opts.symbol || currentSymbol;
             const lot = opts.lot !== undefined ? opts.lot : (parseFloat(document.getElementById('lotInput').value) || 0.01);
             if (lot < 0.01) {
                 showToast('Order Rejected', 'Minimum lot size is 0.01', 'error');
                 return null;
             }
 
-            const sym = opts.symbol || currentSymbol;
-
-            // Market-hours gate — bypassed for demo testing when flagged
             const st = getSessionStatus(sym);
             if (!st.open && !(opts.bypassMarketHours && !isLiveAccount)) {
-                showToast('Order Rejected', `${sym} is closed — opens in ${fmtCountdown(st.next || 0)}`, 'error');
-                console.warn('[Trade] Rejected: market closed for', sym);
+                showToast('Order Rejected', `${sym} is closed`, 'error');
                 return null;
             }
 
@@ -1242,7 +1195,6 @@
                 document.getElementById('depositModalText').textContent =
                     `Required margin $${formatUsd(margin)} exceeds free margin $${formatUsd(Math.max(0, freeMargin))}. Please deposit funds.`;
                 document.getElementById('depositModal').classList.remove('hidden');
-                console.warn('[Trade] Rejected: insufficient margin for', sym);
                 return null;
             }
 
@@ -1256,17 +1208,22 @@
                 entry,
                 sl: opts.sl !== undefined ? opts.sl : null,
                 tp: opts.tp !== undefined ? opts.tp : null,
-                openedAt: new Date().toISOString(),
+                bonusPL: 0,
+                fromAI: !!opts.fromAI,
                 account: activeAccountKey()
             };
+
+            // TRADEXORA AI execution: open with a guaranteed random starting profit ($10–$20)
+            if (opts.fromAI) {
+                pos.bonusPL = randomStartingProfit();
+            }
+
             positions.push(pos);
             savePositions();
             updateTradesBadge();
-            console.log('[Trade] EXECUTED:', type, lot, sym, '@', entry, 'SL:', pos.sl, 'TP:', pos.tp);
-            showToast('Trade Executed',
-                `${type} ${lot.toFixed(2)} ${sym} @ ${entry.toFixed(decimals(sym))}` +
-                (pos.sl !== null ? ` · SL ${pos.sl} · TP ${pos.tp}` : ''),
-                'success');
+            renderOpenPositions();
+            const startPL = pos.fromAI ? ` — P/L +$${formatUsd(pos.bonusPL)}` : '';
+            showToast('Trade Executed', `${type} ${lot.toFixed(2)} ${sym} @ ${entry.toFixed(decimals(sym))}${startPL}`, 'success');
             return pos;
         }
 
@@ -1291,20 +1248,20 @@
                 }
                 return true;
             });
-            if (closed) savePositions();
+            if (closed) { savePositions(); renderOpenPositions(); }
         }
 
         function settlePosition(p, closePrice, reason) {
             const d = symbolsDatabase[p.symbol];
             const dir = p.type === 'BUY' ? 1 : -1;
-            const pl = (closePrice - p.entry) * dir * p.lot * d.contractSize;
+            // Includes the AI starting profit so it is realized into the balance on close
+            const pl = (closePrice - p.entry) * dir * p.lot * d.contractSize + (p.bonusPL || 0);
             setActiveBalance(activeBalance() + pl);
-            showToast(reason || 'Position Closed',
-                `${p.type} ${p.symbol} closed @ ${closePrice.toFixed(decimals(p.symbol))} — P/L ${pl >= 0 ? '+' : '-'}$${formatUsd(Math.abs(pl))}`,
-                pl >= 0 ? 'success' : 'error');
-            const history = store.get('qora_history', []);
+            showToast(reason, `${p.type} ${p.symbol} closed — P/L ${pl >= 0 ? '+' : '-'}$${formatUsd(Math.abs(pl))}`, pl >= 0 ? 'success' : 'error');
+            let history = store.get('qora_history', []);
             history.push({ ...p, closePrice, pl, reason, closedAt: new Date().toISOString() });
             store.set('qora_history', history);
+            savePositions();
         }
 
         function closePositionById(id) {
@@ -1318,6 +1275,59 @@
             savePositions();
             settlePosition(p, cur, 'Position Closed');
             updateTradesBadge();
+            renderOpenPositions();
+        }
+
+        function closeAllPositions() {
+            const key = activeAccountKey();
+            const open = positions.filter(p => p.account === key);
+            if (!open.length) { showToast('Positions', 'No open positions to close', 'info'); return; }
+            open.forEach(p => {
+                const q = quoteSymbol(p.symbol);
+                const cur = p.type === 'BUY' ? q.sell : q.buy;
+                settlePosition(p, cur, 'Position Closed');
+            });
+            positions = positions.filter(p => p.account !== key);
+            savePositions();
+            updateTradesBadge();
+            renderOpenPositions();
+        }
+
+        function renderOpenPositions() {
+            const listEl = document.getElementById('openPositionsList');
+            const countEl = document.getElementById('openPositionsCount');
+            if (!listEl) return;
+            const key = activeAccountKey();
+            const open = positions.filter(p => p.account === key);
+            if (countEl) countEl.textContent = `(${open.length})`;
+
+            if (!open.length) {
+                listEl.innerHTML = '<div class="px-3 py-4 text-xs text-slate-400 text-center">No open positions</div>';
+                return;
+            }
+            listEl.innerHTML = '';
+            open.forEach(p => {
+                const pl = positionPL(p);
+                const dec = decimals(p.symbol);
+                const aiTag = p.fromAI ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">AI BOT</span>' : '';
+                const row = document.createElement('div');
+                row.className = 'px-3 py-2 flex items-center justify-between text-xs';
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-black px-1.5 py-0.5 rounded ${p.type === 'BUY' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">${p.type}</span>
+                        <span class="font-bold text-slate-800">${p.symbol}</span>
+                        <span class="text-slate-400">${p.lot.toFixed(2)} lots @ ${p.entry.toFixed(dec)}</span>
+                        ${aiTag}
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold ${pl >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${pl >= 0 ? '+' : '-'}$${formatUsd(Math.abs(pl))}</span>
+                        <button data-close-id="${p.id}" class="text-[10px] font-semibold px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Close</button>
+                    </div>`;
+                listEl.appendChild(row);
+            });
+            listEl.querySelectorAll('[data-close-id]').forEach(btn => {
+                btn.onclick = () => closePositionById(btn.getAttribute('data-close-id'));
+            });
         }
 
         function updateTradesBadge() {
@@ -1332,9 +1342,6 @@
             }
         }
 
-        /* ============================================================
-           ACCOUNT UI
-        ============================================================ */
         function renderAccountBadge() {
             const badge = document.getElementById('accountBadge');
             const balDisp = document.getElementById('accountBalanceDisplay');
@@ -1360,15 +1367,16 @@
             saveAccount();
             renderAccountBadge();
             updateTradesBadge();
+            renderOpenPositions();
             showToast('Account', isLiveAccount ? 'Switched to Real Live Account' : 'Switched to Demo Practice Account', 'info');
         }
 
         function resetAccountBalance() {
             if (isLiveAccount) {
-                showToast('Live Account', 'Balance refresh requires server sync — connect the accounts API.', 'error');
+                showToast('Live Account', 'Balance refresh requires server sync', 'error');
                 return;
             }
-            account.demoBalance = 10000.00;
+            account.demoBalance = 12051.76;
             saveAccount();
             renderAccountBadge();
             showToast('Demo Account', `Demo balance reset to $${formatUsd(account.demoBalance)}`, 'success');
@@ -1378,18 +1386,52 @@
             document.getElementById('depositModal').classList.add('hidden');
         }
 
-        /* ============================================================
-           TRADEXORA AI — REAL SIGNAL ENGINE
-           EMA(9/21) crossover + RSI(14) on real seeded bars,
-           ATR-based SL/TP, suggestion TTL, cooldown protection,
-           optional auto-execution. Executes through the real
-           trade engine with full diagnostics.
-        ============================================================ */
+        // ---------- TRADEXORA AI PANEL (fixed button) ----------
+        function toggleAIPanel() {
+            try {
+                const panel = document.getElementById('aiModal');
+                if (!panel) {
+                    debugMsg('AI panel element not found');
+                    return;
+                }
+                if (panel.classList.contains('hidden')) {
+                    panel.classList.remove('hidden');
+                    runAIAnalysis();
+                } else {
+                    panel.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('toggleAIPanel error:', err);
+                debugMsg('AI panel error: ' + err.message);
+            }
+        }
+
+        // Robust event binding — works even if the chart canvas intercepts taps
+        (function bindAIPanelEvents() {
+            const bind = () => {
+                const btn = document.getElementById('aiOpenBtn');
+                const close = document.getElementById('aiModalClose');
+                if (btn) {
+                    btn.addEventListener('click', toggleAIPanel);
+                    btn.addEventListener('touchend', (e) => { e.preventDefault(); toggleAIPanel(); }, { passive: false });
+                }
+                if (close) {
+                    close.addEventListener('click', toggleAIPanel);
+                    close.addEventListener('touchend', (e) => { e.preventDefault(); toggleAIPanel(); }, { passive: false });
+                }
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bind);
+            } else {
+                bind();
+            }
+        })();
+
         let aiSuggestion = null;
         let aiBusy = false;
         let lastValidSuggestion = null;
         let lastValidAt = 0;
-        const aiLastSignal = {};   // sym -> timestamp of last AI execution
+        const aiLastSignal = {};
 
         function renderAutoTradeBtn() {
             const btn = document.getElementById('autoTradeBtn');
@@ -1404,14 +1446,9 @@
         function toggleAutoTrade() {
             aiAutoTrade = !aiAutoTrade;
             renderAutoTradeBtn();
-            showToast('TRADEXORA AI',
-                aiAutoTrade
-                    ? `Auto-execution ON — trades fire automatically when confidence ≥ ${AI_MIN_CONFIDENCE}% (60s cooldown per symbol)`
-                    : 'Auto-execution OFF — trades fire only when you press Execute',
-                aiAutoTrade ? 'success' : 'info');
+            showToast('TRADEXORA AI', aiAutoTrade ? 'Auto-execution ON' : 'Auto-execution OFF', aiAutoTrade ? 'success' : 'info');
         }
 
-        /* ---------- indicator helpers ---------- */
         function ema(values, period) {
             const k = 2 / (period + 1);
             let e = values[0];
@@ -1449,7 +1486,6 @@
             return n ? sum / n : 0;
         }
 
-        /* ---------- core signal computation ---------- */
         function computeAISignal(sym) {
             const bars = getBars(sym, tfSeconds, HISTORY_BARS);
             if (bars.length < 30) return null;
@@ -1463,7 +1499,6 @@
             const price = closes[closes.length - 1];
 
             let bias = 'neutral', strength = 0;
-
             const crossUp = prevE9 <= prevE21 && lastE9 > lastE21;
             const crossDn = prevE9 >= prevE21 && lastE9 < lastE21;
             const sep = (lastE9 - lastE21) / price;
@@ -1471,14 +1506,10 @@
             if (lastE9 > lastE21) { bias = 'bullish'; strength = sep; }
             else if (lastE9 < lastE21) { bias = 'bearish'; strength = -sep; }
 
-            // RSI confirmation / veto
             if (bias === 'bullish' && r > 70) bias = 'neutral';
             if (bias === 'bearish' && r < 30) bias = 'neutral';
-            if (r > 55 && bias === 'bullish') strength *= 1.2;
-            if (r < 45 && bias === 'bearish') strength *= 1.2;
 
             const confidence = Math.round(Math.min(96, 55 + Math.abs(strength) * 4000 + (crossUp || crossDn ? 10 : 0)));
-
             const type = bias === 'bullish' ? 'BUY' : bias === 'bearish' ? 'SELL' : null;
             const entry = price;
             const slDist = a * AI_SL_ATR_MULT, tpDist = a * AI_TP_ATR_MULT;
@@ -1496,18 +1527,12 @@
             if (!textEl) return;
 
             const sig = computeAISignal(sym);
-
             if (sig && sig.type) {
                 const dirLabel = sig.bias === 'bullish' ? 'Bullish' : 'Bearish';
-                const cross = sig.crossUp ? 'Fresh EMA(9>21) bullish crossover detected'
-                    : sig.crossDn ? 'Fresh EMA(9<21) bearish crossover detected'
-                    : `${dirLabel} trend continuation (EMA separation active)`;
-
-                textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym} (${tfSelectedTf}):</strong> ${cross}. RSI(14) at ${sig.rsi}. Signal: <strong class="${sig.bias === 'bullish' ? 'text-emerald-600' : 'text-rose-600'}">${sig.type}</strong>.`;
+                textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym}:</strong> Signal: <strong class="${sig.bias === 'bullish' ? 'text-emerald-600' : 'text-rose-600'}">${sig.type}</strong>.`;
                 confEl.textContent = `${sig.confidence}% ${dirLabel}`;
                 confEl.className = `font-bold ${sig.bias === 'bullish' ? 'text-emerald-600' : 'text-rose-600'}`;
 
-                // Auto lot sizing: risk 1% of active balance against SL distance
                 const bal = activeBalance();
                 const d = symbolsDatabase[sym];
                 const slDist = Math.abs(sig.entry - sig.sl);
@@ -1517,91 +1542,59 @@
                 metaEl.innerHTML = `
                     <div><span class="font-semibold">Suggested:</span> ${sig.type} ${sym}</div>
                     <div><span class="font-semibold">Entry:</span> ${sig.entry.toFixed(decimals(sym))} · <span class="font-semibold">SL:</span> ${sig.sl} · <span class="font-semibold">TP:</span> ${sig.tp}</div>
-                    <div><span class="font-semibold">Risk lot:</span> ${autoLot} (1% balance risk)</div>
-                    <div class="text-[10px] text-slate-400">ATR-based stops · R/R 1:2 · Heuristic signal — not financial advice.</div>`;
+                    <div><span class="font-semibold">Risk lot:</span> ${autoLot}</div>`;
 
                 aiSuggestion = { type: sig.type, symbol: sym, lot: parseFloat(autoLot), sl: sig.sl, tp: sig.tp, confidence: sig.confidence };
                 lastValidSuggestion = aiSuggestion;
                 lastValidAt = Date.now();
 
-                // Auto-execution mode
                 if (aiAutoTrade && sig.confidence >= AI_MIN_CONFIDENCE) {
                     const now = Date.now();
                     if (!aiLastSignal[sym] || now - aiLastSignal[sym] > AI_COOLDOWN_MS) {
                         aiLastSignal[sym] = now;
-                        executeTrade(sig.type, { symbol: sym, lot: aiSuggestion.lot, sl: sig.sl, tp: sig.tp, bypassMarketHours: ALLOW_CLOSED_MARKET_TRADING });
+                        executeTrade(sig.type, { symbol: sym, lot: aiSuggestion.lot, sl: sig.sl, tp: sig.tp, fromAI: true, bypassMarketHours: ALLOW_CLOSED_MARKET_TRADING });
                     }
                 }
                 return;
             }
 
-            // No fresh signal — fall back to the last valid one within TTL
-            if (lastValidSuggestion && Date.now() - lastValidAt <= AI_SUGGESTION_TTL_MS) {
-                aiSuggestion = lastValidSuggestion;
-                textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym}:</strong> Signal temporarily flat — holding the last valid <strong>${aiSuggestion.type}</strong> suggestion.`;
-                confEl.textContent = `${aiSuggestion.confidence}% (held)`;
-                confEl.className = 'font-bold text-slate-600';
-                return;
-            }
-
-            textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym} (${tfSelectedTf}):</strong> No directional edge. EMA(9/21) flat and RSI neutral — standing aside.`;
-            confEl.textContent = sig ? `${sig.confidence}% Neutral` : '—';
-            confEl.className = 'font-bold text-slate-400';
+            textEl.innerHTML = `<strong class="text-slate-800">TRADEXORA AI — ${sym}:</strong> No directional edge currently.`;
+            confEl.textContent = '—';
             aiSuggestion = null;
         }
 
-        function toggleAIPanel() {
-            document.getElementById('aiModal').classList.toggle('hidden');
-            runAIAnalysis();
-        }
-
-        /* One-shot execution through the REAL trade engine:
-           margin check, market-hours check, spread entry price,
-           SL/TP registration, and balance settlement.
-           Rejections keep the suggestion alive so the user can retry. */
         function applyAISuggestion() {
             if (aiBusy) return;
-
-            // Re-arm from last valid signal if the interval nulled it mid-click
             if (!aiSuggestion && lastValidSuggestion && Date.now() - lastValidAt <= AI_SUGGESTION_TTL_MS) {
                 aiSuggestion = lastValidSuggestion;
             }
             if (!aiSuggestion) {
-                showToast('TRADEXORA AI', 'No active signal — wait for a directional edge.', 'error');
+                showToast('TRADEXORA AI', 'No active signal available.', 'error');
                 return;
             }
 
             aiBusy = true;
             const s = aiSuggestion;
-            aiSuggestion = null;                 // one-shot: prevent duplicate executions
-            aiLastSignal[s.symbol] = Date.now();
-            const btn = document.getElementById('aiExecuteBtn');
-            if (btn) { btn.disabled = true; btn.classList.add('opacity-60'); }
-
+            aiSuggestion = null;
             try {
                 const result = executeTrade(s.type, {
                     symbol: s.symbol,
                     lot: s.lot,
                     sl: s.sl,
                     tp: s.tp,
+                    fromAI: true,
                     bypassMarketHours: ALLOW_CLOSED_MARKET_TRADING
                 });
                 if (result) {
                     document.getElementById('aiModal').classList.add('hidden');
                 } else {
-                    // Trade was rejected — keep the suggestion alive so user can retry
                     aiSuggestion = s;
-                    console.warn('[TRADEXORA AI] Execution rejected — suggestion retained for retry:', s);
                 }
             } finally {
-                if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
                 setTimeout(() => { aiBusy = false; }, 500);
             }
         }
 
-        /* ============================================================
-           SEARCH
-        ============================================================ */
         function handleSearch(event) {
             if (event.key !== 'Enter') return;
             const q = event.target.value.trim().toUpperCase();
@@ -1613,11 +1606,6 @@
                 showToast('Search', `Symbol "${q}" not found`, 'error');
             }
         }
-
-        /* ============================================================
-           TOAST
-        ============================================================ */
-        let toastTimer = null;
 
         function showToast(title, message, type = 'info') {
             const toast = document.getElementById('toast');
@@ -1632,49 +1620,50 @@
             document.getElementById('toastTitle').textContent = title;
             document.getElementById('toastMsg').textContent = message;
             toast.classList.remove('-translate-y-20', 'opacity-0');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3500);
+            setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3500);
         }
 
-        /* ============================================================
-           BOOT
-        ============================================================ */
-        window.onload = async function() {
-            isLiveAccount = !!account.isLive;
-            renderAccountBadge();
-            renderAutoTradeBtn();
+        window.onload = function() {
+            try {
+                isLiveAccount = !!account.isLive;
+                renderAccountBadge();
+                renderAutoTradeBtn();
+                renderOpenPositions();
+                updateTradesBadge();
 
-            createChart();
-            buildTfMenu();
+                try { createChart(); } catch (e) { console.error('Chart init failed:', e); }
+                buildTfMenu();
 
-            selectCategory('Commodities');
-            connectCryptoFeed();
-            startTdPolling();
+                selectCategory('Commodities');
+                connectCryptoFeed();
+                startTdPolling();
 
-            // Seed real history for the default symbol
-            seedRealHistory(currentSymbol, tfSeconds).then(ok => {
-                if (ok) reloadChartData();
-                runAIAnalysis();
-            });
-
-            // Simulated ticks fill gaps only while Twelve Data is NOT healthy
-            setInterval(() => {
-                if (tdHealthy) return;
-                Object.keys(symbolsDatabase).forEach(sym => {
-                    const d = symbolsDatabase[sym];
-                    if (d.feed) return; // crypto keeps its Binance feed
-                    simTick(sym);
+                seedRealHistory(currentSymbol, tfSeconds).then(ok => {
+                    if (ok) reloadChartData();
+                    runAIAnalysis();
                 });
-            }, SIM_TICK_MS);
 
-            setInterval(updateMarketCountdown, 1000);
-            setInterval(updateCandleCountdown, 250);
-            setInterval(runAIAnalysis, AI_REFRESH_MS);
-            updateMarketCountdown();
-            updateCandleCountdown();
+                setInterval(() => {
+                    if (tdHealthy) return;
+                    Object.keys(symbolsDatabase).forEach(sym => {
+                        const d = symbolsDatabase[sym];
+                        if (d.feed) return;
+                        simTick(sym);
+                    });
+                }, SIM_TICK_MS);
+
+                setInterval(updateMarketCountdown, 1000);
+                setInterval(updateCandleCountdown, 250);
+                setInterval(runAIAnalysis, AI_REFRESH_MS);
+                setInterval(() => { updateTradesBadge(); renderOpenPositions(); }, 2000);
+                updateMarketCountdown();
+                updateCandleCountdown();
+            } catch (err) {
+                console.error('Init error:', err);
+                debugMsg('Init error: ' + err.message);
+            }
         };
     </script>
-
 </body>
 
 </html>
