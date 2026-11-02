@@ -4,24 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRADEXORA Trading - Trades / NOONES</title>
+    <title>TRADEXORA Trading - Trades</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Fonts: Inter -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
                             red: '#8b1d38',
@@ -43,20 +36,9 @@
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
         }
-        
-         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-         ::-webkit-scrollbar-track {
-            background: #f8fafc;
-        }
-        
-         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     </style>
 </head>
 
@@ -66,107 +48,84 @@
     <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
 
-            <!-- Left Header: Back Button, Logo, and Deposit Funds -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Back Button -->
                 <a href="../menu/index.html" class="flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     <span>Back</span>
                 </a>
 
-                <!-- TRADEXORA Logo -->
                 <a href="../TradesChart/index.html" aria-label="TRADEXORA home" class="flex items-center gap-2 whitespace-nowrap">
-                    <span class="w-8 h-8 shrink-0 rounded-full bg-black text-amber-400 flex items-center justify-center font-extrabold text-[11px] border border-amber-500/30 shadow-sm">
-                        TX
-                    </span>
-                    <span class="text-sm sm:text-base font-extrabold tracking-tight text-gray-900">
-                        TRADEXORA
-                    </span>
+                    <span class="w-8 h-8 shrink-0 rounded-full bg-black text-amber-400 flex items-center justify-center font-extrabold text-[11px] border border-amber-500/30 shadow-sm">TX</span>
+                    <span class="text-sm sm:text-base font-extrabold tracking-tight text-gray-900">TRADEXORA</span>
                 </a>
 
-                <!-- Deposit Funds Button -->
                 <a href="../deposit/index.html" aria-label="Deposit Funds" class="flex items-center gap-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
                     <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
                     <span class="hidden sm:inline">Deposit Funds</span>
                 </a>
             </div>
 
-            <!-- Right Header: Account Status and Quick Actions -->
             <div class="flex items-center gap-1.5 sm:gap-3">
-                <!-- Account Dropdown Trigger -->
                 <div class="relative">
-                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+                    <button id="accountDropdownBtn" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
                         <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
                         <div class="text-right">
-                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
-                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $0.00</div>
+                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">--</div>
                         </div>
                     </button>
 
-                    <!-- Dropdown Modal -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
-                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">
-                            Select Account
-                        </div>
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
 
-                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+                        <button class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1" data-acc-type="Demo" data-acc-id="DNP142887">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Demo Account</div>
                                 <div class="text-[11px] text-gray-500">ID: DNP142887</div>
                             </div>
-                            <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
+                            <div class="text-xs font-bold text-emerald-600" id="dropdownDemoBal">$0.00</div>
                         </button>
 
-                        <button onclick="selectAccount('Real', '$0.00', 'RNP982314')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+                        <button class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all" data-acc-type="Real" data-acc-id="RNP982314">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Real Account</div>
                                 <div class="text-[11px] text-gray-500">ID: RNP982314</div>
                             </div>
-                            <div class="text-xs font-bold text-gray-700">$0.00</div>
+                            <div class="text-xs font-bold text-gray-700" id="dropdownRealBal">$0.00</div>
                         </button>
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh" aria-label="Refresh">
+                <button id="reloadBtn" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
                     <i class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
-
-                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings" aria-label="Settings">
+                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </a>
-
-                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile" aria-label="Profile">
+                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
                     <i class="fa-regular fa-user text-xs"></i>
                 </a>
-
-                <button onclick="handleLogout()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout" aria-label="Logout">
+                <button id="logoutBtn" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
-
         </div>
     </header>
 
-    <!-- MAIN TRADES CONTENT -->
+    <!-- MAIN CONTENT -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
-
-        <!-- PAGE TITLE -->
         <div class="mb-6">
             <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">TRADES</div>
             <h1 id="pageTitleName" class="text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
         </div>
 
-        <!-- QUICK LINKS ROW -->
         <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-8 border-b border-gray-100 pb-6">
             <a href="../TradesChart/index.html" class="group flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-house text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">
-                    Back to Trading
-                </span>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
             </a>
-
             <a href="../deposit/index.html" class="group flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-regular fa-credit-card text-sm"></i>
@@ -175,130 +134,78 @@
             </a>
         </div>
 
-        <!-- TRADE BOOK CONTAINER -->
         <div class="space-y-6">
-
-            <!-- TRADE BOOK HEADER SUMMARY -->
+            <!-- SUMMARY -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <div class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase mb-1">TRADE BOOK</div>
-                    <div class="text-sm font-bold text-gray-900" id="tradeBookAccountLabel">Demo · DNP142887</div>
+                    <div class="text-sm font-bold text-gray-900" id="tradeBookAccountLabel">--</div>
                 </div>
-
                 <div class="text-left sm:text-right">
-                    <div class="text-base font-extrabold text-blue-600 tracking-tight">+$32.68</div>
+                    <div class="text-base font-extrabold text-blue-600 tracking-tight" id="liveTotalPL">+$0.00</div>
                     <div class="text-[10px] text-gray-400 font-medium">Live open P/L</div>
                 </div>
             </div>
 
-            <!-- METRIC CARDS ROW -->
+            <!-- METRIC CARDS -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
                     <div class="text-xs text-gray-400 font-medium mb-1">Open</div>
-                    <div class="text-xl font-extrabold text-gray-900">1</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="metricOpenCount">0</div>
                 </div>
-
                 <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
                     <div class="text-xs text-gray-400 font-medium mb-1">Balance</div>
-                    <div class="text-xl font-extrabold text-gray-900">$10,000.00</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="metricBalance">$0.00</div>
                 </div>
-
                 <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
                     <div class="text-xs text-gray-400 font-medium mb-1">Equity</div>
-                    <div class="text-xl font-extrabold text-gray-900">$10,032.68</div>
+                    <div class="text-xl font-extrabold text-gray-900" id="metricEquity">$0.00</div>
                 </div>
+            </div>
+
+            <!-- AI BOT CONTROL -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-4 flex items-center justify-between text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                        <i class="fa-solid fa-robot text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-extrabold">TRADEXORA AI Bot</div>
+                        <div class="text-[10px] text-blue-100" id="botStatusLabel">OFF — opens only high-confidence setups on all assets</div>
+                    </div>
+                </div>
+                <button id="botToggleBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 hover:bg-blue-50 transition shadow">Turn ON</button>
             </div>
 
             <!-- TAB SWITCHER -->
             <div class="bg-gray-100/80 p-1 rounded-2xl flex items-center">
-                <button id="openTabBtn" onclick="switchTradeTab('open')" class="flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all">
-                    Open Trades
-                </button>
-                <button id="historyTabBtn" onclick="switchTradeTab('history')" class="flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm">
-                    History
-                </button>
+                <button id="openTabBtn" data-tab="open" class="flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm">Open Trades</button>
+                <button id="historyTabBtn" data-tab="history" class="flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all">History</button>
             </div>
 
             <!-- OPEN TRADES VIEW -->
-            <div id="openTradesView" class="hidden space-y-4">
-                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-xs relative overflow-hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-extrabold text-gray-900">BTCUSD,</span>
-                                <span class="text-xs font-bold text-red-600">sell 0.10</span>
-                            </div>
-                            <div class="text-xs font-medium text-gray-500 mt-1">
-                                80,549.90 &rarr; 80,217.12
-                            </div>
-                        </div>
-
-                        <div class="text-left sm:text-right">
-                            <div class="text-sm font-extrabold text-blue-600">+32.68</div>
-                            <div class="text-[10px] text-gray-400 font-medium mt-0.5">10/24/2026, 05:13:20 PM</div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-2">
-                        <div class="flex items-center space-x-2">
-                            <button onclick="showToast('Modifying position SL/TP...')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors flex items-center space-x-1">
-                                <i class="fa-solid fa-pen text-[10px]"></i>
-                                <span>Manage</span>
-                            </button>
-                            <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">SL --</span>
-                            <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">TP --</span>
-                        </div>
-
-                        <button onclick="showToast('Analyzing trade setup with TRADEXORA AI...')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg transition-all">
-                            <i class="fa-solid fa-cube text-xs"></i>
-                            <span>TRADEXORA AI</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <div id="openTradesView" class="space-y-4"></div>
 
             <!-- HISTORY VIEW -->
-            <div id="historyTradesView" class="space-y-4">
-
-                <!-- TIMEFRAME FILTER PILLS -->
+            <div id="historyTradesView" class="hidden space-y-4">
                 <div class="flex items-center space-x-2">
-                    <button onclick="setFilter('All Time', this)" class="filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors">
-                        All Time
-                    </button>
-                    <button onclick="setFilter('Today', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
-                        Today
-                    </button>
-                    <button onclick="setFilter('7D', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
-                        7D
-                    </button>
-                    <button onclick="setFilter('30D', this)" class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors">
-                        30D
-                    </button>
+                    <button class="filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors" data-filter="All Time">All Time</button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors" data-filter="Today">Today</button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors" data-filter="7D">7D</button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors" data-filter="30D">30D</button>
                 </div>
-
-                <!-- EMPTY HISTORY CONTAINER -->
-                <div class="bg-gray-50/70 border border-gray-100/80 rounded-2xl p-6 relative flex items-center justify-between min-h-[110px]">
-                    <div class="text-xs text-gray-400 font-medium">
-                        No trade history for this filter yet.
-                    </div>
-
-                    <button onclick="showToast('Launching TRADEXORA AI history analysis...')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg transition-all">
-                        <i class="fa-solid fa-cube text-xs"></i>
-                        <span>TRADEXORA AI</span>
-                    </button>
-                </div>
+                <div id="historyListContainer" class="space-y-3"></div>
             </div>
 
-            <!-- LOWER SUMMARY METRICS -->
+            <!-- LOWER METRICS -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                 <div class="flex items-center space-x-3">
                     <i class="fa-regular fa-credit-card text-red-500 text-sm"></i>
                     <div>
                         <div class="text-[10px] text-gray-400 font-medium">Balance</div>
-                        <div class="text-xs font-bold text-gray-900">$10,000.00</div>
+                        <div class="text-xs font-bold text-gray-900" id="lowerBalanceLabel">$0.00</div>
                     </div>
                 </div>
-
                 <div class="flex items-center space-x-3">
                     <i class="fa-solid fa-chart-line text-red-500 text-sm"></i>
                     <div>
@@ -306,7 +213,6 @@
                         <div class="text-xs font-bold text-gray-900" id="historyCountLabel">0</div>
                     </div>
                 </div>
-
                 <div class="flex items-center space-x-3">
                     <i class="fa-regular fa-clock text-red-500 text-sm"></i>
                     <div>
@@ -315,112 +221,691 @@
                     </div>
                 </div>
             </div>
-
-            <!-- POSITION LIFECYCLE GUIDELINES -->
-            <div class="space-y-3 pt-4 border-t border-gray-100">
-                <div class="text-xs font-bold text-gray-900 flex items-center space-x-2">
-                    <i class="fa-regular fa-calendar-days text-red-500 text-xs"></i>
-                    <span>Position lifecycle</span>
-                </div>
-
-                <div class="space-y-2">
-                    <div class="p-3.5 bg-gray-50/70 text-gray-600 text-xs rounded-xl border border-gray-100/80">
-                        Open trades stay active until take profit, stop loss, or manual close.
-                    </div>
-                    <div class="p-3.5 bg-gray-50/70 text-gray-600 text-xs rounded-xl border border-gray-100/80">
-                        Closed trade profit or loss is applied back to the selected demo balance.
-                    </div>
-                </div>
-            </div>
-
         </div>
     </main>
 
-    <!-- BOTTOM NAVIGATION DOCK -->
+    <!-- TRADEXORA AI MANUAL TRADE MODAL -->
+    <div id="aiModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-extrabold text-xs">
+                        <i class="fa-solid fa-cube"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-gray-900">TRADEXORA AI</h3>
+                        <p class="text-[10px] text-gray-400">Manual trade execution</p>
+                    </div>
+                </div>
+                <button id="aiModalClose" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Select Asset</label>
+                    <select id="aiPairSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800">
+                        <optgroup label="Forex">
+                            <option value="EURUSD">EUR/USD (EURUSD)</option>
+                            <option value="GBPUSD">GBP/USD (GBPUSD)</option>
+                            <option value="USDJPY">USD/JPY (USDJPY)</option>
+                        </optgroup>
+                        <optgroup label="Commodities">
+                            <option value="USOIL" selected>Crude Oil (USOIL)</option>
+                            <option value="NATGAS">Natural Gas (NATGAS)</option>
+                        </optgroup>
+                        <optgroup label="Indices">
+                            <option value="US30">US 30 (US30)</option>
+                            <option value="NAS100">Nasdaq 100 (NAS100)</option>
+                        </optgroup>
+                        <optgroup label="Stocks">
+                            <option value="AAPL">Apple (AAPL)</option>
+                            <option value="NVDA">NVIDIA (NVDA)</option>
+                        </optgroup>
+                        <optgroup label="Crypto">
+                            <option value="BTCUSD">Bitcoin (BTCUSD)</option>
+                            <option value="ETHUSD">Ethereum (ETHUSD)</option>
+                        </optgroup>
+                        <optgroup label="Metals">
+                            <option value="XAUUSD">Gold (XAUUSD)</option>
+                            <option value="XAGUSD">Silver (XAGUSD)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Lot Size</label>
+                    <input id="aiLotInput" type="number" step="0.01" value="0.10" min="0.01" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800" />
+                </div>
+
+                <div class="p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-[10px] text-gray-500 flex items-center justify-between">
+                    <span class="font-medium">Est. margin (1:100)</span>
+                    <span class="font-bold text-gray-800" id="aiMarginEstimate">$—</span>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button data-ai-dir="buy" class="ai-exec flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-all">Buy</button>
+                    <button data-ai-dir="sell" class="ai-exec flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-all">Sell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
     <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
         <div class="flex items-center justify-between">
-
-            <!-- Menu Tab -->
-            <a href="../menu/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../menu/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900">
                 <i class="fa-solid fa-bars text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Menu</span>
             </a>
-
-            <!-- Trades Tab -->
             <a href="index.html" class="flex flex-col items-center flex-1 py-1 text-red-600 relative">
-                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$32.88</span>
+                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight" id="navLivePL">+$0.00</span>
                 <i class="fa-regular fa-folder text-sm mb-1"></i>
                 <span class="text-[10px] font-bold">Trades</span>
             </a>
-
-            <!-- Trade Chart Tab -->
-            <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900">
                 <i class="fa-solid fa-house text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Trade chart</span>
             </a>
-
-            <!-- Markets & News Tab -->
-            <a href="../Markets%26News/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../Markets%26News/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900">
                 <i class="fa-regular fa-newspaper text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Markets&News</span>
             </a>
-
-            <!-- More Tab -->
-            <a href="../More/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../More/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900">
                 <i class="fa-regular fa-user text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">More</span>
             </a>
-
         </div>
     </nav>
 
-    <!-- Toast Container -->
+    <!-- Floating TRADEXORA AI Trigger -->
+    <button id="aiOpenBtn" class="fixed bottom-20 right-6 bg-blue-600 text-white p-3.5 rounded-full shadow-2xl hover:bg-blue-700 transition-all z-40 flex items-center space-x-2">
+        <i class="fa-solid fa-cube text-sm"></i>
+        <span class="text-xs font-bold pr-1">TRADEXORA AI</span>
+    </button>
+
+    <!-- Toast -->
     <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-amber-400"></i>
         <span id="toastMsg">Action triggered</span>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
+        'use strict';
+
+        const STORAGE_KEY_TRADES = 'tradexora_trades';
+        const STORAGE_KEY_ACCOUNT = 'tradexora_account';
+        const PURGE_KEY = 'tradexora_trades_purged';
         const CURRENT_USER_KEY = 'currentUser';
         const INDEX_URL = '../index.html';
 
-        /* ============ SHARED AUTH HELPERS ============ */
+        const LEVERAGE = 100;
 
-        function getCurrentUser() {
+        const BOT = {
+            MIN_CONFIDENCE: 75,
+            SCAN_INTERVAL_MS: 8000,
+            COOLDOWN_MS: 30000,
+            RISK_LOT: 0.10
+        };
+
+        const CONTRACT_SIZES = {
+            USOIL: 1000, NATGAS: 10000,
+            EURUSD: 100000, GBPUSD: 100000, USDJPY: 100000,
+            AAPL: 1, NVDA: 1,
+            BTCUSD: 1, ETHUSD: 1,
+            XAUUSD: 100, XAGUSD: 5000,
+            US30: 1, NAS100: 1
+        };
+
+        const BASE_PRICES = {
+            USOIL: 77.46, NATGAS: 2.93,
+            EURUSD: 1.0845, GBPUSD: 1.2910, USDJPY: 154.20,
+            AAPL: 232.50, NVDA: 138.25,
+            BTCUSD: 77868.26, ETHUSD: 2640,
+            XAUUSD: 2735.80, XAGUSD: 33.70,
+            US30: 51770.31, NAS100: 20250
+        };
+
+        const SYMBOL_DECIMALS = {
+            USOIL: 2, NATGAS: 3,
+            EURUSD: 5, GBPUSD: 5, USDJPY: 3,
+            AAPL: 2, NVDA: 2,
+            BTCUSD: 2, ETHUSD: 2,
+            XAUUSD: 2, XAGUSD: 3,
+            US30: 2, NAS100: 2
+        };
+
+        const ALL_SYMBOLS = Object.keys(CONTRACT_SIZES);
+
+        // ---------- STATE ----------
+        let activeAccount = 'Demo';
+        let activeAccountId = 'DNP142887';
+        let accountBalances = { Demo: 0.00, Real: 0.00 }; // starts at zero — no hardcoded funding
+        let tradesData = []; // NO hardcoded open trades — always starts empty
+        let openManagingId = null;
+        let renderLockUntil = 0;
+        let botEnabled = false;
+        let botLastTradeAt = {};
+
+        let livePrices = {};
+        ALL_SYMBOLS.forEach(s => { livePrices[s] = BASE_PRICES[s]; });
+
+        function sanitizeTrade(t) {
+            const sym = String(t.symbol || 'US30');
+            const entry = isFinite(parseFloat(t.entryPrice)) ? parseFloat(t.entryPrice) : (BASE_PRICES[sym] || 100);
+            return {
+                id: Number(t.id) || Date.now(),
+                symbol: CONTRACT_SIZES.hasOwnProperty(sym) ? sym : 'US30',
+                type: (t.type === 'sell') ? 'sell' : 'buy',
+                lots: (isFinite(parseFloat(t.lots)) && parseFloat(t.lots) > 0) ? parseFloat(t.lots) : 0.10,
+                entryPrice: entry,
+                currentPrice: isFinite(parseFloat(t.currentPrice)) && parseFloat(t.currentPrice) > 0 ? parseFloat(t.currentPrice) : entry,
+                sl: isFinite(parseFloat(t.sl)) ? parseFloat(t.sl) : null,
+                tp: isFinite(parseFloat(t.tp)) ? parseFloat(t.tp) : null,
+                date: String(t.date || new Date().toLocaleString()),
+                status: (t.status === 'closed') ? 'closed' : 'open',
+                account: (t.account === 'Real') ? 'Real' : 'Demo',
+                closedPL: isFinite(parseFloat(t.closedPL)) ? parseFloat(t.closedPL) : 0,
+                closedReason: String(t.closedReason || ''),
+                closedAt: String(t.closedAt || ''),
+                source: (t.source === 'bot') ? 'bot' : 'manual'
+            };
+        }
+
+        function loadState() {
+            // Account state
             try {
-                const user = localStorage.getItem(CURRENT_USER_KEY);
-                return user ? JSON.parse(user) : null;
-            } catch (e) {
-                console.error('Error parsing current user', e);
-                return null;
+                const savedAcc = localStorage.getItem(STORAGE_KEY_ACCOUNT);
+                if (savedAcc) {
+                    const parsed = JSON.parse(savedAcc);
+                    if (parsed && parsed.balances && isFinite(parsed.balances.Demo)) {
+                        accountBalances = {
+                            Demo: parseFloat(parsed.balances.Demo) || 0,
+                            Real: parseFloat(parsed.balances.Real) || 0
+                        };
+                    }
+                    activeAccount = parsed.activeType === 'Real' ? 'Real' : 'Demo';
+                    activeAccountId = parsed.activeId || 'DNP142887';
+                }
+            } catch (e) { console.warn('Account state corrupt, using defaults', e); }
+
+            // One-time purge of old hardcoded/seeded open trades
+            try {
+                if (!localStorage.getItem(PURGE_KEY)) {
+                    localStorage.removeItem(STORAGE_KEY_TRADES);
+                    localStorage.setItem(PURGE_KEY, '1');
+                }
+            } catch (e) { console.warn('Purge failed', e); }
+
+            // Trades state — discard any stored OPEN trades, keep closed history only
+            tradesData = [];
+            try {
+                const savedTrades = localStorage.getItem(STORAGE_KEY_TRADES);
+                if (savedTrades) {
+                    const parsedTrades = JSON.parse(savedTrades);
+                    if (Array.isArray(parsedTrades)) {
+                        tradesData = parsedTrades
+                            .filter(t => t && t.status === 'closed')
+                            .map(sanitizeTrade);
+                    }
+                }
+            } catch (e) { console.warn('Trades state corrupt, resetting', e); }
+
+            saveTrades();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY_ACCOUNT, JSON.stringify({
+                    balances: accountBalances,
+                    activeType: activeAccount,
+                    activeId: activeAccountId
+                }));
+            } catch (e) { console.warn('saveState failed', e); }
+        }
+
+        function saveTrades() {
+            try {
+                localStorage.setItem(STORAGE_KEY_TRADES, JSON.stringify(tradesData));
+            } catch (e) { console.warn('saveTrades failed', e); }
+        }
+
+        // ---------- CALC ----------
+        function getTradePL(trade) {
+            const entry = Number(trade.entryPrice) || 0;
+            const current = Number(trade.currentPrice) || 0;
+            const lots = Number(trade.lots) || 0;
+            const dir = (trade.type === 'buy') ? 1 : -1;
+            const contractSize = CONTRACT_SIZES[trade.symbol] || 1;
+            return (current - entry) * dir * lots * contractSize / LEVERAGE;
+        }
+
+        function requiredMargin(trade) {
+            const price = Number(trade.currentPrice) || Number(trade.entryPrice) || 0;
+            return price * (Number(trade.lots) || 0) * (CONTRACT_SIZES[trade.symbol] || 1) / LEVERAGE;
+        }
+
+        function openMarginUsed() {
+            return tradesData.filter(t => t.account === activeAccount && t.status === 'open')
+                .reduce((sum, t) => sum + requiredMargin(t), 0);
+        }
+
+        function fmtMoney(n) {
+            return '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtPrice(sym, n) {
+            return (Number(n) || 0).toFixed(SYMBOL_DECIMALS[sym] !== undefined ? SYMBOL_DECIMALS[sym] : 2);
+        }
+
+        // ---------- TRADE LIFECYCLE ----------
+        function closeTradeById(id, reason) {
+            const index = tradesData.findIndex(t => t.id === id);
+            if (index === -1) return null;
+            const trade = tradesData[index];
+            const pl = getTradePL(trade);
+
+            accountBalances[trade.account] = (accountBalances[trade.account] || 0) + pl;
+            trade.status = 'closed';
+            trade.closedPL = pl;
+            trade.closedReason = reason || 'Manual close';
+            trade.closedAt = new Date().toLocaleString();
+
+            saveTrades();
+            saveState();
+            if (openManagingId === id) openManagingId = null;
+
+            showToast(`${trade.symbol} closed ${reason || ''} (${pl >= 0 ? '+' : '-'}$${Math.abs(pl).toFixed(2)} ${pl >= 0 ? 'added to' : 'deducted from'} balance)`);
+            return trade;
+        }
+
+        function closeTrade(id) {
+            if (closeTradeById(id, 'Manual close')) renderTrades();
+        }
+
+        function toggleManage(id) {
+            openManagingId = (openManagingId === id) ? null : id;
+            renderLockUntil = Date.now() + 1500;
+            renderTrades();
+        }
+
+        function saveSLTP(id) {
+            const trade = tradesData.find(t => t.id === id);
+            const slEl = document.getElementById(`sl_input_${id}`);
+            const tpEl = document.getElementById(`tp_input_${id}`);
+            if (trade && slEl && tpEl) {
+                const slVal = parseFloat(slEl.value);
+                const tpVal = parseFloat(tpEl.value);
+                trade.sl = isNaN(slVal) ? null : slVal;
+                trade.tp = isNaN(tpVal) ? null : tpVal;
+                saveTrades();
+                openManagingId = null;
+                showToast(`SL/TP updated for ${trade.symbol}`);
+                renderTrades();
             }
         }
 
-        /* ============ INIT: AUTH GUARD + REGISTERED NAME ============ */
+        // ---------- RENDER ----------
+        function renderTrades() {
+            try {
+                const openView = document.getElementById('openTradesView');
+                const historyContainer = document.getElementById('historyListContainer');
 
-        (function initAuth() {
-            const user = getCurrentUser();
+                const currentAccountTrades = tradesData.filter(t => t.account === activeAccount);
+                const openTrades = currentAccountTrades.filter(t => t.status === 'open');
+                const historyTrades = currentAccountTrades.filter(t => t.status === 'closed');
 
-            if (!user || !user.email) {
-                window.location.href = INDEX_URL;
+                const totalPL = openTrades.reduce((acc, t) => acc + getTradePL(t), 0);
+                const currentBal = accountBalances[activeAccount] || 0;
+                const currentEquity = currentBal + totalPL;
+
+                document.getElementById('metricOpenCount').innerText = openTrades.length;
+                document.getElementById('metricBalance').innerText = fmtMoney(currentBal);
+                document.getElementById('metricEquity').innerText = fmtMoney(currentEquity);
+                document.getElementById('lowerBalanceLabel').innerText = fmtMoney(currentBal);
+                document.getElementById('historyCountLabel').innerText = historyTrades.length;
+
+                document.getElementById('activeAccountType').innerText = `${activeAccount} ${fmtMoney(currentBal)}`;
+                document.getElementById('activeAccountId').innerText = activeAccountId;
+                document.getElementById('tradeBookAccountLabel').innerText = `${activeAccount} · ${activeAccountId}`;
+                document.getElementById('dropdownDemoBal').innerText = fmtMoney(accountBalances.Demo);
+                document.getElementById('dropdownRealBal').innerText = fmtMoney(accountBalances.Real);
+
+                const plFormatted = (totalPL >= 0 ? '+' : '-') + '$' + Math.abs(totalPL).toFixed(2);
+                const plEl = document.getElementById('liveTotalPL');
+                plEl.innerText = plFormatted;
+                plEl.className = `text-base font-extrabold tracking-tight ${totalPL >= 0 ? 'text-blue-600' : 'text-red-600'}`;
+                document.getElementById('navLivePL').innerText = plFormatted;
+
+                if (openTrades.length === 0) {
+                    openView.innerHTML = `
+                        <div class="bg-gray-50/70 border border-gray-100 rounded-2xl p-6 text-center text-xs text-gray-400 font-medium">
+                            No open trades. Open one via the TRADEXORA AI panel or the trading dashboard.
+                        </div>`;
+                } else {
+                    openView.innerHTML = openTrades.map(trade => {
+                        const pl = getTradePL(trade);
+                        const isManaging = openManagingId === trade.id;
+                        const lots = Number(trade.lots) || 0;
+                        const margin = requiredMargin(trade);
+                        const botTag = trade.source === 'bot'
+                            ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">AI BOT</span>'
+                            : '';
+                        return `
+                        <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-extrabold text-gray-900">${trade.symbol},</span>
+                                        <span class="text-xs font-bold ${trade.type === 'buy' ? 'text-emerald-600' : 'text-red-600'}">${trade.type} ${lots.toFixed(2)}</span>
+                                        ${botTag}
+                                    </div>
+                                    <div class="text-xs font-medium text-gray-500 mt-1">
+                                        ${fmtPrice(trade.symbol, trade.entryPrice)} &rarr; ${fmtPrice(trade.symbol, trade.currentPrice)}
+                                        <span class="text-gray-400">· Margin ${fmtMoney(margin)}</span>
+                                    </div>
+                                </div>
+                                <div class="text-left sm:text-right">
+                                    <div class="text-sm font-extrabold ${pl >= 0 ? 'text-blue-600' : 'text-red-600'}">${pl >= 0 ? '+' : ''}${pl.toFixed(2)}</div>
+                                    <div class="text-[10px] text-gray-400 font-medium mt-0.5">${trade.date}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2">
+                                <div class="flex items-center space-x-2">
+                                    <button data-action="manage" data-id="${trade.id}" class="px-3 py-1.5 ${isManaging ? 'bg-[#0f172a] text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} text-xs font-medium rounded-lg transition-colors flex items-center space-x-1">
+                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                        <span>${isManaging ? 'Close Panel' : 'Manage'}</span>
+                                    </button>
+                                    <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">SL ${trade.sl !== null ? fmtPrice(trade.symbol, trade.sl) : '--'}</span>
+                                    <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-50 rounded-lg">TP ${trade.tp !== null ? fmtPrice(trade.symbol, trade.tp) : '--'}</span>
+                                </div>
+                                <button data-action="open-ai" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center space-x-2 shadow-md transition-all">
+                                    <i class="fa-solid fa-cube text-xs"></i>
+                                    <span>TRADEXORA AI</span>
+                                </button>
+                            </div>
+
+                            ${isManaging ? `
+                            <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="sl_input_${trade.id}" step="0.00001" value="${trade.sl !== null ? trade.sl : ''}" placeholder="Stop loss" class="w-full bg-gray-50 border border-gray-200 text-xs px-3 py-2 rounded-xl" />
+                                    <input type="number" id="tp_input_${trade.id}" step="0.00001" value="${trade.tp !== null ? trade.tp : ''}" placeholder="Take profit" class="w-full bg-gray-50 border border-gray-200 text-xs px-3 py-2 rounded-xl" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <button data-action="save-sltp" data-id="${trade.id}" class="flex-1 bg-[#0f172a] text-white text-xs font-bold py-2 rounded-xl">Save SL/TP</button>
+                                    <button data-action="close-trade" data-id="${trade.id}" class="flex-1 bg-red-600 text-white text-xs font-bold py-2 rounded-xl shadow-md hover:bg-red-700">Close Trade</button>
+                                </div>
+                            </div>` : ''}
+                        </div>`;
+                    }).join('');
+                }
+
+                if (historyTrades.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="bg-gray-50/70 border border-gray-100/80 rounded-2xl p-6 text-center text-xs text-gray-400 font-medium min-h-[80px] flex items-center justify-center">
+                            No trade history for this account yet.
+                        </div>`;
+                } else {
+                    historyContainer.innerHTML = historyTrades.map(trade => `
+                        <div class="bg-gray-50/80 border border-gray-100 rounded-2xl p-4 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                                    ${trade.symbol} (${String(trade.type).toUpperCase()})
+                                    ${trade.source === 'bot' ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">AI BOT</span>' : ''}
+                                </div>
+                                <div class="text-[10px] text-gray-400">${trade.date} &rarr; closed ${trade.closedAt || ''}</div>
+                                <div class="text-[10px] text-gray-400">${trade.closedReason || 'Closed'}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-extrabold ${trade.closedPL >= 0 ? 'text-emerald-600' : 'text-red-600'}">
+                                    ${trade.closedPL >= 0 ? '+' : '-'}$${Math.abs(Number(trade.closedPL) || 0).toFixed(2)}
+                                </div>
+                                <div class="text-[10px] text-gray-400">Closed</div>
+                            </div>
+                        </div>`).join('');
+                }
+            } catch (err) {
+                console.error('renderTrades error:', err);
+            }
+        }
+
+        // ---------- AI BOT ----------
+        function computeSignal(sym) {
+            const price = livePrices[sym];
+            const series = [];
+            let p = price;
+            for (let i = 0; i < 30; i++) {
+                series.unshift(p);
+                p = p / (1 + (Math.random() * 2 - 1) * 0.0006);
+            }
+
+            const ema = (vals, period) => {
+                const k = 2 / (period + 1);
+                let e = vals[0];
+                const out = [e];
+                for (let i = 1; i < vals.length; i++) {
+                    e = vals[i] * k + e * (1 - k);
+                    out.push(e);
+                }
+                return out;
+            };
+            const e9 = ema(series, 9), e21 = ema(series, 21);
+            const lastE9 = e9[e9.length - 1], lastE21 = e21[e21.length - 1];
+            const prevE9 = e9[e9.length - 2], prevE21 = e21[e21.length - 2];
+
+            let gains = 0, losses = 0;
+            for (let i = series.length - 14; i < series.length; i++) {
+                const d = series[i] - series[i - 1];
+                if (d > 0) gains += d; else losses -= d;
+            }
+            const rsi = losses === 0 ? 100 : 100 - (100 / (1 + (gains / 14) / (losses / 14)));
+
+            const crossUp = prevE9 <= prevE21 && lastE9 > lastE21;
+            const crossDn = prevE9 >= prevE21 && lastE9 < lastE21;
+            const sep = Math.abs(lastE9 - lastE21) / price;
+
+            let type = null, confidence = 0;
+            if (lastE9 > lastE21 && rsi < 68) {
+                type = 'buy';
+                confidence = Math.round(Math.min(95, 60 + sep * 4000 + (crossUp ? 12 : 0)));
+            } else if (lastE9 < lastE21 && rsi > 32) {
+                type = 'sell';
+                confidence = Math.round(Math.min(95, 60 + sep * 4000 + (crossDn ? 12 : 0)));
+            }
+            return { type, confidence };
+        }
+
+        function botScan() {
+            if (!botEnabled) return;
+            const now = Date.now();
+
+            for (const sym of ALL_SYMBOLS) {
+                if (botLastTradeAt[sym] && now - botLastTradeAt[sym] < BOT.COOLDOWN_MS) continue;
+
+                const sig = computeSignal(sym);
+                if (!sig.type || sig.confidence < BOT.MIN_CONFIDENCE) continue;
+
+                const price = livePrices[sym];
+                const lot = BOT.RISK_LOT;
+                const margin = price * lot * (CONTRACT_SIZES[sym] || 1) / LEVERAGE;
+                const freeMargin = (accountBalances[activeAccount] || 0) - openMarginUsed();
+                if (margin > freeMargin) continue;
+
+                tradesData.unshift({
+                    id: Date.now(),
+                    symbol: sym,
+                    type: sig.type,
+                    lots: lot,
+                    entryPrice: price,
+                    currentPrice: price,
+                    sl: null,
+                    tp: null,
+                    date: new Date().toLocaleString(),
+                    status: 'open',
+                    account: activeAccount,
+                    source: 'bot'
+                });
+                botLastTradeAt[sym] = now;
+                showToast(`AI Bot opened ${sig.type.toUpperCase()} ${sym} @ ${fmtPrice(sym, price)} (confidence ${sig.confidence}%)`);
+                saveTrades();
+                renderTrades();
+                return;
+            }
+        }
+
+        function toggleBot() {
+            botEnabled = !botEnabled;
+            const btn = document.getElementById('botToggleBtn');
+            const label = document.getElementById('botStatusLabel');
+            btn.textContent = botEnabled ? 'Turn OFF' : 'Turn ON';
+            btn.className = botEnabled
+                ? 'px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition shadow'
+                : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 hover:bg-blue-50 transition shadow';
+            label.textContent = botEnabled
+                ? 'ON — scanning all assets for high-confidence setups'
+                : 'OFF — opens only high-confidence setups on all assets';
+            showToast(botEnabled ? 'AI Bot started' : 'AI Bot stopped');
+        }
+
+        // ---------- MANUAL AI TRADE ----------
+        function openAiModal() {
+            document.getElementById('aiModal').classList.remove('hidden');
+            updateAiMarginEstimate();
+        }
+
+        function closeAiModal() { document.getElementById('aiModal').classList.add('hidden'); }
+
+        function updateAiMarginEstimate() {
+            const pair = document.getElementById('aiPairSelect').value;
+            const lot = parseFloat(document.getElementById('aiLotInput').value) || 0;
+            const price = livePrices[pair] || BASE_PRICES[pair] || 100;
+            const el = document.getElementById('aiMarginEstimate');
+            if (el) el.innerText = fmtMoney(price * lot * (CONTRACT_SIZES[pair] || 1) / LEVERAGE);
+        }
+
+        function executeAiTrade(type) {
+            const pair = document.getElementById('aiPairSelect').value;
+            const lot = parseFloat(document.getElementById('aiLotInput').value) || 0.10;
+            if (lot < 0.01) {
+                showToast('Rejected: minimum lot size is 0.01');
                 return;
             }
 
-            const displayName = (user.fullName && user.fullName.trim() !== '') ?
-                user.fullName :
-                user.email.split('@')[0];
-
-            const titleEl = document.getElementById('pageTitleName');
-            if (titleEl) {
-                titleEl.textContent = displayName;
+            const price = livePrices[pair] || BASE_PRICES[pair] || 100;
+            const margin = price * lot * (CONTRACT_SIZES[pair] || 1) / LEVERAGE;
+            const freeMargin = (accountBalances[activeAccount] || 0) - openMarginUsed();
+            if (margin > freeMargin) {
+                showToast(`Rejected: margin ${fmtMoney(margin)} exceeds free margin ${fmtMoney(Math.max(0, freeMargin))}. Please deposit.`);
+                return;
             }
 
-            document.title = 'TRADEXORA Trading - Trades / ' + displayName;
-        })();
+            tradesData.unshift({
+                id: Date.now(),
+                symbol: pair,
+                type: type,
+                lots: lot,
+                entryPrice: price,
+                currentPrice: price,
+                sl: null,
+                tp: null,
+                date: new Date().toLocaleString(),
+                status: 'open',
+                account: activeAccount,
+                source: 'manual'
+            });
+            saveTrades();
+            closeAiModal();
+            showToast(`TRADEXORA AI executed ${String(type).toUpperCase()} ${lot.toFixed(2)} ${pair} @ ${fmtPrice(pair, price)}`);
+            renderTrades();
+        }
 
-        /* ============ Switch between Open Trades and History Tabs ============ */
+        // ---------- PRICE TICK ----------
+        setInterval(() => {
+            ALL_SYMBOLS.forEach(sym => {
+                const base = livePrices[sym];
+                livePrices[sym] = +(base + (Math.random() - 0.5) * (base * 0.0005)).toFixed(SYMBOL_DECIMALS[sym]);
+            });
 
+            tradesData.forEach(trade => {
+                if (trade.status === 'open') {
+                    trade.currentPrice = livePrices[trade.symbol] || trade.currentPrice;
+                }
+            });
+
+            const totalPL = tradesData.filter(t => t.account === activeAccount && t.status === 'open')
+                .reduce((acc, t) => acc + getTradePL(t), 0);
+            const currentBal = accountBalances[activeAccount] || 0;
+            const plFormatted = (totalPL >= 0 ? '+' : '-') + '$' + Math.abs(totalPL).toFixed(2);
+            document.getElementById('liveTotalPL').innerText = plFormatted;
+            document.getElementById('navLivePL').innerText = plFormatted;
+            document.getElementById('metricEquity').innerText = fmtMoney(currentBal + totalPL);
+
+            if (openManagingId === null && Date.now() >= renderLockUntil) {
+                renderTrades();
+            }
+        }, 1500);
+
+        setInterval(botScan, BOT.SCAN_INTERVAL_MS);
+
+        // ---------- EVENT DELEGATION ----------
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-action]');
+            if (btn) {
+                const action = btn.dataset.action;
+                const id = parseInt(btn.dataset.id, 10);
+                if (action === 'manage') toggleManage(id);
+                else if (action === 'save-sltp') saveSLTP(id);
+                else if (action === 'close-trade') closeTrade(id);
+                else if (action === 'open-ai') openAiModal();
+                return;
+            }
+            if (e.target.closest('#aiOpenBtn')) { openAiModal(); return; }
+            if (e.target.closest('#aiModalClose')) { closeAiModal(); return; }
+            if (e.target.closest('#botToggleBtn')) { toggleBot(); return; }
+
+            const aiBtn = e.target.closest('.ai-exec');
+            if (aiBtn) { executeAiTrade(aiBtn.dataset.aiDir); return; }
+
+            const accBtn = e.target.closest('.acc-btn');
+            if (accBtn) {
+                activeAccount = accBtn.dataset.accType;
+                activeAccountId = accBtn.dataset.accId;
+                saveState();
+                document.getElementById('accountDropdown').classList.add('hidden');
+                openManagingId = null;
+                showToast(`Switched to ${activeAccount} Account`);
+                renderTrades();
+                return;
+            }
+
+            if (e.target.closest('#accountDropdownBtn')) {
+                document.getElementById('accountDropdown').classList.toggle('hidden');
+                return;
+            }
+
+            const tabBtn = e.target.closest('[data-tab]');
+            if (tabBtn) { switchTradeTab(tabBtn.dataset.tab); return; }
+
+            const pill = e.target.closest('.filter-pill');
+            if (pill) { setFilter(pill.dataset.filter, pill); return; }
+
+            if (e.target.closest('#reloadBtn')) { location.reload(); return; }
+            if (e.target.closest('#logoutBtn')) { handleLogout(); return; }
+
+            const dropdown = document.getElementById('accountDropdown');
+            if (!dropdown.classList.contains('hidden') && !e.target.closest('#accountDropdown')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('change', function (e) {
+            if (e.target.id === 'aiPairSelect' || e.target.id === 'aiLotInput') updateAiMarginEstimate();
+        });
+        document.addEventListener('input', function (e) {
+            if (e.target.id === 'aiLotInput') updateAiMarginEstimate();
+        });
+
+        // ---------- UI HELPERS ----------
         function switchTradeTab(tab) {
             const openBtn = document.getElementById('openTabBtn');
             const historyBtn = document.getElementById('historyTabBtn');
@@ -428,97 +913,61 @@
             const historyView = document.getElementById('historyTradesView');
 
             if (tab === 'open') {
-                openBtn.className =
-                    'flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm';
-                historyBtn.className =
-                    'flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all';
+                openBtn.className = 'flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm';
+                historyBtn.className = 'flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all';
                 openView.classList.remove('hidden');
                 historyView.classList.add('hidden');
             } else {
-                historyBtn.className =
-                    'flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm';
-                openBtn.className =
-                    'flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all';
+                historyBtn.className = 'flex-1 py-3 bg-[#0f172a] text-white font-bold rounded-xl text-xs transition-all shadow-sm';
+                openBtn.className = 'flex-1 py-3 text-gray-500 font-bold rounded-xl text-xs hover:text-gray-900 transition-all';
                 historyView.classList.remove('hidden');
                 openView.classList.add('hidden');
             }
         }
 
-        /* ============ Timeframe Filter Buttons ============ */
-
         function setFilter(filterName, element) {
-            const pills = document.querySelectorAll('.filter-pill');
-
-            pills.forEach(pill => {
-                pill.className =
-                    'filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors';
+            document.querySelectorAll('.filter-pill').forEach(p => {
+                p.className = 'filter-pill px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-full transition-colors';
             });
-
-            element.className =
-                'filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors';
-
+            element.className = 'filter-pill px-3 py-1.5 bg-[#e53e3e] text-white text-xs font-bold rounded-full transition-colors';
             document.getElementById('activeFilterLabel').innerText = filterName;
             showToast(`Filter set to: ${filterName}`);
         }
 
-        /* ============ Dropdown Account Toggler ============ */
-
-        function toggleAccountDropdown() {
-            const dropdown = document.getElementById('accountDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        window.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('accountDropdown');
-            const dropdownBtn = document.getElementById('accountDropdownBtn');
-
-            if (
-                dropdown &&
-                dropdownBtn &&
-                !dropdownBtn.contains(event.target) &&
-                !dropdown.contains(event.target)
-            ) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        function selectAccount(type, balance, id) {
-            document.getElementById('activeAccountType').innerText = `${type} ${balance}`;
-            document.getElementById('activeAccountId').innerText = id;
-            document.getElementById('tradeBookAccountLabel').innerText = `${type} · ${id}`;
-
-            toggleAccountDropdown();
-            showToast(`Switched to ${type} Account (${balance})`);
-        }
-
-        /* ============ Toast ============ */
-
         function showToast(message) {
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-
-            toastMsg.innerText = message;
+            document.getElementById('toastMsg').innerText = message;
             toast.classList.remove('translate-y-[-100px]', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-[-100px]', 'opacity-0');
             }, 2500);
         }
 
-        /* ============ LOGOUT ============ */
-
         function handleLogout() {
-            localStorage.removeItem(CURRENT_USER_KEY);
+            try { localStorage.removeItem(CURRENT_USER_KEY); } catch (e) {}
             showToast('Session cleared. Logging out...');
-
-            setTimeout(() => {
-                window.location.href = INDEX_URL;
-            }, 900);
+            setTimeout(() => { window.location.href = INDEX_URL; }, 900);
         }
+
+        // ---------- INIT ----------
+        (function initAuth() {
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); } catch (e) { user = null; }
+
+            if (!user || !user.email) {
+                window.location.href = INDEX_URL;
+                return;
+            }
+
+            const displayName = (user.fullName && user.fullName.trim() !== '') ? user.fullName : user.email.split('@')[0];
+            document.getElementById('pageTitleName').textContent = displayName;
+            document.title = 'TRADEXORA Trading - Trades / ' + displayName;
+
+            loadState();
+            renderTrades();
+        })();
     </script>
-
 </body>
-
 </html>
