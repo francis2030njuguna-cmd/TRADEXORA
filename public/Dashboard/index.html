@@ -889,15 +889,38 @@
                 console.error('LightweightCharts not loaded');
                 return;
             }
+
             const container = document.getElementById('lwc_chart_container');
+
             lwcChart = LightweightCharts.createChart(container, {
                 width: container.clientWidth,
                 height: container.clientHeight,
-                layout: { background: { type: 'solid', color: '#ffffff' }, textColor: '#475569', fontFamily: 'Inter, sans-serif', fontSize: 11 },
-                grid: { vertLines: { color: '#f1f5f9', visible: true }, horzLines: { color: '#f1f5f9', visible: true } },
-                rightPriceScale: { visible: true, borderColor: '#e2e8f0', scaleMargins: { top: 0.12, bottom: 0.12 } },
-                timeScale: { visible: true, borderColor: '#e2e8f0', timeVisible: true, secondsVisible: false, rightOffset: 6, barSpacing: 14 }
+                layout: {
+                    background: { type: 'solid', color: '#ffffff' },
+                    textColor: '#475569',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 11
+                },
+                grid: {
+                    vertLines: { color: '#f1f5f9', visible: true },
+                    horzLines: { color: '#f1f5f9', visible: true }
+                },
+                rightPriceScale: {
+                    visible: true,
+                    borderColor: '#e2e8f0',
+                    scaleMargins: { top: 0.12, bottom: 0.12 }
+                },
+                timeScale: {
+                    visible: true,
+                    borderColor: '#e2e8f0',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    rightOffset: 4,
+                    barSpacing: 8,
+                    minBarSpacing: 4
+                }
             });
+
             buildSeries();
         }
 
@@ -928,8 +951,19 @@
 
         function reloadChartData(keepView) {
             if (!lwcSeries || !lwcChart) return;
-            lwcSeries.setData(dataForChart());
-            if (!keepView) lwcChart.timeScale().fitContent();
+
+            const data = dataForChart();
+            lwcSeries.setData(data);
+
+            if (!keepView && data.length) {
+                const visibleBars = 90;
+                const rightOffset = 4;
+
+                lwcChart.timeScale().setVisibleLogicalRange({
+                    from: Math.max(0, data.length - visibleBars),
+                    to: data.length - 1 + rightOffset
+                });
+            }
         }
 
         function updateLiveCandle(price) {
