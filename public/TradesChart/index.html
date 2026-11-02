@@ -14,7 +14,6 @@
     <!-- TradingView Lightweight Charts — multi-CDN fallback loader -->
     <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
     <script>
-        // Fallback: if unpkg failed, load from jsdelivr
         if (typeof LightweightCharts === 'undefined') {
             document.write('<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"><\/script>');
         }
@@ -48,6 +47,9 @@
             color: #1e293b;
             user-select: none;
             overflow-x: hidden;
+            /* FIX 2c: reserve space so nothing is obscured by the fixed
+               action bar (~90px) + bottom nav (~70px) */
+            padding-bottom: 175px;
         }
 
         ::-webkit-scrollbar {
@@ -86,32 +88,18 @@
         }
 
         @keyframes flashUp {
-            0% {
-                background: rgba(80, 227, 150, .35);
-            }
-            100% {
-                background: transparent;
-            }
+            0% { background: rgba(80, 227, 150, .35); }
+            100% { background: transparent; }
         }
 
         @keyframes flashDown {
-            0% {
-                background: rgba(255, 123, 137, .35);
-            }
-            100% {
-                background: transparent;
-            }
+            0% { background: rgba(255, 123, 137, .35); }
+            100% { background: transparent; }
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: none;
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: none; }
         }
 
         .animate-fadeIn {
@@ -123,12 +111,45 @@
             height: 100%;
             min-height: 300px;
         }
+
+        /* ============================================================
+           FIX 2a: STICKY BOTTOM ACTION BAR (Sell / Lot / Buy)
+           Pinned above the bottom navigation across all devices.
+        ============================================================ */
+        #stickyTradeBar {
+            position: fixed;
+            bottom: 70px;               /* height of the bottom nav bar */
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #ffffff;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Bottom dock nav pinned to viewport bottom edge */
+        #bottomDockNav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 640px;
+            z-index: 1001;
+            padding-bottom: max(6px, env(safe-area-inset-bottom));
+        }
+
+        /* FIX 1: clean, edge-to-edge chart area */
+        #chartStage {
+            border-radius: 0;
+            background: #ffffff;
+        }
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col justify-between p-2 md:p-3 bg-slate-50">
+<body class="min-h-screen flex flex-col bg-slate-50">
 
-    <div class="max-w-[1600px] w-full mx-auto space-y-2 pb-20">
+    <div class="max-w-[1600px] w-full mx-auto space-y-2">
 
         <!-- 1. HEADER BAR -->
         <header class="bg-white rounded-xl p-2 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
@@ -177,22 +198,32 @@
             </div>
         </header>
 
-        <!-- 2. CATEGORY TABS & SUB SYMBOLS -->
-        <section class="bg-white rounded-xl p-2.5 border border-slate-200 shadow-sm space-y-2">
-            <div id="categoryContainer" class="flex items-center gap-6 overflow-x-auto border-b border-slate-100 pb-2 text-xs font-medium text-slate-500 no-scrollbar">
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Forex')">Forex</button>
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Commodities')">Commodities</button>
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Indices')">Indices</button>
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Stocks')">Stocks</button>
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Crypto')">Crypto</button>
-                <button class="asset-cat-btn hover:text-slate-900 transition" onclick="selectCategory('Metals')">Metals</button>
+        <!-- ============================================================
+             2. CHART CONTROL BAR (QoraTrading-style structure)
+             Row 1: Category tabs | Row 2: quick-symbol chips
+             Row 3: toolbar (TF, chart style, indicators, drawing)
+             The chart canvas sits directly below, edge-to-edge.
+        ============================================================ -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <!-- Row 1: Category filter tabs -->
+            <div class="px-3 pt-2.5">
+                <div id="categoryContainer" class="flex items-center gap-5 overflow-x-auto border-b border-slate-100 text-xs font-medium text-slate-500 no-scrollbar">
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Forex')">Forex</button>
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Commodities')">Commodities</button>
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Indices')">Indices</button>
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Stocks')">Stocks</button>
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Crypto')">Crypto</button>
+                    <button class="asset-cat-btn whitespace-nowrap pb-2 hover:text-slate-900 transition" onclick="selectCategory('Metals')">Metals</button>
+                </div>
             </div>
-            <div id="subSymbolsList" class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5"></div>
-        </section>
 
-        <!-- 3. MAIN CHART PANEL -->
-        <main class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative">
-            <div class="p-2 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs bg-slate-50/50">
+            <!-- Row 2: quick-symbol selector chips -->
+            <div class="px-3 py-2 border-b border-slate-100 bg-slate-50/50">
+                <div id="subSymbolsList" class="flex items-center gap-2 overflow-x-auto no-scrollbar"></div>
+            </div>
+
+            <!-- Row 3: toolbar controls directly above the chart canvas -->
+            <div class="px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs border-b border-slate-100">
                 <div class="flex items-center gap-2 flex-wrap">
                     <!-- TF Two-Column Dropdown -->
                     <div class="relative" id="tfDropdownRoot">
@@ -202,6 +233,7 @@
                             <i id="tfChevron" class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition-transform"></i>
                         </button>
                     </div>
+                    <!-- Chart style dropdown -->
                     <div class="relative flex items-center gap-1 bg-white border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs">
                         <i class="fa-solid fa-chart-candlestick text-slate-500 text-xs"></i>
                         <select id="chartTypeSelect" onchange="changeChartType(this.value)" class="bg-transparent font-semibold text-slate-800 text-xs focus:outline-none cursor-pointer">
@@ -213,12 +245,22 @@
                             <option value="bars">Bars</option>
                         </select>
                     </div>
+                    <!-- Indicators -->
                     <button onclick="showToast('Indicators', 'Technical Indicators panel loaded', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Indicators">
                         <i class="fa-solid fa-chart-line text-xs"></i>
                     </button>
-                    <button onclick="showToast('Drawing', 'Drawing tools activated', 'info')" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
-                        <i class="fa-solid fa-pencil text-xs"></i>
-                    </button>
+                    <!-- Drawing tools dropdown -->
+                    <div class="relative" id="drawDropdownRoot">
+                        <button onclick="event.stopPropagation(); toggleDrawDropdown();" class="w-7 h-7 flex items-center justify-center bg-white rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition shadow-2xs" title="Drawing Tools">
+                            <i class="fa-solid fa-pencil text-xs"></i>
+                        </button>
+                        <div id="drawMenu" class="hidden absolute left-0 top-8 w-44 bg-white border border-slate-200 rounded-lg shadow-2xl py-1.5 animate-fadeIn z-40">
+                            <button class="block w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" onclick="pickDrawTool('Trend Line')"><i class="fa-solid fa-slash w-4 mr-1.5 text-slate-400"></i>Trend Line</button>
+                            <button class="block w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" onclick="pickDrawTool('Horizontal Line')"><i class="fa-solid fa-grip-lines w-4 mr-1.5 text-slate-400"></i>Horizontal Line</button>
+                            <button class="block w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" onclick="pickDrawTool('Fibonacci Retracement')"><i class="fa-solid fa-wave-square w-4 mr-1.5 text-slate-400"></i>Fibonacci</button>
+                            <button class="block w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" onclick="pickDrawTool('Rectangle')"><i class="fa-regular fa-square w-4 mr-1.5 text-slate-400"></i>Rectangle</button>
+                        </div>
+                    </div>
                     <!-- Live symbol + price readout -->
                     <div class="flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-md shadow-2xs">
                         <span id="chartSymbolLabel" class="font-bold text-slate-900">USOIL</span>
@@ -226,22 +268,15 @@
                         <span id="candleCountdown" class="font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">—</span>
                     </div>
                 </div>
+                <!-- FIX 1: feed status moved here (outside the chart canvas) -->
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span id="feedStatusText">Connecting Twelve Data feed…</span>
                 </span>
             </div>
 
-            <!-- 4. MARKET STATUS BANNER -->
-            <div id="marketAlert" class="mx-3 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between text-xs text-amber-900 font-medium shadow-2xs">
-                <div class="flex items-center gap-2">
-                    <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                    <span id="marketNoticeText">Calculating market status…</span>
-                </div>
-            </div>
-
-            <!-- 5. CHART AREA — TradingView Lightweight Charts -->
-            <div class="relative w-full h-[340px] md:h-[400px] my-1 bg-white overflow-hidden">
+            <!-- 5. CHART AREA — clean, edge-to-edge, no banners inside -->
+            <div id="chartStage" class="relative w-full h-[340px] md:h-[440px] bg-white overflow-hidden">
                 <div id="lwc_chart_container"></div>
 
                 <button onclick="toggleAIPanel()" class="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2 bg-[#2d60f7] hover:bg-blue-700 text-white rounded-full font-semibold text-xs ai-shadow transition-all transform hover:scale-105 active:scale-95">
@@ -266,32 +301,44 @@
                     <button onclick="applyAISuggestion()" class="w-full py-2 bg-[#2d60f7] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Execute Suggested Trade</button>
                 </div>
             </div>
+        </section>
 
-            <!-- 6. TRADE EXECUTION BAR -->
-            <div class="p-3 bg-white border-t border-slate-200 grid grid-cols-12 gap-2 md:gap-3 items-center">
-                <button onclick="executeTrade('SELL')" class="col-span-5 py-3 px-4 bg-[#ff7b89] hover:bg-rose-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-rose-300">
-                    <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
-                    <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
-                </button>
-                <div class="col-span-2 flex flex-col items-center justify-center border border-slate-200 rounded-xl py-1.5 px-2 bg-slate-50 shadow-2xs">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LOT</span>
-                    <div class="flex items-center gap-1 w-full justify-center mt-0.5">
-                        <button onclick="adjustLot(-0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">-</button>
-                        <input type="number" id="lotInput" value="0.10" step="0.01" min="0.01" onchange="updateMarginEstimate()" class="w-12 text-center text-xs font-extrabold bg-transparent text-slate-900 focus:outline-none">
-                        <button onclick="adjustLot(0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">+</button>
-                    </div>
-                    <span class="text-[9px] text-slate-400">Est. margin <span id="marginEstimate" class="font-bold text-slate-600">$—</span></span>
-                </div>
-                <button onclick="executeTrade('BUY')" class="col-span-5 py-3 px-4 bg-[#50e396] hover:bg-emerald-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-300">
-                    <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
-                    <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
-                </button>
+        <!-- 6. MARKET STATUS — slim strip BELOW the chart panel (no longer
+             inside the chart viewing area, keeping the canvas clean) -->
+        <div id="marketAlert" class="bg-white rounded-xl px-3 py-2 border border-slate-200 shadow-sm flex items-center justify-between text-xs text-amber-900 font-medium">
+            <div class="flex items-center gap-2">
+                <i id="marketAlertIcon" class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                <span id="marketNoticeText">Calculating market status…</span>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- 7. BOTTOM DOCK NAVIGATION -->
-    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-30 w-[95%] max-w-md">
+    <!-- ============================================================
+         FIX 2b: STICKY TRADE EXECUTION BAR (Sell / Lot / Buy)
+         Fixed above the bottom navigation, full width, always visible.
+    ============================================================ -->
+    <div id="stickyTradeBar" class="grid grid-cols-12 gap-2 md:gap-3 items-center px-3 py-2.5">
+        <button onclick="executeTrade('SELL')" class="col-span-5 py-2.5 px-4 bg-[#ff7b89] hover:bg-rose-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-rose-300">
+            <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">SELL</span>
+            <span id="sellPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+        </button>
+        <div class="col-span-2 flex flex-col items-center justify-center border border-slate-200 rounded-xl py-1.5 px-2 bg-slate-50 shadow-2xs">
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LOT</span>
+            <div class="flex items-center gap-1 w-full justify-center mt-0.5">
+                <button onclick="adjustLot(-0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">-</button>
+                <input type="number" id="lotInput" value="0.10" step="0.01" min="0.01" onchange="updateMarginEstimate()" class="w-12 text-center text-xs font-extrabold bg-transparent text-slate-900 focus:outline-none">
+                <button onclick="adjustLot(0.01)" class="text-slate-400 hover:text-slate-800 font-bold text-xs px-1">+</button>
+            </div>
+            <span class="text-[9px] text-slate-400">Margin <span id="marginEstimate" class="font-bold text-slate-600">$—</span></span>
+        </div>
+        <button onclick="executeTrade('BUY')" class="col-span-5 py-2.5 px-4 bg-[#50e396] hover:bg-emerald-400 text-white rounded-xl shadow-sm transition flex flex-col items-center justify-center active:scale-[0.99] border border-emerald-300">
+            <span class="text-[10px] tracking-wider uppercase opacity-90 font-bold">BUY</span>
+            <span id="buyPriceVal" class="text-base md:text-xl font-black text-slate-900 mt-0.5">—</span>
+        </button>
+    </div>
+
+    <!-- 7. BOTTOM DOCK NAVIGATION — pinned to viewport bottom -->
+    <div id="bottomDockNav">
         <nav class="bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-full px-5 py-2 flex items-center justify-between text-slate-500">
             <a href="../menu/index.html" class="nav-item flex flex-col items-center gap-0.5 hover:text-slate-900 transition text-[10px] font-medium">
                 <i class="fa-solid fa-bars text-sm"></i><span>Menu</span>
@@ -314,7 +361,7 @@
     </div>
 
     <!-- INSUFFICIENT FUNDS MODAL -->
-    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div id="depositModal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-100 animate-fadeIn">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-wallet"></i></div>
             <div class="space-y-1">
@@ -331,7 +378,7 @@
     </div>
 
     <!-- TOAST -->
-    <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 -translate-y-20 opacity-0 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-medium border border-slate-700">
+    <div id="toast" class="fixed top-5 right-5 z-[1200] transform transition-all duration-300 -translate-y-20 opacity-0 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-medium border border-slate-700">
         <i id="toastIcon" class="fa-solid fa-circle-info text-sky-400 text-base"></i>
         <div>
             <div id="toastTitle" class="font-bold text-slate-100">Notification</div>
@@ -352,10 +399,10 @@
         const SIM_TICK_MS = 800;
         const AI_REFRESH_MS = 5000;
         const TICK_HISTORY_MAX = 600;
-        const HISTORY_BARS = 300; // synthetic bars generated per timeframe
+        const HISTORY_BARS = 300;
 
         /* ============================================================
-           TIMEFRAME DROPDOWN DATA (two-column: category → interval)
+           TIMEFRAME DATA
         ============================================================ */
         const timeframeData = {
             Minutes: [
@@ -382,14 +429,6 @@
         let tfSelectedCategory = 'Minutes';
         let tfSelectedTf = '15m';
         let tfSeconds = 900;
-
-        function tfSecondsOf(label) {
-            for (const cat of Object.keys(timeframeData)) {
-                const hit = timeframeData[cat].find(i => i.label === label);
-                if (hit) return hit.sec;
-            }
-            return 900;
-        }
 
         const symbolsDatabase = {
             'USOIL': { tdSymbol: 'WTI/USD', category: 'Commodities', base: 103.27, pipSize: 0.01, contractSize: 1000 },
@@ -443,9 +482,7 @@
                 }
             },
             set(key, val) {
-                try {
-                    localStorage.setItem(key, JSON.stringify(val));
-                } catch {}
+                try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
             }
         };
 
@@ -459,12 +496,8 @@
         let positions = store.get('qora_positions', []);
 
         function formatUsd(n) {
-            return Number(n || 0).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+            return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-
         function saveAccount() { store.set('qora_account', account); }
         function savePositions() { store.set('qora_positions', positions); }
 
@@ -492,7 +525,7 @@
         }
 
         /* ============================================================
-           TICK HISTORY — source of truth for live bars
+           TICK HISTORY
         ============================================================ */
         const tickHistory = {};
         Object.keys(symbolsDatabase).forEach(s => {
@@ -517,18 +550,14 @@
         /* ============================================================
            BAR ENGINE — synthetic history + live tick merging
         ============================================================ */
-        // barsCache[symbol][barSeconds] = array of {time, open, high, low, close}
         const barsCache = {};
 
-        /* Generate deterministic-looking synthetic OHLC history ending at
-           the current price so the chart always has deep, realistic bars. */
         function generateHistory(sym, barSec, count) {
             const d = symbolsDatabase[sym];
             const dec = decimals(sym);
             const endPrice = priceOf(sym);
             const vol = d.base * 0.0025 * Math.sqrt(barSec / 60);
 
-            // Random walk backwards from current price, then reverse
             const closes = [];
             let p = endPrice;
             for (let i = 0; i < count; i++) {
@@ -555,8 +584,6 @@
             return bars;
         }
 
-        /* Get merged bar list for a symbol/timeframe: synthetic history
-           + live ticks folded into the tail (correct OHLC accumulation). */
         function getBars(sym, barSec, maxBars) {
             if (!barsCache[sym]) barsCache[sym] = {};
             if (!barsCache[sym][barSec]) {
@@ -569,15 +596,12 @@
                 const t = Math.floor(tk.t / (barSec * 1000)) * (barSec * 1000) / 1000;
                 const last = bars[bars.length - 1];
                 if (last && last.time === t) {
-                    // same bar → accumulate OHLC
                     last.high = Math.max(last.high, tk.p);
                     last.low = Math.min(last.low, tk.p);
                     last.close = tk.p;
                 } else if (!last || t > last.time) {
-                    // new bar → open a fresh one
                     bars.push({ time: t, open: tk.p, high: tk.p, low: tk.p, close: tk.p });
                 }
-                // ticks older than the last synthetic bar are ignored
             }
             while (bars.length > (maxBars || HISTORY_BARS)) bars.shift();
             return bars;
@@ -598,7 +622,6 @@
             return bars[bars.length - 1];
         }
 
-        /* Heikin Ashi transform */
         function heikinAshi(series) {
             const out = [];
             series.forEach((c, i) => {
@@ -807,11 +830,11 @@
             if (st.open) {
                 el.textContent = `${currentSymbol}: ${st.label}`;
                 icon.className = 'fa-solid fa-circle-check text-emerald-600';
-                banner.className = 'mx-3 mt-3 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between text-xs text-emerald-900 font-medium shadow-2xs';
+                banner.className = 'bg-white rounded-xl px-3 py-2 border border-emerald-200 shadow-sm flex items-center justify-between text-xs text-emerald-900 font-medium';
             } else {
                 el.textContent = `${currentSymbol}: ${st.label} — opens in ${fmtCountdown(st.next || 0)}`;
                 icon.className = 'fa-solid fa-triangle-exclamation text-amber-600';
-                banner.className = 'mx-3 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between text-xs text-amber-900 font-medium shadow-2xs';
+                banner.className = 'bg-white rounded-xl px-3 py-2 border border-amber-200 shadow-sm flex items-center justify-between text-xs text-amber-900 font-medium';
             }
             checkAutoClose();
         }
@@ -893,7 +916,6 @@
                 handleScale: true
             });
 
-            // Explicit resize handling (more reliable than autoSize)
             if (window.ResizeObserver) {
                 new ResizeObserver(() => {
                     if (lwcChart) lwcChart.resize(container.clientWidth, container.clientHeight);
@@ -919,10 +941,7 @@
             else if (type === 'area') lwcSeries = lwcChart.addAreaSeries(opts);
             else if (type === 'bars') lwcSeries = lwcChart.addBarSeries(opts);
             else lwcSeries = lwcChart.addCandlestickSeries(opts);
-            lwcSeries.applyOptions({
-                priceLineVisible: true,
-                lastValueVisible: true
-            });
+            lwcSeries.applyOptions({ priceLineVisible: true, lastValueVisible: true });
             reloadChartData();
         }
 
@@ -949,8 +968,6 @@
             } else if (currentChartType === 'heikin-ashi') {
                 lwcSeries.setData(heikinAshi(getBars(currentSymbol, tfSeconds)));
             } else {
-                // update() merges into the existing bar at the same timestamp —
-                // pass full OHLC so high/low/open are preserved correctly.
                 lwcSeries.update({
                     time: lastBar.time,
                     open: lastBar.open,
@@ -988,13 +1005,33 @@
         }
 
         /* ============================================================
+           DRAWING TOOL DROPDOWN
+        ============================================================ */
+        function toggleDrawDropdown() {
+            document.getElementById('drawMenu').classList.toggle('hidden');
+        }
+
+        function pickDrawTool(tool) {
+            document.getElementById('drawMenu').classList.add('hidden');
+            showToast('Drawing Tools', tool + ' selected — draw directly on the chart', 'info');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('drawMenu');
+            const root = document.getElementById('drawDropdownRoot');
+            if (menu && !menu.classList.contains('hidden') && !root.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        /* ============================================================
            CATEGORY / SYMBOL UI
         ============================================================ */
         function selectCategory(category) {
             currentCategory = category;
             document.querySelectorAll('.asset-cat-btn').forEach(btn => {
-                btn.classList.remove('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold');
-                if (btn.textContent.includes(category)) btn.classList.add('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold');
+                btn.classList.remove('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold', '-mb-px');
+                if (btn.textContent.trim() === category) btn.classList.add('text-slate-900', 'border-b-2', 'border-slate-900', 'font-bold', '-mb-px');
             });
             renderSubSymbols();
             const list = categorySymbols[category];
@@ -1064,7 +1101,7 @@
         }
 
         /* ============================================================
-           TIMEFRAME DROPDOWN — two-column UI (category → interval)
+           TIMEFRAME DROPDOWN — two-column UI
         ============================================================ */
         let tfMenuEl = null;
 
@@ -1072,7 +1109,7 @@
             tfMenuEl = document.createElement('div');
             tfMenuEl.id = 'tfDropdownMenu';
             tfMenuEl.className = 'hidden w-64 bg-white border border-slate-200 rounded-xl shadow-2xl flex overflow-hidden animate-fadeIn';
-            tfMenuEl.style.cssText = 'position:fixed;z-index:60;';
+            tfMenuEl.style.cssText = 'position:fixed;z-index:1000;';
             tfMenuEl.innerHTML =
                 '<div id="tfCategoryCol" class="w-1/2 border-r border-slate-100 py-2 bg-white"></div>' +
                 '<div id="tfIntervalCol" class="w-1/2 py-2 max-h-64 overflow-y-auto bg-white"></div>';
@@ -1269,12 +1306,7 @@
                 `${p.type} ${p.symbol} closed @ ${closePrice.toFixed(decimals(p.symbol))} — P/L ${pl >= 0 ? '+' : '-'}$${formatUsd(Math.abs(pl))}`,
                 pl >= 0 ? 'success' : 'error');
             const history = store.get('qora_history', []);
-            history.push({ ...p,
-                closePrice,
-                pl,
-                reason,
-                closedAt: new Date().toISOString()
-            });
+            history.push({ ...p, closePrice, pl, reason, closedAt: new Date().toISOString() });
             store.set('qora_history', history);
         }
 
@@ -1479,12 +1511,11 @@
             connectCryptoFeed();
             startTdPolling();
 
-            // Simulated ticks fill gaps only while Twelve Data is NOT healthy
             setInterval(() => {
                 if (tdHealthy) return;
                 Object.keys(symbolsDatabase).forEach(sym => {
                     const d = symbolsDatabase[sym];
-                    if (d.feed) return; // crypto keeps its Binance feed
+                    if (d.feed) return;
                     simTick(sym);
                 });
                 if (Math.random() < 0.25) renderSubSymbols();
