@@ -52,11 +52,9 @@
             background-color: #ffffff;
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
-            /* Clear the fixed bottom dock + safe area */
             padding-bottom: calc(7rem + var(--safe-b));
         }
 
-        /* Restrict selection blocking to interactive controls, not body */
         nav a,
         button,
         #accountDropdownBtn {
@@ -74,19 +72,16 @@
             border-color: #cbd5e1;
         }
 
-        /* Fixed bottom dock, safe-area aware */
         .bottom-nav {
             bottom: calc(1rem + var(--safe-b));
         }
 
-        /* Toast: safe-area aware, above everything */
         #toast {
             top: calc(1rem + var(--safe-t));
             right: calc(1rem + var(--safe-r));
             z-index: 60;
         }
 
-        /* Account dropdown: never overflow narrow viewports */
         #accountDropdown {
             max-width: calc(100vw - 2rem);
         }
@@ -104,6 +99,14 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        .page-view {
+            display: none;
+        }
+
+        .page-view.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -113,15 +116,13 @@
     <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-3">
 
-            <!-- Left Header: Back Button, Logo, and Deposit Funds -->
+            <!-- Left Header -->
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                <!-- Back Button -->
                 <a href="../menu/index.html" class="flex shrink-0 items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     <span>Back</span>
                 </a>
 
-                <!-- TRADEXORA Logo -->
                 <a href="../TradesChart/index.html" class="flex shrink-0 items-center gap-2" aria-label="TRADEXORA home">
                     <span class="w-9 h-9 shrink-0 rounded-xl bg-black text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-sm">
                         <i class="fa-solid fa-chart-line text-sm" aria-hidden="true"></i>
@@ -131,16 +132,14 @@
                     </span>
                 </a>
 
-                <!-- Deposit Funds Button -->
                 <a href="../deposit/index.html" class="flex shrink-0 items-center gap-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-2.5 sm:px-3 py-2 rounded-xl transition-colors">
                     <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
                     <span class="hidden sm:inline">Deposit Funds</span>
                 </a>
             </div>
 
-            <!-- Right Header: Account Status and Quick Actions -->
+            <!-- Right Header -->
             <div class="ml-auto flex items-center space-x-2 sm:space-x-3">
-                <!-- Account Dropdown Trigger -->
                 <div class="relative">
                     <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
                         <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
@@ -154,12 +153,10 @@
                         </div>
                     </button>
 
-                    <!-- Account Dropdown -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
                         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">
                             Select Account
                         </div>
-
                         <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Demo Account</div>
@@ -178,168 +175,498 @@
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh" aria-label="Refresh">
+                <button onclick="location.reload()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
                     <i class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
 
-                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings" aria-label="Settings">
+                <button onclick="navigateTo('settings')" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
                     <i class="fa-solid fa-gear text-xs"></i>
-                </a>
+                </button>
 
-                <a href="../menu/index.html" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile" aria-label="Profile">
+                <button onclick="navigateTo('profile')" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
                     <i class="fa-regular fa-user text-xs"></i>
-                </a>
+                </button>
 
-                <button onclick="handleLogout()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout" aria-label="Logout">
+                <button onclick="handleLogout()" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
-
         </div>
     </header>
 
-    <!-- MAIN MORE CONTENT -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full space-y-8">
+    <!-- DYNAMIC MAIN CONTENT -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
 
-        <!-- PAGE TITLE -->
-        <div>
-            <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">MORE</div>
-            <h1 id="pageTitleName" class="text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
+        <!-- PAGE 1: MORE (MAIN MENU) -->
+        <div id="page-more" class="page-view active space-y-8">
+            <div>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">MORE</div>
+                <h1 class="pageTitleName text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
+            </div>
+
+            <!-- Quick Links Row -->
+            <div class="flex items-center justify-center gap-10 sm:gap-20 mb-6 border-b border-gray-100 pb-6">
+                <a href="../TradesChart/index.html" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">Back to Trading</span>
+                </a>
+
+                <a href="../deposit/index.html" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-regular fa-credit-card text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">Wallet</span>
+                </a>
+            </div>
+
+            <!-- Preferences -->
+            <section class="space-y-4">
+                <h2 class="text-xs font-extrabold text-gray-900 tracking-wide">Preferences</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div onclick="navigateTo('settings')" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 cursor-pointer shadow-xs">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-moon text-base"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-gray-900 mb-1">Appearance</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Light mode default with dark mode controls</p>
+                    </div>
+
+                    <div onclick="navigateTo('settings')" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 cursor-pointer shadow-xs">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-language text-base"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-gray-900 mb-1">Language</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Terminal language and notification preferences</p>
+                    </div>
+
+                    <div onclick="navigateTo('profile')" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 cursor-pointer shadow-xs">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-shield-halved text-base"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-gray-900 mb-1">Security</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">Password, devices, verification, KYC</p>
+                    </div>
+
+                    <div onclick="navigateTo('support')" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 cursor-pointer shadow-xs">
+                        <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
+                            <i class="fa-regular fa-book-open text-base"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-gray-900 mb-1">Documentation</h3>
+                        <p class="text-[11px] text-gray-400 leading-relaxed font-normal">FAQ, support, live chat, guides</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy & Security -->
+            <section class="space-y-3 pt-2">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-lock text-red-500 text-xs"></i>
+                    <span>Privacy and security</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80">Dark mode stays available from Settings while the platform starts in light mode.</div>
+                    <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80">Security alerts and device sessions stay accessible from Notifications and Profile.</div>
+                    <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80">Support, documentation, and help remain one or two taps away through Menu and More.</div>
+                </div>
+            </section>
         </div>
 
-        <!-- QUICK LINKS ROW -->
-        <div class="flex items-center justify-center gap-10 sm:gap-20 mb-6 border-b border-gray-100 pb-6">
-            <a href="../TradesChart/index.html" class="group flex flex-col items-center min-w-[72px]">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
-                    <i class="fa-solid fa-house text-sm"></i>
-                </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">
-                    Back to Trading
-                </span>
-            </a>
+        <!-- PAGE 2: SETTINGS -->
+        <div id="page-settings" class="page-view space-y-6">
+            <div>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">SETTINGS</div>
+                <h1 class="pageTitleName text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
+            </div>
 
-            <a href="../deposit/index.html" class="group flex flex-col items-center min-w-[72px]">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
-                    <i class="fa-regular fa-credit-card text-sm"></i>
+            <div class="flex items-center justify-center gap-10 sm:gap-20 border-b border-gray-100 pb-6">
+                <button onclick="navigateTo('more')" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Back to Trading</span>
+                </button>
+
+                <a href="../deposit/index.html" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-regular fa-credit-card text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Wallet</span>
+                </a>
+            </div>
+
+            <!-- Appearance Controls -->
+            <section class="space-y-3">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fa-regular fa-compass text-red-500"></i> Appearance
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors text-center">
-                    Wallet
-                </span>
-            </a>
+                <div class="space-y-2">
+                    <button onclick="setTheme('light')" id="btn-light-mode" class="w-full text-left p-3.5 rounded-2xl border border-red-200 bg-red-50/40 text-red-600 font-bold text-xs flex items-center justify-between">
+                        <span>Light Mode</span>
+                    </button>
+                    <button onclick="setTheme('dark')" id="btn-dark-mode" class="w-full text-left p-3.5 rounded-2xl border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50">
+                        <span>Dark Mode</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Language -->
+            <section class="space-y-3">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-red-500"></i> Language
+                </div>
+                <select class="w-full p-3 bg-white border border-gray-200 rounded-2xl text-xs font-medium text-gray-700 focus:outline-none">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                </select>
+            </section>
+
+            <!-- Notifications -->
+            <section class="space-y-3">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fa-regular fa-bell text-red-500"></i> Notifications
+                </div>
+                <div class="space-y-3 bg-white border border-gray-100 rounded-2xl p-4">
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-xs text-gray-700 font-medium">Price alerts</span>
+                        <input type="checkbox" checked class="w-4 h-4 accent-sky-600 rounded">
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-xs text-gray-700 font-medium">Security alerts</span>
+                        <input type="checkbox" checked class="w-4 h-4 accent-sky-600 rounded">
+                    </label>
+                </div>
+            </section>
+
+            <!-- Privacy -->
+            <section class="space-y-2 pt-2">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fa-regular fa-shield text-red-500"></i> Privacy
+                </div>
+                <div class="p-3.5 bg-gray-50 text-gray-500 text-xs rounded-2xl border border-gray-100">Session security enabled</div>
+                <div class="p-3.5 bg-gray-50 text-gray-500 text-xs rounded-2xl border border-gray-100">Manual theme and language preferences saved locally</div>
+            </section>
         </div>
 
-        <!-- PREFERENCES SECTION -->
-        <section class="space-y-4">
-            <h2 class="text-xs font-extrabold text-gray-900 tracking-wide">Preferences</h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                <!-- Appearance Card -->
-                <a href="../menu/index.html" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 block shadow-xs">
-                    <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
-                        <i class="fa-regular fa-moon text-base"></i>
-                    </div>
-                    <h3 class="text-sm font-extrabold text-gray-900 mb-1">Appearance</h3>
-                    <p class="text-[11px] text-gray-400 leading-relaxed font-normal">
-                        Light mode default with dark mode controls
-                    </p>
-                </a>
-
-                <!-- Language Card -->
-                <a href="../menu/index.html" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 block shadow-xs">
-                    <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-language text-base"></i>
-                    </div>
-                    <h3 class="text-sm font-extrabold text-gray-900 mb-1">Language</h3>
-                    <p class="text-[11px] text-gray-400 leading-relaxed font-normal">
-                        Terminal language and notification preferences
-                    </p>
-                </a>
-
-                <!-- Security Card -->
-                <a href="../menu/index.html" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 block shadow-xs">
-                    <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
-                        <i class="fa-regular fa-shield-halved text-base"></i>
-                    </div>
-                    <h3 class="text-sm font-extrabold text-gray-900 mb-1">Security</h3>
-                    <p class="text-[11px] text-gray-400 leading-relaxed font-normal">
-                        Password, devices, verification, KYC
-                    </p>
-                </a>
-
-                <!-- Documentation Card -->
-                <a href="../menu/index.html" class="card-hover bg-white rounded-2xl p-5 border border-gray-200/80 block shadow-xs">
-                    <div class="w-10 h-10 rounded-2xl bg-gray-100/80 text-gray-700 flex items-center justify-center mb-4">
-                        <i class="fa-regular fa-book-open text-base"></i>
-                    </div>
-                    <h3 class="text-sm font-extrabold text-gray-900 mb-1">Documentation</h3>
-                    <p class="text-[11px] text-gray-400 leading-relaxed font-normal">
-                        FAQ, support, live chat, guides
-                    </p>
-                </a>
-
-            </div>
-        </section>
-
-        <!-- PRIVACY AND SECURITY SECTION -->
-        <section class="space-y-3 pt-2">
-            <div class="text-xs font-extrabold text-gray-900 flex items-center space-x-2">
-                <i class="fa-solid fa-lock text-red-500 text-xs"></i>
-                <span>Privacy and security</span>
+        <!-- PAGE 3: PROFILE -->
+        <div id="page-profile" class="page-view space-y-6">
+            <div>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">PROFILE</div>
+                <h1 class="pageTitleName text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
             </div>
 
-            <div class="space-y-2">
-                <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80 leading-relaxed">
-                    Dark mode stays available from Settings while the platform starts in light mode.
+            <div class="flex items-center justify-center gap-10 sm:gap-20 border-b border-gray-100 pb-6">
+                <button onclick="navigateTo('more')" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Back to Trading</span>
+                </button>
+
+                <a href="../deposit/index.html" class="group flex flex-col items-center min-w-[72px]">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                        <i class="fa-regular fa-credit-card text-sm"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Wallet</span>
+                </a>
+            </div>
+
+            <!-- Personal Info -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-regular fa-user text-red-500"></i> Personal information
+                    </div>
+                    <button id="editProfileBtn" onclick="toggleEditProfile()" class="text-xs text-red-600 font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                    </button>
                 </div>
 
-                <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80 leading-relaxed">
-                    Security alerts and device sessions stay accessible from Notifications and Profile.
+                <div class="bg-gray-50/50 rounded-2xl p-4 border border-gray-100 space-y-4">
+                    <div>
+                        <div class="text-[11px] text-gray-400 font-medium">Name</div>
+                        <div id="profileNameDisplay" class="text-xs font-extrabold text-gray-800 uppercase tracking-tight mt-0.5">-</div>
+                        <input type="text" id="profileNameInput" class="hidden w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-gray-800 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-400 font-medium">Email</div>
+                        <div id="profileEmailDisplay" class="text-xs font-semibold text-gray-800 mt-0.5">-</div>
+                        <input type="email" id="profileEmailInput" class="hidden w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-gray-800 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-400 font-medium">Phone Number</div>
+                        <div id="profilePhoneDisplay" class="text-xs text-gray-500 mt-0.5">Not set</div>
+                        <input type="tel" id="profilePhoneInput" placeholder="Enter phone number" class="hidden w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-gray-800 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-400 font-medium">Country</div>
+                        <div id="profileCountryDisplay" class="text-xs text-gray-700 mt-0.5">Not set</div>
+                        <input type="text" id="profileCountryInput" placeholder="Enter country" class="hidden w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-gray-800 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-400 font-medium">Date of Birth</div>
+                        <div id="profileDobDisplay" class="text-xs text-gray-500 mt-0.5">Not set</div>
+                        <input type="date" id="profileDobInput" class="hidden w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-gray-800 focus:outline-none focus:border-red-500">
+                    </div>
+
+                    <div id="profileSaveContainer" class="hidden pt-2">
+                        <button onclick="saveProfileChanges()" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors shadow-sm">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Verification -->
+            <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-regular fa-circle-check text-red-500"></i> Verification
+                    </div>
+                    <button onclick="navigateTo('verification')" class="text-xs text-red-600 font-bold hover:underline flex items-center gap-1">
+                        Upload docs <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
                 </div>
 
-                <div class="p-3.5 bg-gray-50/70 text-gray-500 text-xs rounded-2xl border border-gray-100/80 leading-relaxed">
-                    Support, documentation, and help remain one or two taps away through Menu and More.
+                <div class="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-700">Status</span>
+                    <span class="text-[10px] font-extrabold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md tracking-wider">PENDING</span>
+                </div>
+                <p class="text-[11px] text-gray-400 leading-relaxed">
+                    KYC, identity, and document review stay here. Upload your ID, passport, or driver's license together with a utility bill or bank statement.
+                </p>
+            </section>
+
+            <!-- Devices -->
+            <section class="space-y-2">
+                <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen text-red-500"></i> Devices
+                </div>
+                <div class="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 text-xs text-gray-600">
+                    Current device session verified and secured.
+                </div>
+            </section>
+
+            <!-- Security -->
+            <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-regular fa-shield text-red-500"></i> Security
+                    </div>
+                    <button class="text-xs text-red-600 font-semibold hover:underline">Change Password</button>
+                </div>
+                <div class="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 text-xs text-gray-500">
+                    Password and device controls live alongside alerts and settings.
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE 4: KYC VERIFICATION -->
+        <div id="page-verification" class="page-view space-y-6">
+            <div>
+                <button onclick="navigateTo('profile')" class="text-xs text-gray-500 font-bold hover:text-gray-800 flex items-center gap-1 mb-2">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i> Back to profile
+                </button>
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">VERIFICATION</div>
+                <h1 class="pageTitleName text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
+            </div>
+
+            <!-- Verification Container -->
+            <div class="bg-white border border-gray-100 rounded-3xl p-5 sm:p-6 space-y-6 shadow-xs">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-regular fa-id-card text-red-500 text-base"></i>
+                        <span class="text-sm font-extrabold text-gray-900">KYC verification</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md tracking-wider">PENDING</span>
+                </div>
+
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    Upload one identity document and one proof of address. Accepted formats include PDF, DOC, DOCX, XLSX, TXT, JPG, PNG, WEBP, GIF, HEIC, and HEIF up to 10MB each.
+                </p>
+
+                <!-- Required Documents List -->
+                <div class="p-4 bg-gray-50/60 rounded-2xl border border-gray-100 space-y-3">
+                    <div class="text-xs font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-regular fa-file-lines text-red-500"></i> Required documents
+                    </div>
+                    <div class="text-xs text-gray-600 pl-6 space-y-2">
+                        <p><strong class="text-gray-700">Identity verification:</strong> National ID, Passport, or Driver's License</p>
+                        <p><strong class="text-gray-700">Proof of address:</strong> Utility Bill, Bank Statement, Government Letter, or Lease Agreement</p>
+                    </div>
+                </div>
+
+                <!-- Document Forms -->
+                <form onsubmit="handleKYCSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Identity document type</label>
+                        <select class="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:border-red-500">
+                            <option value="national-id">National ID</option>
+                            <option value="passport">Passport</option>
+                            <option value="drivers-license">Driver's License</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Identity document file</label>
+                        <div class="flex items-center gap-3">
+                            <label class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl cursor-pointer transition-colors">
+                                Choose File
+                                <input type="file" class="hidden" onchange="updateFileName(this, 'id-file-name')">
+                            </label>
+                            <span id="id-file-name" class="text-xs text-gray-400">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Proof of address type</label>
+                        <select class="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:outline-none focus:border-red-500">
+                            <option value="utility">Utility Bill</option>
+                            <option value="bank">Bank Statement</option>
+                            <option value="gov">Government Letter</option>
+                            <option value="lease">Lease Agreement</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Proof of address file</label>
+                        <div class="flex items-center gap-3">
+                            <label class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl cursor-pointer transition-colors">
+                                Choose File
+                                <input type="file" class="hidden" onchange="updateFileName(this, 'proof-file-name')">
+                            </label>
+                            <span id="proof-file-name" class="text-xs text-gray-400">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 mt-4 shadow-sm">
+                        <i class="fa-solid fa-upload"></i> Submit documents
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE 5: SUPPORT / DOCUMENTATION -->
+        <div id="page-support" class="page-view space-y-6">
+            <div>
+                <button onclick="navigateTo('more')" class="text-xs text-gray-500 font-bold hover:text-gray-800 flex items-center gap-1 mb-2">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i> Back
+                </button>
+                <div class="text-center py-4">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-regular fa-comment-dots text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Get Help</h1>
+                    <p class="text-xs text-gray-400 mt-1">Find answers to common questions or reach out to our support team</p>
                 </div>
             </div>
-        </section>
+
+            <!-- Help Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="w-8 h-8 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center mb-3">
+                            <i class="fa-regular fa-circle-question text-sm"></i>
+                        </div>
+                        <h3 class="text-xs font-extrabold text-gray-900">FAQ</h3>
+                        <p class="text-[11px] text-gray-400 mt-1">Browse frequently asked questions</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="w-8 h-8 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center mb-3">
+                            <i class="fa-regular fa-file-code text-sm"></i>
+                        </div>
+                        <h3 class="text-xs font-extrabold text-gray-900">Documentation</h3>
+                        <p class="text-[11px] text-gray-400 mt-1">Learn how to use the platform</p>
+                    </div>
+                </div>
+
+                <a href="mailto:Info@tradexora.site" class="p-4 bg-white border border-gray-100 hover:border-red-200 rounded-2xl shadow-xs flex flex-col justify-between transition-all">
+                    <div>
+                        <div class="w-8 h-8 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center mb-3">
+                            <i class="fa-regular fa-envelope text-sm"></i>
+                        </div>
+                        <h3 class="text-xs font-extrabold text-gray-900">Email Support</h3>
+                        <p class="text-[11px] text-red-600 mt-1 font-medium">Info@tradexora.site</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- FAQ Section -->
+            <section class="space-y-3 pt-4">
+                <h2 class="text-xs font-extrabold text-gray-900 tracking-wide">Frequently Asked Questions</h2>
+                <div class="space-y-3">
+                    <div class="p-4 bg-white border border-gray-100 rounded-2xl space-y-1">
+                        <h4 class="text-xs font-bold text-gray-800">How do I create an account?</h4>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">Click the "Create Account" button on the homepage, fill in your details, and follow the verification process.</p>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-100 rounded-2xl space-y-1">
+                        <h4 class="text-xs font-bold text-gray-800">What markets can I trade?</h4>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">TRADEXORA offers access to forex, cryptocurrencies, stocks, commodities, and indices.</p>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-100 rounded-2xl space-y-1">
+                        <h4 class="text-xs font-bold text-gray-800">How do I reset my demo account balance?</h4>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">Log in to your account, go to your account settings, and click "Reset Demo Balance".</p>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-100 rounded-2xl space-y-1">
+                        <h4 class="text-xs font-bold text-gray-800">Is my personal data secure?</h4>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">Yes, we use industry-standard encryption and security practices to protect your personal and financial data.</p>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-100 rounded-2xl space-y-1">
+                        <h4 class="text-xs font-bold text-gray-800">How do I contact customer support?</h4>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">You can reach our support team via email at Info@tradexora.site or through the in-app chat feature.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Still Need Help Box -->
+            <div class="p-6 bg-gray-50/70 rounded-3xl border border-gray-100 text-center space-y-3 mt-6">
+                <h3 class="text-xs font-extrabold text-gray-900">Still need help?</h3>
+                <p class="text-[11px] text-gray-400">Our support team is available 24/7 to assist you</p>
+                <a href="mailto:Info@tradexora.site" class="inline-block bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition-colors">
+                    Contact Support
+                </a>
+            </div>
+        </div>
 
     </main>
 
     <!-- BOTTOM NAVIGATION DOCK -->
     <nav class="bottom-nav fixed left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
         <div class="flex items-center justify-between">
-
-            <!-- Menu Tab -->
             <a href="../menu/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-solid fa-bars text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Menu</span>
             </a>
 
-            <!-- Trades Tab -->
             <a href="../Trades/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
                 <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$23.48</span>
                 <i class="fa-regular fa-folder text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Trades</span>
             </a>
 
-            <!-- Trade Chart Tab -->
             <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-solid fa-house text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Trade chart</span>
             </a>
 
-            <!-- Markets and News Tab -->
             <a href="../Markets%26News/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-regular fa-newspaper text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Markets&amp;News</span>
             </a>
 
-            <!-- More Tab (Active) -->
-            <a href="index.html" class="flex flex-col items-center flex-1 py-1 text-red-600">
+            <button onclick="navigateTo('more')" class="flex flex-col items-center flex-1 py-1 text-red-600">
                 <i class="fa-regular fa-user text-sm mb-1"></i>
                 <span class="text-[10px] font-bold">More</span>
-            </a>
-
+            </button>
         </div>
     </nav>
 
@@ -354,7 +681,7 @@
         const CURRENT_USER_KEY = 'currentUser';
         const INDEX_URL = '../index.html';
 
-        /* ============ SHARED AUTH HELPERS ============ */
+        let isEditingProfile = false;
 
         function getCurrentUser() {
             try {
@@ -366,9 +693,7 @@
             }
         }
 
-        /* ============ AUTH GUARD AND REGISTERED NAME ============ */
-
-        (function initAuth() {
+        function loadProfileData() {
             const user = getCurrentUser();
 
             if (!user || !user.email) {
@@ -376,19 +701,111 @@
                 return;
             }
 
-            const displayName = (user.fullName && user.fullName.trim() !== '') ?
-                user.fullName :
-                user.email.split('@')[0];
+            const fullName = (user.fullName && user.fullName.trim() !== '') ? user.fullName : user.email.split('@')[0];
+            const phone = user.phone || user.phoneNumber || '';
+            const country = user.country || '';
+            const dob = user.dob || user.dateOfBirth || '';
 
-            const titleEl = document.getElementById('pageTitleName');
-            if (titleEl) {
-                titleEl.textContent = displayName;
-            }
+            // Populate header and titles
+            document.querySelectorAll('.pageTitleName').forEach(el => {
+                el.textContent = fullName;
+            });
+            document.title = 'TRADEXORA Trading - More / ' + fullName;
 
-            document.title = 'TRADEXORA Trading - More / ' + displayName;
+            // Populate profile display elements
+            document.getElementById('profileNameDisplay').textContent = fullName;
+            document.getElementById('profileEmailDisplay').textContent = user.email;
+            document.getElementById('profilePhoneDisplay').textContent = phone || 'Not set';
+            document.getElementById('profileCountryDisplay').textContent = country || 'Not set';
+            document.getElementById('profileDobDisplay').textContent = dob || 'Not set';
+
+            // Populate profile input fields
+            document.getElementById('profileNameInput').value = fullName;
+            document.getElementById('profileEmailInput').value = user.email;
+            document.getElementById('profilePhoneInput').value = phone;
+            document.getElementById('profileCountryInput').value = country;
+            document.getElementById('profileDobInput').value = dob;
+        }
+
+        (function initAuth() {
+            loadProfileData();
         })();
 
-        /* ============ ACCOUNT DROPDOWN ============ */
+        /* Toggle Edit Mode on Profile */
+        function toggleEditProfile() {
+            isEditingProfile = !isEditingProfile;
+
+            const nameDisp = document.getElementById('profileNameDisplay');
+            const emailDisp = document.getElementById('profileEmailDisplay');
+            const phoneDisp = document.getElementById('profilePhoneDisplay');
+            const countryDisp = document.getElementById('profileCountryDisplay');
+            const dobDisp = document.getElementById('profileDobDisplay');
+
+            const nameInp = document.getElementById('profileNameInput');
+            const emailInp = document.getElementById('profileEmailInput');
+            const phoneInp = document.getElementById('profilePhoneInput');
+            const countryInp = document.getElementById('profileCountryInput');
+            const dobInp = document.getElementById('profileDobInput');
+
+            const saveContainer = document.getElementById('profileSaveContainer');
+            const editBtn = document.getElementById('editProfileBtn');
+
+            if (isEditingProfile) {
+                nameDisp.classList.add('hidden'); nameInp.classList.remove('hidden');
+                emailDisp.classList.add('hidden'); emailInp.classList.remove('hidden');
+                phoneDisp.classList.add('hidden'); phoneInp.classList.remove('hidden');
+                countryDisp.classList.add('hidden'); countryInp.classList.remove('hidden');
+                dobDisp.classList.add('hidden'); dobInp.classList.remove('hidden');
+                saveContainer.classList.remove('hidden');
+
+                editBtn.innerHTML = '<i class="fa-solid fa-xmark text-[10px]"></i> Cancel';
+            } else {
+                nameDisp.classList.remove('hidden'); nameInp.classList.add('hidden');
+                emailDisp.classList.remove('hidden'); emailInp.classList.add('hidden');
+                phoneDisp.classList.remove('hidden'); phoneInp.classList.add('hidden');
+                countryDisp.classList.remove('hidden'); countryInp.classList.add('hidden');
+                dobDisp.classList.remove('hidden'); dobInp.classList.add('hidden');
+                saveContainer.classList.add('hidden');
+
+                editBtn.innerHTML = '<i class="fa-solid fa-pen text-[10px]"></i> Edit';
+            }
+        }
+
+        function saveProfileChanges() {
+            const user = getCurrentUser() || {};
+
+            const newName = document.getElementById('profileNameInput').value.trim();
+            const newEmail = document.getElementById('profileEmailInput').value.trim();
+            const newPhone = document.getElementById('profilePhoneInput').value.trim();
+            const newCountry = document.getElementById('profileCountryInput').value.trim();
+            const newDob = document.getElementById('profileDobInput').value.trim();
+
+            user.fullName = newName;
+            user.email = newEmail;
+            user.phone = newPhone;
+            user.phoneNumber = newPhone;
+            user.country = newCountry;
+            user.dob = newDob;
+            user.dateOfBirth = newDob;
+
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+
+            toggleEditProfile();
+            loadProfileData();
+            showToast('Profile updated successfully');
+        }
+
+        /* Navigation routing between page sections */
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
 
         function toggleAccountDropdown() {
             const dropdown = document.getElementById('accountDropdown');
@@ -412,12 +829,38 @@
         function selectAccount(type, balance, id) {
             document.getElementById('activeAccountType').innerText = `${type} ${balance}`;
             document.getElementById('activeAccountId').innerText = id;
-
             document.getElementById('accountDropdown').classList.add('hidden');
             showToast(`Switched to ${type} Account (${balance})`);
         }
 
-        /* ============ TOAST ============ */
+        function setTheme(theme) {
+            const lightBtn = document.getElementById('btn-light-mode');
+            const darkBtn = document.getElementById('btn-dark-mode');
+
+            if (theme === 'light') {
+                lightBtn.className = "w-full text-left p-3.5 rounded-2xl border border-red-200 bg-red-50/40 text-red-600 font-bold text-xs flex items-center justify-between";
+                darkBtn.className = "w-full text-left p-3.5 rounded-2xl border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50";
+                showToast('Light mode activated');
+            } else {
+                darkBtn.className = "w-full text-left p-3.5 rounded-2xl border border-red-200 bg-red-50/40 text-red-600 font-bold text-xs flex items-center justify-between";
+                lightBtn.className = "w-full text-left p-3.5 rounded-2xl border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50";
+                showToast('Dark mode activated');
+            }
+        }
+
+        function updateFileName(input, targetId) {
+            const target = document.getElementById(targetId);
+            if (input.files && input.files[0]) {
+                target.innerText = input.files[0].name;
+                target.classList.remove('text-gray-400');
+                target.classList.add('text-gray-700', 'font-medium');
+            }
+        }
+
+        function handleKYCSubmit(e) {
+            e.preventDefault();
+            showToast('Verification documents submitted');
+        }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -432,8 +875,6 @@
                 toast.classList.add('translate-y-[-100px]', 'opacity-0');
             }, 2500);
         }
-
-        /* ============ LOGOUT ============ */
 
         function handleLogout() {
             localStorage.removeItem(CURRENT_USER_KEY);
