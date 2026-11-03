@@ -88,7 +88,7 @@
                         </div>
                     </button>
 
-                    <!-- ACCOUNT DROPDOWN WITH DEMO RESET -->
+                    <!-- ACCOUNT DROPDOWN -->
                     <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
                         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
 
@@ -100,21 +100,21 @@
                             <div class="text-xs font-bold text-emerald-600" id="dropdownDemoBal">$10,000.00</div>
                         </button>
 
-                        <button type="button" class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-2" data-acc-type="Real" data-acc-id="RNP982314">
+                        <button type="button" class="acc-btn w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all" data-acc-type="Real" data-acc-id="RNP982314">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Real Account</div>
                                 <div class="text-[11px] text-gray-500">ID: RNP982314</div>
                             </div>
                             <div class="text-xs font-bold text-gray-700" id="dropdownRealBal">$0.00</div>
                         </button>
-
-                        <div class="border-t border-gray-100 pt-2">
-                            <button type="button" id="resetDemoBtn" class="w-full text-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold py-2 rounded-lg transition-colors cursor-pointer">
-                                <i class="fa-solid fa-rotate-right mr-1"></i> Reset Demo to $10,000
-                            </button>
-                        </div>
                     </div>
                 </div>
+
+                <!-- RESET DEMO BUTTON (with text, next to refresh) -->
+                <button id="resetDemoBtn" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-[10px] sm:text-xs font-bold px-3 py-2 rounded-full flex items-center space-x-1.5 transition-colors cursor-pointer">
+                    <i class="fa-solid fa-rotate-right text-[10px]"></i>
+                    <span>Reset Demo</span>
+                </button>
 
                 <button id="reloadBtn" class="w-8 h-8 shrink-0 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
                     <i class="fa-solid fa-rotate-right text-xs"></i>
@@ -1014,7 +1014,7 @@
 
         // ---------- EVENT DELEGATION ----------
         document.addEventListener('click', function (e) {
-            // RESET DEMO — always returns balance to $10,000
+            // RESET DEMO — always returns balance to $10,000 (header button)
             if (e.target.closest('#resetDemoBtn')) {
                 TX.resetDemoBalance();
                 loadState();
