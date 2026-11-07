@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>TRADEXORA Trading - Markets & News</title>
 
     <!-- Tailwind CSS -->
@@ -44,84 +44,236 @@
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
         }
-        
-         ::-webkit-scrollbar {
+
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
-         ::-webkit-scrollbar-track {
+
+        ::-webkit-scrollbar-track {
             background: #f8fafc;
         }
-        
-         ::-webkit-scrollbar-thumb {
+
+        ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 3px;
         }
+
         /* Hide scrollbar for tab navigation on mobile */
-        
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-        
+
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* ================= RESPONSIVE BASE ================= */
+        html,
+        body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        img,
+        svg,
+        select,
+        input,
+        button {
+            max-width: 100%;
+        }
+
+        /* iOS: prevent auto-zoom when focusing inputs on mobile */
+        @media (max-width: 640px) {
+            #searchInput {
+                font-size: 16px;
+            }
+        }
+
+        /* ================= HEADER RESPONSIVE ================= */
+        @media (max-width: 1024px) {
+            header .header-inner {
+                flex-wrap: wrap;
+                row-gap: 0.5rem;
+            }
+
+            header .header-left {
+                flex: 1 1 auto;
+                min-width: 0;
+                flex-wrap: wrap;
+                row-gap: 0.4rem;
+            }
+
+            header .header-right {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                row-gap: 0.4rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            /* Deposit button: icon-only on phones */
+            header .deposit-btn span.deposit-text {
+                display: none;
+            }
+
+            header .deposit-btn {
+                padding-left: 0.65rem;
+                padding-right: 0.65rem;
+            }
+
+            header .header-right .icon-btn {
+                width: 2.1rem;
+                height: 2.1rem;
+            }
+        }
+
+        /* Account dropdown never clipped on tiny screens */
+        @media (max-width: 420px) {
+            #accountDropdown {
+                width: calc(100vw - 2rem);
+                max-width: 16rem;
+            }
+        }
+
+        /* ================= INSTRUMENT CARDS ================= */
+        /* Very narrow screens: SELL / LOT / BUY reflow to 3 equal columns */
+        @media (max-width: 380px) {
+            .order-row {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.4rem;
+            }
+
+            .order-row>button,
+            .order-row>div {
+                grid-column: span 1 !important;
+            }
+        }
+
+        /* ================= TOP MOVER BANNER ================= */
+        @media (min-width: 640px) {
+            .top-mover-right {
+                margin-top: 0;
+            }
+        }
+
+        /* ================= BOTTOM NAV DOCK ================= */
+        .bottom-dock {
+            bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+            width: min(92%, 36rem);
+        }
+
+        @media (max-width: 400px) {
+            .bottom-dock {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+
+            .bottom-dock a span {
+                font-size: 9px;
+            }
+
+            /* Hide floating P/L badge on tiny screens to avoid overlap */
+            .bottom-dock .pl-badge {
+                display: none;
+            }
+        }
+
+        /* Body bottom padding adapts to dock + safe area */
+        .page-body {
+            padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        /* ================= TOAST ================= */
+        #toast {
+            max-width: calc(100vw - 2rem);
+        }
+
+        /* ================= LARGE SCREEN READABILITY ================= */
+        @media (min-width: 1024px) {
+            main h1 {
+                font-size: 1.75rem;
+            }
+
+            .instrument-card .text-xs {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            main {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-white min-h-screen flex flex-col justify-between pb-28 select-none">
+<body class="page-body bg-white min-h-screen flex flex-col justify-between select-none">
 
     <!-- TOP HEADER -->
     <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="max-w-7xl mx-auto header-inner flex items-center justify-between">
 
             <!-- Left Header: Back Button, Logo & Deposit Funds -->
-            <div class="flex items-center space-x-3">
+            <div class="header-left flex items-center space-x-2 sm:space-x-3">
 
                 <!-- Back Button pointing to Dashboard -->
-                <a href="../Dashboard/index.html" class="flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                <a href="../Dashboard/index.html"
+                    class="flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
-                    <span>Back</span>
+                    <span class="hidden xs:inline sm:inline">Back</span>
                 </a>
 
                 <!-- TRADEXORA Logo -->
                 <a href="../TradesChart/index.html" aria-label="TRADEXORA home" class="flex items-center shrink-0">
-                    <div class="min-h-9 px-3 rounded-lg bg-black text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-sm">
-                        <span class="text-[11px] sm:text-xs font-extrabold tracking-[0.12em] whitespace-nowrap">
+                    <div
+                        class="min-h-9 px-2 sm:px-3 rounded-lg bg-black text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-sm">
+                        <span class="text-[10px] sm:text-xs font-extrabold tracking-[0.12em] whitespace-nowrap">
                             TRADEXORA
                         </span>
                     </div>
                 </a>
 
                 <!-- Deposit Funds Button -->
-                <a href="../deposit/index.html" class="flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
+                <a href="../deposit/index.html"
+                    class="deposit-btn hidden xs:flex sm:flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors shrink-0">
                     <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
-                    <span>Deposit Funds</span>
+                    <span class="deposit-text">Deposit Funds</span>
                 </a>
             </div>
 
             <!-- Right Header: Account Status & Quick Actions -->
-            <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="header-right flex items-center space-x-2 sm:space-x-3">
 
                 <!-- Account Dropdown Trigger -->
                 <div class="relative">
-                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()"
+                        class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
                         <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
                         <div class="text-right">
-                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
-                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+                            <div class="text-[11px] font-bold leading-tight whitespace-nowrap"
+                                id="activeAccountType">Demo $10,000.00</div>
+                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">
+                                DNP142887</div>
                         </div>
                     </button>
 
                     <!-- Account Dropdown -->
-                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                    <div id="accountDropdown"
+                        class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
                         <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">
                             Select Account
                         </div>
 
-                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')"
+                            class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Demo Account</div>
                                 <div class="text-[11px] text-gray-500">ID: DNP142887</div>
@@ -129,7 +281,8 @@
                             <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
                         </button>
 
-                        <button onclick="selectAccount('Real', '$0.00', 'RNP982314')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+                        <button onclick="selectAccount('Real', '$0.00', 'RNP982314')"
+                            class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Real Account</div>
                                 <div class="text-[11px] text-gray-500">ID: RNP982314</div>
@@ -139,19 +292,27 @@
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
+                <button onclick="location.reload()"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+                    title="Refresh">
                     <i class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
 
-                <a href="../More/index.html" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
+                <a href="../More/index.html"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0 hidden sm:flex"
+                    title="Settings">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </a>
 
-                <a href="../More/index.html" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
+                <a href="../More/index.html"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+                    title="Profile">
                     <i class="fa-regular fa-user text-xs"></i>
                 </a>
 
-                <button onclick="showLogoutToast()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
+                <button onclick="showLogoutToast()"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors shrink-0"
+                    title="Logout">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
@@ -164,43 +325,57 @@
         <!-- PAGE TITLE -->
         <div>
             <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">MARKETS &amp; NEWS</div>
-            <h1 id="pageTitleName" class="text-2xl font-extrabold text-gray-900 tracking-tight">Welcome</h1>
+            <h1 id="pageTitleName" class="text-2xl font-extrabold text-gray-900 tracking-tight break-words">Welcome</h1>
         </div>
 
         <!-- QUICK LINKS ROW -->
-        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-6 border-b border-gray-100 pb-6">
+        <div
+            class="flex items-center justify-center gap-10 sm:gap-24 mb-6 border-b border-gray-100 pb-6 flex-wrap">
             <a href="../TradesChart/index.html" class="group flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-house text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
+                <span
+                    class="text-xs font-medium text-gray-700 text-center group-hover:text-red-600 transition-colors">Back
+                    to Trading</span>
             </a>
 
             <a href="../deposit/index.html" class="group flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-regular fa-credit-card text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Wallet</span>
+                <span
+                    class="text-xs font-medium text-gray-700 text-center group-hover:text-red-600 transition-colors">Wallet</span>
             </a>
         </div>
 
         <!-- INSTRUMENTS SEARCH & CATEGORY BOX -->
-        <div class="border border-gray-200/80 rounded-2xl p-4 bg-white space-y-3">
+        <div class="border border-gray-200/80 rounded-2xl p-3 sm:p-4 bg-white space-y-3">
 
-            <!-- CATEGORY TABS -->
-            <div class="flex items-center space-x-6 overflow-x-auto no-scrollbar border-b border-gray-100 pb-2 text-xs font-medium text-gray-400">
-                <button onclick="switchCategory('forex', this)" class="category-tab text-[#e53e3e] font-bold border-b-2 border-[#e53e3e] pb-2 whitespace-nowrap">Forex</button>
-                <button onclick="switchCategory('crypto', this)" class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Crypto</button>
-                <button onclick="switchCategory('metals', this)" class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Metals</button>
-                <button onclick="switchCategory('commodities', this)" class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Commodities</button>
-                <button onclick="switchCategory('indices', this)" class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Indices</button>
-                <button onclick="switchCategory('stocks', this)" class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Stocks</button>
+            <!-- CATEGORY TABS (horizontally scrollable on mobile) -->
+            <div
+                class="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar border-b border-gray-100 pb-2 text-xs font-medium text-gray-400">
+                <button onclick="switchCategory('forex', this)"
+                    class="category-tab text-[#e53e3e] font-bold border-b-2 border-[#e53e3e] pb-2 whitespace-nowrap">Forex</button>
+                <button onclick="switchCategory('crypto', this)"
+                    class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Crypto</button>
+                <button onclick="switchCategory('metals', this)"
+                    class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Metals</button>
+                <button onclick="switchCategory('commodities', this)"
+                    class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Commodities</button>
+                <button onclick="switchCategory('indices', this)"
+                    class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Indices</button>
+                <button onclick="switchCategory('stocks', this)"
+                    class="category-tab hover:text-gray-800 pb-2 whitespace-nowrap">Stocks</button>
             </div>
 
             <!-- SEARCH INPUT -->
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                <input type="text" id="searchInput" oninput="filterInstruments()" placeholder="Search instruments" class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 focus:outline-none focus:border-gray-400 transition-all">
+                <input type="text" id="searchInput" oninput="filterInstruments()" placeholder="Search instruments"
+                    class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-800 focus:outline-none focus:border-gray-400 transition-all">
             </div>
         </div>
 
@@ -208,30 +383,33 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="instrumentsGrid">
 
             <!-- EURUSD CARD -->
-            <div class="instrument-card border border-gray-100 rounded-2xl p-4 bg-white space-y-3 shadow-xs">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-star text-red-500 text-xs cursor-pointer"></i>
-                        <div>
+            <div class="instrument-card border border-gray-100 rounded-2xl p-3 sm:p-4 bg-white space-y-3 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <i class="fa-solid fa-star text-red-500 text-xs cursor-pointer shrink-0"></i>
+                        <div class="min-w-0">
                             <div class="text-xs font-extrabold text-gray-900 instrument-symbol">EURUSD</div>
-                            <div class="text-[10px] text-gray-400 font-medium">EUR/USD · Tap to open chart</div>
+                            <div class="text-[10px] text-gray-400 font-medium truncate">EUR/USD · Tap to open chart</div>
                         </div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right shrink-0">
                         <div class="text-xs font-extrabold text-gray-900">1.12040</div>
                         <div class="text-[10px] font-bold text-red-500">-0.18%</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-7 gap-2 items-center">
-                    <button onclick="executeOrder('EURUSD', 'SELL', '1.12040')" class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                <div class="order-row grid grid-cols-7 gap-2 items-center">
+                    <button onclick="executeOrder('EURUSD', 'SELL', '1.12040')"
+                        class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">SELL</div>
                         <div class="text-xs font-black tracking-tight">1.12040</div>
                     </button>
 
-                    <div class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1">
+                    <div
+                        class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1 min-w-0">
                         <div class="text-[8px] font-bold text-gray-400 uppercase">LOT</div>
-                        <select class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
+                        <select
+                            class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
                             <option>0.10</option>
                             <option>0.01</option>
                             <option>0.50</option>
@@ -239,7 +417,8 @@
                         </select>
                     </div>
 
-                    <button onclick="executeOrder('EURUSD', 'BUY', '1.12040')" class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                    <button onclick="executeOrder('EURUSD', 'BUY', '1.12040')"
+                        class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">BUY</div>
                         <div class="text-xs font-black tracking-tight">1.12040</div>
                     </button>
@@ -247,30 +426,33 @@
             </div>
 
             <!-- GBPUSD CARD -->
-            <div class="instrument-card border border-gray-100 rounded-2xl p-4 bg-white space-y-3 shadow-xs">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-star text-red-500 text-xs cursor-pointer"></i>
-                        <div>
+            <div class="instrument-card border border-gray-100 rounded-2xl p-3 sm:p-4 bg-white space-y-3 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <i class="fa-solid fa-star text-red-500 text-xs cursor-pointer shrink-0"></i>
+                        <div class="min-w-0">
                             <div class="text-xs font-extrabold text-gray-900 instrument-symbol">GBPUSD</div>
-                            <div class="text-[10px] text-gray-400 font-medium">GBP/USD · Tap to open chart</div>
+                            <div class="text-[10px] text-gray-400 font-medium truncate">GBP/USD · Tap to open chart</div>
                         </div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right shrink-0">
                         <div class="text-xs font-extrabold text-gray-900">1.33750</div>
                         <div class="text-[10px] font-bold text-red-500">-0.15%</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-7 gap-2 items-center">
-                    <button onclick="executeOrder('GBPUSD', 'SELL', '1.33750')" class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                <div class="order-row grid grid-cols-7 gap-2 items-center">
+                    <button onclick="executeOrder('GBPUSD', 'SELL', '1.33750')"
+                        class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">SELL</div>
                         <div class="text-xs font-black tracking-tight">1.33750</div>
                     </button>
 
-                    <div class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1">
+                    <div
+                        class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1 min-w-0">
                         <div class="text-[8px] font-bold text-gray-400 uppercase">LOT</div>
-                        <select class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
+                        <select
+                            class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
                             <option>0.10</option>
                             <option>0.01</option>
                             <option>0.50</option>
@@ -278,7 +460,8 @@
                         </select>
                     </div>
 
-                    <button onclick="executeOrder('GBPUSD', 'BUY', '1.33750')" class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                    <button onclick="executeOrder('GBPUSD', 'BUY', '1.33750')"
+                        class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">BUY</div>
                         <div class="text-xs font-black tracking-tight">1.33750</div>
                     </button>
@@ -286,26 +469,29 @@
             </div>
 
             <!-- USDJPY CARD -->
-            <div class="instrument-card border border-gray-100 rounded-2xl p-4 bg-white space-y-3 shadow-xs">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-regular fa-star text-gray-300 text-xs cursor-pointer hover:text-red-500"></i>
-                        <div>
+            <div class="instrument-card border border-gray-100 rounded-2xl p-3 sm:p-4 bg-white space-y-3 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <i class="fa-regular fa-star text-gray-300 text-xs cursor-pointer hover:text-red-500 shrink-0"></i>
+                        <div class="min-w-0">
                             <div class="text-xs font-extrabold text-gray-900 instrument-symbol">USDJPY</div>
-                            <div class="text-[10px] text-gray-400 font-medium">USD/JPY · Tap to open chart</div>
+                            <div class="text-[10px] text-gray-400 font-medium truncate">USD/JPY · Tap to open chart</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-7 gap-2 items-center">
-                    <button onclick="executeOrder('USDJPY', 'SELL', '156.814')" class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                <div class="order-row grid grid-cols-7 gap-2 items-center">
+                    <button onclick="executeOrder('USDJPY', 'SELL', '156.814')"
+                        class="col-span-3 bg-[#e53e3e] hover:bg-red-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">SELL</div>
                         <div class="text-xs font-black tracking-tight">156.814</div>
                     </button>
 
-                    <div class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1">
+                    <div
+                        class="col-span-1 text-center bg-gray-50 border border-gray-200 rounded-xl py-1.5 px-1 min-w-0">
                         <div class="text-[8px] font-bold text-gray-400 uppercase">LOT</div>
-                        <select class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
+                        <select
+                            class="text-xs font-bold text-gray-800 bg-transparent focus:outline-none text-center w-full cursor-pointer">
                             <option>0.10</option>
                             <option>0.01</option>
                             <option>0.50</option>
@@ -313,7 +499,8 @@
                         </select>
                     </div>
 
-                    <button onclick="executeOrder('USDJPY', 'BUY', '156.814')" class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
+                    <button onclick="executeOrder('USDJPY', 'BUY', '156.814')"
+                        class="col-span-3 bg-[#16a34a] hover:bg-green-700 text-white rounded-xl py-2.5 px-2 text-center transition-colors">
                         <div class="text-[9px] font-extrabold uppercase opacity-80">BUY</div>
                         <div class="text-xs font-black tracking-tight">156.814</div>
                     </button>
@@ -322,7 +509,8 @@
         </div>
 
         <!-- TOP MOVER BANNER -->
-        <div class="bg-gray-50/70 border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div
+            class="bg-gray-50/70 border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
                 <div class="text-[9px] font-extrabold text-gray-400 tracking-wider uppercase mb-1">TOP MOVER</div>
                 <div class="text-xs font-extrabold text-gray-900">EURUSD</div>
@@ -331,9 +519,9 @@
                 <div class="text-[10px] text-gray-400 font-normal">One-click orders use DEMO · DNP142887 with lot 0.10.</div>
             </div>
 
-            <div class="text-left sm:text-right">
+            <div class="top-mover-right text-left sm:text-right mt-2 sm:mt-4">
                 <div class="text-[10px] text-emerald-600 font-extrabold">Live prices active</div>
-                <div class="text-xs font-extrabold text-gray-900 mt-4">0.00000</div>
+                <div class="text-xs font-extrabold text-gray-900 mt-1 sm:mt-4">0.00000</div>
             </div>
         </div>
 
@@ -348,9 +536,11 @@
 
                 <!-- NEWS CARD 1 -->
                 <div class="bg-white border border-gray-100 rounded-2xl p-4 space-y-2 shadow-xs">
-                    <div class="flex items-start justify-between">
-                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Dollar steadies before Fed remarks</h3>
-                        <span class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Medium</span>
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Dollar steadies before Fed
+                            remarks</h3>
+                        <span
+                            class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded shrink-0">Medium</span>
                     </div>
                     <div class="text-[10px] text-gray-400 font-medium">Market Wire · 08:30</div>
                     <p class="text-[11px] text-gray-600 leading-relaxed">
@@ -360,9 +550,11 @@
 
                 <!-- NEWS CARD 2 -->
                 <div class="bg-white border border-gray-100 rounded-2xl p-4 space-y-2 shadow-xs">
-                    <div class="flex items-start justify-between">
-                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Gold holds bid on softer yields</h3>
-                        <span class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">High</span>
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Gold holds bid on softer
+                            yields</h3>
+                        <span
+                            class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded shrink-0">High</span>
                     </div>
                     <div class="text-[10px] text-gray-400 font-medium">Commodities Desk · 09:10</div>
                     <p class="text-[11px] text-gray-600 leading-relaxed">
@@ -371,18 +563,21 @@
                 </div>
 
                 <!-- NEWS CARD 3 -->
-                <div class="bg-white border border-gray-100 rounded-2xl p-4 space-y-2 shadow-xs relative">
-                    <div class="flex items-start justify-between">
-                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Crypto majors trade mixed into New York open</h3>
-                        <span class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Medium</span>
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 space-y-2 shadow-xs relative pb-14">
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="text-xs font-extrabold text-gray-900 leading-snug">Crypto majors trade mixed into
+                            New York open</h3>
+                        <span
+                            class="text-[9px] font-extrabold bg-gray-100 text-gray-500 px-2 py-0.5 rounded shrink-0">Medium</span>
                     </div>
                     <div class="text-[10px] text-gray-400 font-medium">Crypto Pulse · 10:05</div>
-                    <p class="text-[11px] text-gray-600 leading-relaxed pb-4">
+                    <p class="text-[11px] text-gray-600 leading-relaxed">
                         Bitcoin remains resilient while altcoin rotation stays selective ahead of ETF flow data.
                     </p>
 
                     <!-- QORA AI BUTTON -->
-                    <button onclick="showToast('Loading Qora AI Market Insights...')" class="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center space-x-1.5 shadow-md hover:shadow-lg transition-all">
+                    <button onclick="showToast('Loading Qora AI Market Insights...')"
+                        class="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center space-x-1.5 shadow-md hover:shadow-lg transition-all">
                         <i class="fa-solid fa-cube text-xs"></i>
                         <span>Qora AI</span>
                     </button>
@@ -451,31 +646,37 @@
     </main>
 
     <!-- BOTTOM NAVIGATION DOCK -->
-    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+    <nav
+        class="bottom-dock fixed left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-2 sm:px-3 py-2 z-40">
         <div class="flex items-center justify-between">
 
-            <a href="../menu/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../menu/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-solid fa-bars text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Menu</span>
             </a>
 
-            <a href="../Trades/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
-                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$29.19</span>
+            <a href="../Trades/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
+                <span
+                    class="pl-badge absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$29.19</span>
                 <i class="fa-regular fa-folder text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Trades</span>
             </a>
 
-            <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../TradesChart/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-solid fa-house text-sm mb-1"></i>
-                <span class="text-[10px] font-medium">Trade chart</span>
+                <span class="text-[10px] font-medium text-center leading-tight">Trade chart</span>
             </a>
 
             <a href="index.html" class="flex flex-col items-center flex-1 py-1 text-red-600">
                 <i class="fa-regular fa-newspaper text-sm mb-1"></i>
-                <span class="text-[10px] font-bold">Markets &amp; News</span>
+                <span class="text-[10px] font-bold text-center leading-tight">Markets &amp; News</span>
             </a>
 
-            <a href="../More/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../More/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-regular fa-user text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">More</span>
             </a>
@@ -483,7 +684,8 @@
     </nav>
 
     <!-- TOAST CONTAINER -->
-    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+    <div id="toast"
+        class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-amber-400"></i>
         <span id="toastMsg">Action triggered</span>
     </div>
@@ -558,7 +760,7 @@
             dropdown.classList.toggle('hidden');
         }
 
-        window.addEventListener('click', function(e) {
+        window.addEventListener('click', function (e) {
             const dropdown = document.getElementById('accountDropdown');
             const dropdownBtn = document.getElementById('accountDropdownBtn');
 
