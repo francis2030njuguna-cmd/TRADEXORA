@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>TRADEXORA Trading - Menu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,83 +44,224 @@
             color: #2d3748;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         .card-hover {
             transition: all 0.2s ease-in-out;
         }
-        
+
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             border-color: #cbd5e1;
         }
-        
-         ::-webkit-scrollbar {
+
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
-         ::-webkit-scrollbar-track {
+
+        ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
-         ::-webkit-scrollbar-thumb {
+
+        ::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 3px;
+        }
+
+        /* ================= RESPONSIVE BASE ================= */
+        html,
+        body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        img,
+        svg,
+        select,
+        input,
+        button {
+            max-width: 100%;
+        }
+
+        /* iOS: prevent auto-zoom when focusing inputs on mobile */
+        @media (max-width: 640px) {
+            #walletAmount {
+                font-size: 16px;
+            }
+        }
+
+        /* ================= HEADER RESPONSIVE ================= */
+        @media (max-width: 1024px) {
+            header .header-inner {
+                flex-wrap: wrap;
+                row-gap: 0.5rem;
+            }
+
+            header .header-left {
+                flex: 1 1 auto;
+                min-width: 0;
+                flex-wrap: wrap;
+                row-gap: 0.4rem;
+            }
+
+            header .header-right {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                row-gap: 0.4rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            /* Deposit button: icon-only on phones */
+            header .deposit-btn span.deposit-text {
+                display: none;
+            }
+
+            header .deposit-btn {
+                padding-left: 0.65rem;
+                padding-right: 0.65rem;
+            }
+
+            header .header-right .icon-btn {
+                width: 2.1rem;
+                height: 2.1rem;
+            }
+        }
+
+        /* Account dropdown never clipped on tiny screens */
+        @media (max-width: 420px) {
+            #accountDropdown {
+                width: calc(100vw - 2rem);
+                max-width: 16rem;
+            }
+        }
+
+        /* ================= BOTTOM NAV DOCK ================= */
+        .bottom-dock {
+            bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+            width: min(92%, 36rem);
+        }
+
+        @media (max-width: 400px) {
+            .bottom-dock {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+
+            .bottom-dock a span,
+            .bottom-dock button span {
+                font-size: 9px;
+            }
+
+            /* Hide floating P/L badge on tiny screens to avoid overlap */
+            .bottom-dock .pl-badge {
+                display: none;
+            }
+        }
+
+        /* Body bottom padding adapts to dock + safe area */
+        .page-body {
+            padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        /* ================= TOAST ================= */
+        #toast {
+            max-width: calc(100vw - 2rem);
+        }
+
+        /* ================= LARGE SCREEN READABILITY ================= */
+        @media (min-width: 1024px) {
+            main h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            main {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            /* Portfolio stats: 2 columns stay but tighten */
+            .stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.6rem;
+            }
+
+            .stat-grid .text-xl {
+                font-size: 1.05rem;
+            }
         }
     </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen flex flex-col justify-between pb-28 select-none">
+<body class="page-body bg-slate-50 min-h-screen flex flex-col justify-between select-none">
 
     <!-- TOP HEADER -->
     <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="max-w-7xl mx-auto header-inner flex items-center justify-between">
 
             <!-- Left Header: Back Button OR Logo & Deposit Funds -->
-            <div class="flex items-center space-x-3">
+            <div class="header-left flex items-center space-x-2 sm:space-x-3">
                 <!-- Top Left Back Button for Sub-pages -->
-                <button id="topPageBackBtn" onclick="openView('menu')" class="hidden flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                <button id="topPageBackBtn" onclick="openView('menu')"
+                    class="hidden flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     <span>Back</span>
                 </button>
 
-                <a href="../TradesChart/index.html" id="headerLogoBtn" aria-label="Tradexora home" class="flex shrink-0 items-center gap-2.5">
-                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black text-amber-400 border border-amber-500/30 shadow-sm">
-        <i class="fa-solid fa-chart-line text-sm" aria-hidden="true"></i>
-    </span>
-
-                    <span class="flex flex-col leading-none">
-        <span class="whitespace-nowrap text-sm sm:text-base font-extrabold tracking-wide text-gray-900">
-            TRADE<span class="text-[#8b1d38]">XORA</span>
+                <a href="../TradesChart/index.html" id="headerLogoBtn" aria-label="Tradexora home"
+                    class="flex shrink-0 items-center gap-2 min-w-0">
+                    <span
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black text-amber-400 border border-amber-500/30 shadow-sm">
+                        <i class="fa-solid fa-chart-line text-sm" aria-hidden="true"></i>
                     </span>
-                    <span class="mt-1 text-[8px] font-semibold tracking-[0.2em] text-gray-500">
-            TRADING
-        </span>
+
+                    <span class="flex flex-col leading-none min-w-0">
+                        <span
+                            class="whitespace-nowrap text-sm sm:text-base font-extrabold tracking-wide text-gray-900">
+                            TRADE<span class="text-[#8b1d38]">XORA</span>
+                        </span>
+                        <span class="mt-1 text-[8px] font-semibold tracking-[0.2em] text-gray-500">
+                            TRADING
+                        </span>
                     </span>
                 </a>
 
-                <button onclick="openView('wallet'); setWalletTab('deposit');" class="flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors">
+                <button onclick="openView('wallet'); setWalletTab('deposit');"
+                    class="deposit-btn flex items-center space-x-2 bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 text-amber-900 text-xs font-medium px-3 py-2 rounded-xl transition-colors shrink-0">
                     <i class="fa-regular fa-credit-card text-amber-700 text-xs"></i>
-                    <span>Deposit Funds</span>
+                    <span class="deposit-text">Deposit Funds</span>
                 </button>
             </div>
 
             <!-- Right Header: Account Status & Actions -->
-            <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="header-right flex items-center space-x-2 sm:space-x-3">
                 <div class="relative">
-                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()" class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
+                    <button id="accountDropdownBtn" onclick="toggleAccountDropdown()"
+                        class="bg-[#8b1d38] hover:bg-[#72172d] text-white text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-colors shadow-sm">
                         <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
                         <div class="text-right">
-                            <div class="text-[11px] font-bold leading-tight" id="activeAccountType">Demo $10,000.00</div>
-                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">DNP142887</div>
+                            <div class="text-[11px] font-bold leading-tight whitespace-nowrap"
+                                id="activeAccountType">Demo $10,000.00</div>
+                            <div class="text-[9px] font-normal tracking-wider opacity-80" id="activeAccountId">
+                                DNP142887</div>
                         </div>
                     </button>
 
-                    <div id="accountDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
-                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Account</div>
+                    <div id="accountDropdown"
+                        class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select
+                            Account</div>
 
-                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
+                        <button onclick="selectAccount('Demo', '$10,000.00', 'DNP142887')"
+                            class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all mb-1">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Demo Account</div>
                                 <div class="text-[11px] text-gray-500">ID: DNP142887</div>
@@ -128,7 +269,8 @@
                             <div class="text-xs font-bold text-emerald-600">$10,000.00</div>
                         </button>
 
-                        <button onclick="selectAccount('Real', '$0.00', 'LIV982104')" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
+                        <button onclick="selectAccount('Real', '$0.00', 'LIV982104')"
+                            class="w-full text-left p-2.5 rounded-lg hover:bg-gray-50 flex items-center justify-between border border-transparent hover:border-gray-200 transition-all">
                             <div>
                                 <div class="text-xs font-bold text-gray-800">Real Account</div>
                                 <div class="text-[11px] text-gray-500">ID: LIV982104</div>
@@ -138,19 +280,27 @@
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Refresh">
+                <button onclick="location.reload()"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+                    title="Refresh">
                     <i class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
 
-                <button onclick="openView('settings')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Settings">
+                <button onclick="openView('settings')"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0 hidden sm:flex"
+                    title="Settings">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </button>
 
-                <button onclick="openView('profile')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors" title="Profile">
+                <button onclick="openView('profile')"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+                    title="Profile">
                     <i class="fa-regular fa-user text-xs"></i>
                 </button>
 
-                <button onclick="handleLogout()" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors" title="Logout">
+                <button onclick="handleLogout()"
+                    class="icon-btn w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors shrink-0"
+                    title="Logout">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
@@ -162,39 +312,51 @@
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 w-full">
 
         <!-- PAGE TITLE SECTION -->
-        <div class="mb-6 flex items-center justify-between">
-            <div>
-                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase" id="pageCategoryLabel">MENU</div>
-                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight" id="pageTitleLabel">Welcome back</h1>
+        <div class="mb-6 flex items-center justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
+                <div class="text-[10px] font-bold tracking-widest text-gray-400 uppercase"
+                    id="pageCategoryLabel">MENU</div>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight break-words"
+                    id="pageTitleLabel">Welcome back</h1>
             </div>
             <!-- Logged-in user badge (synced with landing page auth) -->
-            <div id="userBadge" class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-                <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
-                <span id="user-display-email" class="text-xs font-semibold text-slate-700">user@qora.com</span>
+            <div id="userBadge"
+                class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm max-w-full">
+                <span class="flex h-2 w-2 rounded-full bg-emerald-500 shrink-0"></span>
+                <span id="user-display-email"
+                    class="text-xs font-semibold text-slate-700 truncate">user@qora.com</span>
             </div>
         </div>
 
         <!-- QUICK LINKS ROW (CENTERED) -->
-        <div class="flex items-center justify-center space-x-12 sm:space-x-24 mb-8 border-b border-gray-100 pb-6">
+        <div
+            class="flex items-center justify-center gap-10 sm:gap-24 mb-8 border-b border-gray-100 pb-6 flex-wrap">
             <a href="../TradesChart/index.html" class="group flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-house text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Back to Trading</span>
+                <span
+                    class="text-xs font-medium text-gray-700 text-center group-hover:text-red-600 transition-colors">Back
+                    to Trading</span>
             </a>
 
             <button onclick="openView('wallet')" class="group flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-full bg-red-50 text-[#e53e3e] flex items-center justify-center mb-1.5 group-hover:bg-red-100 transition-colors">
                     <i class="fa-regular fa-credit-card text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-red-600 transition-colors">Wallet</span>
+                <span
+                    class="text-xs font-medium text-gray-700 text-center group-hover:text-red-600 transition-colors">Wallet</span>
             </button>
 
             <a href="../index.html" class="group flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mb-1.5 group-hover:bg-slate-200 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mb-1.5 group-hover:bg-slate-200 transition-colors">
                     <i class="fa-solid fa-globe text-sm"></i>
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-slate-900 transition-colors">Homepage</span>
+                <span
+                    class="text-xs font-medium text-gray-700 text-center group-hover:text-slate-900 transition-colors">Homepage</span>
             </a>
         </div>
 
@@ -206,8 +368,10 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                    <button onclick="openView('portfolio')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                    <button onclick="openView('portfolio')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
                             <i class="fa-regular fa-clock text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Portfolio</h3>
@@ -216,8 +380,10 @@
                         </p>
                     </button>
 
-                    <button onclick="openView('wallet')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                    <button onclick="openView('wallet')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
                             <i class="fa-regular fa-credit-card text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Wallet</h3>
@@ -226,8 +392,10 @@
                         </p>
                     </button>
 
-                    <button onclick="openView('ai-assistant')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                    <button onclick="openView('ai-assistant')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
                             <i class="fa-solid fa-brain text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">AI Assistant</h3>
@@ -236,8 +404,10 @@
                         </p>
                     </button>
 
-                    <button onclick="openView('notifications')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
+                    <button onclick="openView('notifications')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-red-50 text-[#e53e3e] flex items-center justify-center mb-4">
                             <i class="fa-regular fa-bell text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Notifications</h3>
@@ -255,8 +425,10 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                    <button onclick="openView('profile')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                    <button onclick="openView('profile')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
                             <i class="fa-regular fa-user text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Profile</h3>
@@ -265,8 +437,10 @@
                         </p>
                     </button>
 
-                    <button onclick="openView('settings')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                    <button onclick="openView('settings')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
                             <i class="fa-solid fa-gear text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Settings</h3>
@@ -275,8 +449,10 @@
                         </p>
                     </button>
 
-                    <button onclick="openView('help')" class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
-                        <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
+                    <button onclick="openView('help')"
+                        class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left w-full block cursor-pointer">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center mb-4">
                             <i class="fa-regular fa-circle-question text-base"></i>
                         </div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">Help Center</h3>
@@ -291,129 +467,161 @@
 
         <!-- VIEW 2: PORTFOLIO -->
         <div id="view-portfolio" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-credit-card text-red-500 mr-1"></i> Balance</div>
-                    <div class="text-xl font-extrabold text-gray-900" id="portfolioBalance">$10,000.00</div>
+            <div class="stat-grid grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i
+                            class="fa-regular fa-credit-card text-red-500 mr-1"></i> Balance</div>
+                    <div class="text-xl font-extrabold text-gray-900 truncate"
+                        id="portfolioBalance">$10,000.00</div>
                 </div>
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-regular fa-clock text-red-500 mr-1"></i> Equity</div>
-                    <div class="text-xl font-extrabold text-gray-900" id="portfolioEquity">$10,000.00</div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i
+                            class="fa-regular fa-clock text-red-500 mr-1"></i> Equity</div>
+                    <div class="text-xl font-extrabold text-gray-900 truncate"
+                        id="portfolioEquity">$10,000.00</div>
                 </div>
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Margin</div>
-                    <div class="text-xl font-extrabold text-gray-900">$0.00</div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i
+                            class="fa-solid fa-chart-line text-red-500 mr-1"></i> Margin</div>
+                    <div class="text-xl font-extrabold text-gray-900 truncate">$0.00</div>
                 </div>
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div class="text-xs text-gray-500 font-medium mb-1"><i class="fa-solid fa-chart-line text-red-500 mr-1"></i> Performance</div>
-                    <div class="text-xl font-extrabold text-emerald-600">+0.00%</div>
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
+                    <div class="text-xs text-gray-500 font-medium mb-1"><i
+                            class="fa-solid fa-chart-line text-red-500 mr-1"></i> Performance</div>
+                    <div class="text-xl font-extrabold text-emerald-600 truncate">+0.00%</div>
                 </div>
             </div>
 
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-center">
-                <div>
-                    <div class="text-sm font-bold text-gray-800" id="portfolioAccountName">Demo account portfolio</div>
+            <div
+                class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <div class="min-w-0">
+                    <div class="text-sm font-bold text-gray-800 truncate"
+                        id="portfolioAccountName">Demo account portfolio</div>
                     <div class="text-xs text-gray-500" id="portfolioAccountId">DNP142887</div>
                 </div>
-                <span class="text-xs bg-gray-200 text-gray-700 px-2.5 py-1 rounded-md font-bold" id="portfolioAccountTag">DEMO</span>
+                <span
+                    class="text-xs bg-gray-200 text-gray-700 px-2.5 py-1 rounded-md font-bold self-start sm:self-auto"
+                    id="portfolioAccountTag">DEMO</span>
             </div>
 
             <div class="space-y-3">
                 <h3 class="text-sm font-bold text-gray-900">Analytics</h3>
-                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Win rate and risk/reward analytics extend from live order history.</div>
-                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Portfolio breakdown stays focused on balance, equity, margin, and performance.</div>
-                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Use Trades and Trading for execution, then return here for summary analytics.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Win rate and
+                    risk/reward analytics extend from live order history.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Portfolio
+                    breakdown stays focused on balance, equity, margin, and performance.</div>
+                <div class="p-3 bg-gray-50 text-gray-600 text-xs rounded-lg border border-gray-100">Use Trades and
+                    Trading for execution, then return here for summary analytics.</div>
             </div>
         </div>
 
         <!-- VIEW 3: WALLET -->
         <div id="view-wallet" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                <div class="p-4 bg-white rounded-xl border border-gray-100 min-w-0">
                     <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
                         <i class="fa-regular fa-credit-card text-red-500 mr-1.5"></i> Live wallet
                     </div>
-                    <div class="text-2xl font-extrabold text-gray-900" id="walletLiveBalance">$0.00</div>
+                    <div class="text-2xl font-extrabold text-gray-900 truncate"
+                        id="walletLiveBalance">$0.00</div>
                 </div>
-                <div class="p-4 bg-white rounded-xl border border-gray-100">
+                <div class="p-4 bg-white rounded-xl border border-gray-100 min-w-0">
                     <div class="text-xs text-gray-500 font-medium mb-1 flex items-center">
                         <i class="fa-solid fa-building-columns text-red-500 mr-1.5"></i> Demo balance
                     </div>
-                    <div class="text-2xl font-extrabold text-gray-900" id="walletDemoBalance">$10,000.00</div>
+                    <div class="text-2xl font-extrabold text-gray-900 truncate"
+                        id="walletDemoBalance">$10,000.00</div>
                 </div>
             </div>
 
             <div class="p-3 bg-gray-50 text-gray-500 text-xs rounded-xl border border-gray-100">
-                Wallet actions fund and withdraw from real accounts only. Demo balance is reset from the trading chart header.
+                Wallet actions fund and withdraw from real accounts only. Demo balance is reset from the trading
+                chart header.
             </div>
 
             <!-- DEPOSIT / WITHDRAW TOGGLE -->
             <div class="grid grid-cols-2 gap-3">
-                <button id="depositTabBtn" onclick="setWalletTab('deposit')" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600">
+                <button id="depositTabBtn" onclick="setWalletTab('deposit')"
+                    class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs shadow-sm transition-all border border-emerald-600">
                     Deposit
                 </button>
-                <button id="withdrawTabBtn" onclick="setWalletTab('withdraw')" class="py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100">
+                <button id="withdrawTabBtn" onclick="setWalletTab('withdraw')"
+                    class="py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl text-xs transition-all border border-red-100">
                     Withdraw
                 </button>
             </div>
 
             <!-- PAYMENT METHODS -->
-            <div class="border border-gray-200/80 rounded-2xl p-5 bg-white space-y-4">
+            <div class="border border-gray-200/80 rounded-2xl p-4 sm:p-5 bg-white space-y-4">
                 <div class="text-xs font-bold text-gray-900 flex items-center">
                     <i class="fa-regular fa-credit-card text-blue-600 mr-2"></i> Choose Payment Method
                 </div>
 
                 <div class="space-y-2">
                     <!-- M-PESA -->
-                    <label class="flex items-center justify-between p-3.5 border border-blue-500 bg-blue-50/10 rounded-2xl cursor-pointer hover:bg-blue-50/20 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <input type="radio" name="payment_method" value="mpesa" checked class="text-blue-600 focus:ring-blue-500">
+                    <label
+                        class="flex items-center justify-between gap-3 p-3.5 border border-blue-500 bg-blue-50/10 rounded-2xl cursor-pointer hover:bg-blue-50/20 transition-all">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <input type="radio" name="payment_method" value="mpesa" checked
+                                class="text-blue-600 focus:ring-blue-500 shrink-0">
                             <span class="text-xs font-bold text-gray-900">Use M-Pesa</span>
                         </div>
-                        <div class="border border-green-200 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-600">
+                        <div
+                            class="border border-green-200 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-extrabold text-emerald-600 shrink-0">
                             M-PESA
                         </div>
                     </label>
 
                     <!-- USDT -->
-                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <input type="radio" name="payment_method" value="usdt" class="text-blue-600 focus:ring-blue-500">
+                    <label
+                        class="flex items-center justify-between gap-3 p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <input type="radio" name="payment_method" value="usdt"
+                                class="text-blue-600 focus:ring-blue-500 shrink-0">
                             <span class="text-xs font-bold text-gray-900">USDT</span>
                         </div>
-                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]">
+                        <div
+                            class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                             T
                         </div>
                     </label>
 
                     <!-- ETHEREUM -->
-                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <input type="radio" name="payment_method" value="ethereum" class="text-blue-600 focus:ring-blue-500">
+                    <label
+                        class="flex items-center justify-between gap-3 p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <input type="radio" name="payment_method" value="ethereum"
+                                class="text-blue-600 focus:ring-blue-500 shrink-0">
                             <span class="text-xs font-bold text-gray-900">Ethereum</span>
                         </div>
-                        <div class="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-[10px]">
+                        <div
+                            class="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                             <i class="fa-brands fa-ethereum"></i>
                         </div>
                     </label>
 
                     <!-- BTC -->
-                    <label class="flex items-center justify-between p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <input type="radio" name="payment_method" value="btc" class="text-blue-600 focus:ring-blue-500">
+                    <label
+                        class="flex items-center justify-between gap-3 p-3.5 border border-gray-200/80 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <input type="radio" name="payment_method" value="btc"
+                                class="text-blue-600 focus:ring-blue-500 shrink-0">
                             <span class="text-xs font-bold text-gray-900">BTC</span>
                         </div>
-                        <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-[10px]">
+                        <div
+                            class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                             <i class="fa-brands fa-bitcoin"></i>
                         </div>
                     </label>
@@ -422,10 +630,12 @@
                 <!-- Amount input -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Amount (USD)</label>
-                    <input id="walletAmount" type="number" min="1" step="0.01" value="10.00" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                    <input id="walletAmount" type="number" min="1" step="0.01" value="10.00"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
                 </div>
 
-                <button onclick="handleWalletSubmit()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all shadow-sm">
+                <button onclick="handleWalletSubmit()"
+                    class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all shadow-sm">
                     Continue
                 </button>
 
@@ -444,7 +654,8 @@
 
                 <div id="txHistoryList" class="space-y-2">
                     <!-- Populated dynamically from localStorage -->
-                    <div class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs text-gray-400 text-center">
+                    <div
+                        class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs text-gray-400 text-center">
                         No transactions yet. Your deposits and withdrawals will appear here.
                     </div>
                 </div>
@@ -454,36 +665,44 @@
 
         <!-- VIEW 4: AI ASSISTANT -->
         <div id="view-ai-assistant" class="view-panel hidden">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors mb-6">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors mb-6">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-brain text-red-500 mr-2"></i> Chat and analysis</h3>
+                <div class="lg:col-span-2 space-y-4 min-w-0">
+                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i
+                            class="fa-solid fa-brain text-red-500 mr-2"></i> Chat and analysis</h3>
                     <div class="space-y-3">
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                             <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
-                            <p class="text-xs text-gray-700 mt-1">Analyze EURUSD and explain the current short-term structure.</p>
+                            <p class="text-xs text-gray-700 mt-1 break-words">Analyze EURUSD and explain the current
+                                short-term structure.</p>
                         </div>
                         <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
                             <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
-                            <p class="text-xs text-gray-800 mt-1">EURUSD keeps a constructive intraday bias above 1.0820 with steady higher lows and better momentum through London support.</p>
+                            <p class="text-xs text-gray-800 mt-1 break-words">EURUSD keeps a constructive intraday
+                                bias above 1.0820 with steady higher lows and better momentum through London
+                                support.</p>
                         </div>
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                             <div class="text-[10px] font-bold text-gray-400 uppercase">TRADER</div>
-                            <p class="text-xs text-gray-700 mt-1">What is the preferred risk area for a continuation setup?</p>
+                            <p class="text-xs text-gray-700 mt-1 break-words">What is the preferred risk area for a
+                                continuation setup?</p>
                         </div>
                         <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
                             <div class="text-[10px] font-bold text-red-600 uppercase">QORA AI</div>
-                            <p class="text-xs text-gray-800 mt-1">A continuation setup favors pullbacks into support while maintaining defined risk below the latest higher low.</p>
+                            <p class="text-xs text-gray-800 mt-1 break-words">A continuation setup favors pullbacks
+                                into support while maintaining defined risk below the latest higher low.</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-solid fa-bolt text-red-500 mr-2"></i> AI signals</h3>
+                <div class="space-y-4 min-w-0">
+                    <h3 class="text-xs font-bold text-gray-800 flex items-center"><i
+                            class="fa-solid fa-bolt text-red-500 mr-2"></i> AI signals</h3>
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                         <div class="text-xs font-bold text-gray-900">EURUSD · Buy Bias</div>
                         <div class="text-[10px] text-gray-400">Confidence 80%</div>
@@ -497,7 +716,8 @@
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                         <div class="text-xs font-bold text-gray-900">BTCUSD · Neutral</div>
                         <div class="text-[10px] text-gray-400">Confidence 54%</div>
-                        <p class="text-[11px] text-gray-600">Testing major resistance level on the 24/7 crypto feed.</p>
+                        <p class="text-[11px] text-gray-600">Testing major resistance level on the 24/7 crypto
+                            feed.</p>
                     </div>
                 </div>
             </div>
@@ -505,57 +725,64 @@
 
         <!-- VIEW 5: NOTIFICATIONS -->
         <div id="view-notifications" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-100 pb-3">
                 <div>
                     <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
-                    <p class="text-xs text-gray-400">0 unread · 0 total · Account: <span id="notifAccountName">QORA TRADER</span></p>
+                    <p class="text-xs text-gray-400">0 unread · 0 total · Account: <span
+                            id="notifAccountName">QORA TRADER</span></p>
                 </div>
                 <div class="flex space-x-2">
-                    <button class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-lg font-bold">All</button>
+                    <button
+                        class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-lg font-bold">All</button>
                     <button class="px-3 py-1 bg-gray-50 text-gray-400 text-xs rounded-lg">Unread</button>
                 </div>
             </div>
 
             <div class="py-12 text-center space-y-3">
-                <div class="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto">
+                <div
+                    class="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto">
                     <i class="fa-regular fa-bell-slash text-xl"></i>
                 </div>
                 <div class="text-sm font-bold text-gray-800">No notifications</div>
                 <p class="text-xs text-gray-400">Updates will appear here as they happen.</p>
-                <button onclick="openView('wallet')" class="text-xs text-red-600 font-bold hover:underline">Go to Wallet &rarr;</button>
+                <button onclick="openView('wallet')" class="text-xs text-red-600 font-bold hover:underline">Go to
+                    Wallet &rarr;</button>
             </div>
         </div>
 
         <!-- VIEW 6: PROFILE -->
         <div id="view-profile" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
             <div class="space-y-3">
-                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i class="fa-regular fa-user text-red-500 mr-2"></i> Personal information</h3>
+                <h3 class="text-xs font-bold text-gray-800 flex items-center"><i
+                        class="fa-regular fa-user text-red-500 mr-2"></i> Personal information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
                         <div class="text-[10px] text-gray-400">Name</div>
-                        <div class="text-xs font-bold text-gray-800" id="profileName">Not set</div>
+                        <div class="text-xs font-bold text-gray-800 break-words" id="profileName">Not set</div>
                     </div>
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
                         <div class="text-[10px] text-gray-400">Email</div>
-                        <div class="text-xs font-bold text-gray-800" id="profileEmail">Not set</div>
+                        <div class="text-xs font-bold text-gray-800 break-words" id="profileEmail">Not set</div>
                     </div>
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
                         <div class="text-[10px] text-gray-400">Phone Number</div>
-                        <div class="text-xs font-bold text-gray-800">Not set</div>
+                        <div class="text-xs font-bold text-gray-800 break-words">Not set</div>
                     </div>
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 min-w-0">
                         <div class="text-[10px] text-gray-400">Country</div>
-                        <div class="text-xs font-bold text-gray-800" id="profileCountry">Not set</div>
+                        <div class="text-xs font-bold text-gray-800 break-words" id="profileCountry">Not set</div>
                     </div>
                 </div>
             </div>
@@ -564,32 +791,41 @@
                 <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-gray-800">Verification</span>
-                        <span class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-extrabold">PENDING</span>
+                        <span
+                            class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-extrabold">PENDING</span>
                     </div>
-                    <p class="text-[11px] text-gray-500 leading-normal">Upload your ID, passport, or driver's license together with a utility bill or bank statement.</p>
+                    <p class="text-[11px] text-gray-500 leading-normal">Upload your ID, passport, or driver's
+                        license together with a utility bill or bank statement.</p>
                 </div>
                 <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
                     <span class="text-xs font-bold text-gray-800">Devices</span>
-                    <p class="text-[11px] text-gray-500 leading-normal">Current device session verified and secured.</p>
+                    <p class="text-[11px] text-gray-500 leading-normal">Current device session verified and
+                        secured.</p>
                 </div>
                 <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
                     <span class="text-xs font-bold text-gray-800">Security</span>
-                    <p class="text-[11px] text-gray-500 leading-normal">Password and device controls live alongside alerts and settings.</p>
+                    <p class="text-[11px] text-gray-500 leading-normal">Password and device controls live alongside
+                        alerts and settings.</p>
                 </div>
             </div>
         </div>
 
         <!-- VIEW 7: SETTINGS -->
         <div id="view-settings" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
             <div class="space-y-3">
                 <h3 class="text-xs font-bold text-gray-800">Appearance</h3>
-                <div class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold cursor-pointer">Light Mode</div>
-                <div class="p-3 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold cursor-pointer hover:bg-gray-50 transition-colors">Dark Mode</div>
+                <div
+                    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold cursor-pointer">
+                    Light Mode</div>
+                <div
+                    class="p-3 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold cursor-pointer hover:bg-gray-50 transition-colors">
+                    Dark Mode</div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
@@ -624,17 +860,20 @@
 
         <!-- VIEW 8: HELP CENTER -->
         <div id="view-help" class="view-panel hidden space-y-6">
-            <button onclick="openView('menu')" class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
+            <button onclick="openView('menu')"
+                class="flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Back to Menu</span>
             </button>
 
             <div class="text-center py-4 space-y-2">
-                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <div
+                    class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
                     <i class="fa-regular fa-comments"></i>
                 </div>
                 <h2 class="text-xl font-bold text-gray-900">Get Help</h2>
-                <p class="text-xs text-gray-500">Find answers to common questions or reach out to our support team</p>
+                <p class="text-xs text-gray-500">Find answers to common questions or reach out to our support team
+                </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -651,7 +890,7 @@
                 <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                     <i class="fa-regular fa-envelope text-lg text-gray-700"></i>
                     <div class="text-xs font-bold text-gray-900">Email Support</div>
-                    <p class="text-[10px] text-gray-500">support@qoratrading.com</p>
+                    <p class="text-[10px] text-gray-500 break-words">support@qoratrading.com</p>
                 </div>
             </div>
 
@@ -660,15 +899,18 @@
                 <div class="space-y-2">
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                         <div class="text-xs font-bold text-gray-800">How do I create an account?</div>
-                        <p class="text-xs text-gray-500">Click the "Create Account" button on the homepage, fill in your details, and follow the verification process.</p>
+                        <p class="text-xs text-gray-500">Click the "Create Account" button on the homepage, fill in
+                            your details, and follow the verification process.</p>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                         <div class="text-xs font-bold text-gray-800">What markets can I trade?</div>
-                        <p class="text-xs text-gray-500">Qora Trading offers access to forex, cryptocurrencies, stocks, commodities, and indices.</p>
+                        <p class="text-xs text-gray-500">Qora Trading offers access to forex, cryptocurrencies,
+                            stocks, commodities, and indices.</p>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1">
                         <div class="text-xs font-bold text-gray-800">How do Demo and Live accounts differ?</div>
-                        <p class="text-xs text-gray-500">Demo accounts start with $10,000 in virtual funds for practice. Live accounts require a deposit and trade with real money.</p>
+                        <p class="text-xs text-gray-500">Demo accounts start with $10,000 in virtual funds for
+                            practice. Live accounts require a deposit and trade with real money.</p>
                     </div>
                 </div>
             </div>
@@ -677,31 +919,37 @@
     </main>
 
     <!-- BOTTOM NAVIGATION DOCK -->
-    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-3 py-2 z-40">
+    <nav
+        class="bottom-dock fixed left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-full shadow-lg px-2 sm:px-3 py-2 z-40">
         <div class="flex items-center justify-between">
 
-            <button onclick="openView('menu')" class="flex flex-col items-center flex-1 py-1 text-red-600">
+            <button onclick="openView('menu')"
+                class="flex flex-col items-center flex-1 py-1 text-red-600">
                 <i class="fa-solid fa-bars text-sm mb-1"></i>
                 <span class="text-[10px] font-bold">Menu</span>
             </button>
 
-            <a href="../Trades/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
-                <span class="absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$8.52</span>
+            <a href="../Trades/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors relative">
+                <span class="pl-badge absolute -top-3 text-[9px] font-extrabold text-[#0284c7] tracking-tight">+$8.52</span>
                 <i class="fa-regular fa-folder text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">Trades</span>
             </a>
 
-            <a href="../TradesChart/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../TradesChart/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-solid fa-house text-sm mb-1"></i>
-                <span class="text-[10px] font-medium">Trade chart</span>
+                <span class="text-[10px] font-medium text-center leading-tight">Trade chart</span>
             </a>
 
-            <a href="../Markets%26News/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../Markets%26News/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-regular fa-newspaper text-sm mb-1"></i>
-                <span class="text-[10px] font-medium">Markets&News</span>
+                <span class="text-[10px] font-medium text-center leading-tight">Markets&News</span>
             </a>
 
-            <a href="../More/index.html" class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
+            <a href="../More/index.html"
+                class="flex flex-col items-center flex-1 py-1 text-gray-500 hover:text-gray-900 transition-colors">
                 <i class="fa-regular fa-user text-sm mb-1"></i>
                 <span class="text-[10px] font-medium">More</span>
             </a>
@@ -710,7 +958,8 @@
     </nav>
 
     <!-- Notification Toast Container -->
-    <div id="toast" class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+    <div id="toast"
+        class="fixed top-16 right-4 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium translate-y-[-100px] opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-amber-400" id="toastIcon"></i>
         <span id="toastMsg">Action triggered</span>
     </div>
@@ -843,12 +1092,12 @@
             }
 
             container.innerHTML = list.map(tx => `
-                <div class="p-4 bg-white border border-gray-200/80 rounded-2xl flex items-center justify-between shadow-xs">
-                    <div>
-                        <div class="text-xs font-bold text-gray-900">${tx.type} - ${tx.method.replace('_', ' ').toUpperCase()}</div>
+                <div class="p-4 bg-white border border-gray-200/80 rounded-2xl flex items-center justify-between gap-2 shadow-xs">
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-gray-900 truncate">${tx.type} - ${tx.method.replace('_', ' ').toUpperCase()}</div>
                         <div class="text-[10px] text-gray-400">${tx.date}</div>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right shrink-0">
                         <div class="text-xs font-extrabold text-gray-900">$${tx.amount.toFixed(2)}</div>
                         <div class="text-[9px] font-bold ${tx.status === 'COMPLETED' ? 'text-emerald-600' : 'text-red-500'} uppercase tracking-wider">${tx.status}</div>
                     </div>
@@ -964,7 +1213,7 @@
             document.getElementById('accountDropdown').classList.toggle('hidden');
         }
 
-        window.addEventListener('click', function(e) {
+        window.addEventListener('click', function (e) {
             const dropdown = document.getElementById('accountDropdown');
             const dropdownBtn = document.getElementById('accountDropdownBtn');
             if (dropdown && dropdownBtn && !dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
